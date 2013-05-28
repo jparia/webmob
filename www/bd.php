@@ -93,5 +93,6 @@
 			</ul>
 		</nav>
 	</footer>	
+	<input type="hidden" id="auteur" value="<?php echo($auteur);?>" />
 </body>
 </html>

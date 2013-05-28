@@ -9,6 +9,8 @@
   <meta name="author" content="Jean-Pierre ARIA" lang="fr" xml:lang="fr" />
   <link href="jss/style.css" rel="stylesheet" type="text/css" />
   <link rel="shortcut icon" href="img/favicon.ico" />  
+  <script src="jss/library.js" type="text/javascript"></script>
+  <script src="jss/random.js" type="text/javascript"></script>
 </head>
 <body>	
 	<header>
@@ -32,7 +34,15 @@
 		</nav>
 	</section>
 	<br class="clear" />
-	<article>&nbsp;</article>
+	<article>
+		<div class="info">
+			<h3>Géolocation</h3><br/>
+			<div id="geo">&nbsp;</div>
+			<br class="clear" />
+			<h3>LocalStorage</h3><br/>
+			<div id="session">tioto&nbsp;</div>
+		</div>
+	</article>
 	<br class="clear" />
 	<footer>		
 		<nav>			

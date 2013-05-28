@@ -171,6 +171,7 @@ article .video {
 	margin: auto;
 }
 .info {
+	display: block;
 	text-align:	justify;
 	background-color: rgba(200,160,140, 0.8);
 	border: 1px solid #ccc;
