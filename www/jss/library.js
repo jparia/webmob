@@ -45,6 +45,26 @@ var Nav = new function(){
 		}
 	};
 	
+	this.addevent = function(evt, fc){
+		try{
+			document.body.attachEvent(evt, fc);
+		}catch(e){
+			try{
+				document.body.addEventListener(evt , fc, false);
+			}catch(E){}
+		}
+	};
+	
+	this.delevent = function(evt, fc){
+		try{
+			document.body.detachEvent(ev, fc);
+		}catch(e){
+			try{
+				document.body.removeEventListener(evt , fc, false);
+			}catch(e){}
+		}
+	};
+	
 	this.popup = new function(){
 		
 		var _this = this;
@@ -97,7 +117,6 @@ var Nav = new function(){
 	}
 }
 
-
 var El = new function(){
 	this.get = function(id){
 		if(document.getElementById(id)){
@@ -142,15 +161,12 @@ var El = new function(){
 		return "";
 	};
 	
-	this.drag = function(){
-		
+	this.drag = function(){		
 		var _this = this;
 		this.el = undefined;
 		this.onDrag = false;
-		this.startDrag = false;
 		this.posX = 0;
-		this.posY = 0;
-		
+		this.posY = 0;		
 		this.init = function(id){
 			if(!El.test(id)){
 				return false;
@@ -162,51 +178,44 @@ var El = new function(){
 			this.el.style.top = _this.el.offsetTop + "px";
 			this.el.style.cursor = "move";
 			this.el.onmousedown = this.start;
-			this.el.onmouseup = this.stop;
-			this.el.onmousemove = this.move;
 		};
 		
 		this.move = function(evt){
-			if (!_this.startDrag){
-				return false;
-			}
 			if (!evt){
 				evt = window.event;
 			}
+
 			if (!_this.onDrag){
 				_this.posX = evt.clientX - _this.el.offsetLeft;
 				_this.posY = evt.clientY - _this.el.offsetTop;
+				_this.el.style.zIndex = "2";
 			}
-			_this.onDrag = true;
-			_this.el.style.zIndex = "2";
+			_this.onDrag = true;			
 			_this.el.style.opacity = "0.8";
-			var le = _this.el.offsetLeft;
-			var te = _this.el.offsetTop;
-			var we = _this.el.offsetWidth;
-			var he = _this.el.offsetHeight;
-			var ls = evt.clientX;
-			var ts = evt.clientY;
-			var ld = _this.posX;
-			var td = _this.posY;
-			
-			_this.el.style.left = (parseInt(ls) - parseInt(ld)).toString() + "px";
-			_this.el.style.top = (parseInt(ts) - parseInt(td)).toString() + "px";
+			var l = evt.clientX - _this.posX;
+			var t = evt.clientY - _this.posY;
+			if(l > 0 && t > 0){
+				_this.el.style.left = (l).toString() + "px";
+				_this.el.style.top = (t).toString() + "px";
+			}
 		};
 		
 		this.start = function(){
-			_this.startDrag = true;
+			Nav.addevent("mouseup", _this.stop);
+			Nav.addevent("mousemove", _this.move);
 		};
 		
 		this.stop = function(){
-			_this.startDrag = false;
 			_this.onDrag = false;
 			_this.el.style.zIndex = "1";
 			_this.el.style.opacity = "1";
+			_this.posX = 0;
+			_this.posY = 0;
+			Nav.delevent("mouseup", _this.stop);
+			Nav.delevent("mousemove", _this.move);
 		};
-	}
-		
+	}		
 }
-
 
 var Editor = new function(){
 	

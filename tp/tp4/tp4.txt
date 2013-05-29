@@ -37,9 +37,9 @@ Résumé   : Version plus complète d'une application
   * rajouter dans votre <head> le chargement du plugin jquery-ui-map via le CDN http://jquery-ui-map.googlecode.com/svn/trunk/ui/min/jquery.ui.map.full.min.js
   * Dans la page random, après le paragraphe d'affiche des coordonnées géographique, rajouter une <div#geoMap> avec une class="map rounded"
   * Modifier, dans notre librairie javascript, le fonctionnement de la methode update de l'objet myGPS pour accepter une fonction callback en parametre
-  * Utiliser la methode update, dans la fonction displayGeo(), en lui fournissant un callback lors de la récupération des données GPS
+  * Utiliser la methode update, dans la fonction (), en lui fournissant un callback lors de la récupération des données GPS
   * Dans le callback :
-    * Initialiser le plugin jquery-gmap sur la <div#geoMap>
+    * Initialiser le plugin jquery-gmap sur la <div#geoMap>displayGeo
     * Binder une fonction sur l'événement "init" de la <div#geoMap>
     * dans cette fonction, ajouter un marker sur nos coordoonnées (option addMarker du plugin gmap)
     * Rendre ce marker cliquable et ouvrir une popup avec un message personnalisé
