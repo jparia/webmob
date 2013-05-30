@@ -1,0 +1,107 @@
+body {
+	margin-left: 50px;
+}
+form {
+	border:"1px solid #fff";
+}
+form input {
+	width: 200px;
+	background-color: #fff;
+	margin: 5px;
+	border: 1px solid #333;
+	padding: 3px;
+	border-radius: 5px;
+	color: #611;
+}
+form label {
+	width: 250px;
+	text-align: right;
+	display: block;
+	float: left;
+	font-size: 18px;
+}
+button {
+	margin: 5px;
+	cursor: pointer;
+}
+form span {
+	color: #fff;
+	border-radius: 5px;
+	padding: 5px;
+	color: #fff
+}
+form span.fort {
+	background-color: #090;
+}
+form span.moyen {
+	background-color: #990;
+}
+form span.faible {
+	background-color: #900;
+}
+form img {
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+}
+#question {
+	width: 200px;
+	float:left;
+	height:200px;
+}
+#souris{
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	z-index: 2;	
+	left: 100px;
+	top: 100px;
+	background-image: url(../../img/coccinelle_100.png);
+	background-repeat: no-repeat;
+	display:none;
+}
+.volet {
+	width: 300px;
+	height: 500px;
+	position: absolute;
+	z-index: 1;
+	left: -290px;
+	top: 0px;
+	background-color: #df7708;
+}
+.volet div {
+	width: 170px;
+	height: 50px;
+	background-color: #fae2ba;
+	color: #333;
+	margin: 10px;
+	margin-left: 110px;
+	font-size: 24px;
+	float: left;
+	border-radius: 10px;
+	box-shadow: 3px 3px 3px #333;
+	cursor: pointer;
+	text-align: center;
+}
+.volet div:hover {	
+	background-color: #333;
+	color: #fae2ba;	
+	box-shadow: 0px;
+}
+.volet span {
+	position: absolute;
+	display: block;
+	width: 10px;
+	height: 100%;
+	right: 0px;
+	top: 0px;
+	background-color: #333;
+	cursor: pointer;
+	background-image: url(../../img/barre_blanche.png);
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.volet span:hover {
+	background-color: #fae2ba;
+	background-image: url(../../img/barre_noire.png);
+} 
