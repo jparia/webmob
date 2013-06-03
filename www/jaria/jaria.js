@@ -95,49 +95,40 @@
 				argument 0: obligatoire		texte ou number
 				argument 1: obligatoire		number
 			*/
-			var text = ( this.test(arguments[0]) || !isNaN(arguments[0]) ) ? arguments[0].toString() : "";
+			var t = ( this.test(arguments[0]) || !isNaN(arguments[0]) ) ? arguments[0].toString() : "";
 			var nb = ( !isNaN(arguments[1]) ) ? arguments[1] : 0;
 			var zero = "";
-			for( var i = 0; i < (parseInt(nb) - text.length); i++ ){
+			for( var i = 0; i < (parseInt(nb) - t.length); i++ ){
 				zero += "0";
 			}
-			return ( text.length < nb ) ? zero + text : text;
+			return ( t.length < nb ) ? zero + t : t;
 		};
 		
-		this.round = function(){
-			/*
-				argument 0: decimal obligatoire		numérique
-				argument 1: integer obligatoire		numérique
-			*/
-			if( arguments.length < 2 ){
-				return "0";
-			}
-			var num = arguments[0];
-			var p = arguments[1];
-			if( isNaN(num) || isNaN(p) ){
+		this.round = function(n, p){
+			if( isNaN(n) || isNaN(p) ){
 				return "0";
 			}
 			var m = Math.pow(10, parseFloat(p));
-			num = parseFloat(num) * m;
-			num = ( Math.round(parseFloat(num)) == Math.ceil(parseFloat(num)) ) ? Math.ceil(parseFloat(num)) : Math.ceil(parseFloat(num)) - 1;
-			num = parseFloat(num) / m;
-			if( isNaN(num) ){
+			n = parseFloat(n) * m;
+			n = ( Math.round(parseFloat(n)) == Math.ceil(parseFloat(n)) ) ? Math.ceil(parseFloat(n)) : Math.ceil(parseFloat(n)) - 1;
+			n = parseFloat(n) / m;
+			if( isNaN(n) ){
 				return "0";
 			}			
-			return (num).toString();
+			return (n).toString();
 		};
 			
-		this.daymonth = function(number){				// retourne le jour ou le mois sur 2 caractères en complètant par un zéro
-			return ( number.toString().length == 1 ) ? "0" + number.toString() : number.toString();
+		this.daymonth = function(n){				// retourne le jour ou le mois sur 2 caractères en complètant par un zéro
+			return ( n.toString().length == 1 ) ? "0" + n.toString() : n.toString();
 		};
 		
-		this.isemail = function(text){					// contrôle le format email
+		this.isemail = function(t){					// contrôle le format email
 			var e = /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+([\.][a-z]+)+$/;
-			return ( this.test(text) && text.search(e) != -1 ) ? true : false;
+			return ( this.test(t) && t.search(e) != -1 ) ? true : false;
 		};
 		
-		this.isphone = function(text, sep){				// contrôle le format téléphone
-			switch( sep ){
+		this.isphone = function(t, s){				// contrôle le format téléphone
+			switch(s){
 				case null :								// accepte tous les séparateurs ou aucun
 					var e = /^0[1-68]([-. ]?[0-9]{2}){4}$/;				//var e = /^([+][0-9]{1,3}|0)[1-68][-. ]?(?:[0-9]{2,3}[-. ]?){3,4}$/;
 					break;
@@ -153,7 +144,7 @@
 				default :								// n'accepte aucun séparateur
 					var e = /^0[1-68][0-9]{8}$/;
 			}
-			return ( text.search(e) != -1 ) ? true : false;
+			return ( t.search(e) != -1 ) ? true : false;
 		};
 		
 		this.isnumss = function(s){
@@ -230,8 +221,8 @@
 		
 		this.html =  new Array("&quot;", "&#37;", "&amp;&amp;", " &amp; ", "&amp; ", "&Acirc;", "&Atilde;", "&Auml;", "&AElig;", "&Egrave;", "&Eacute;", "&Ecric;", "&Euml;", "&Icirc;", "&Iuml;", "&Igrave;", "&Iacute;", "&Ocirc;", "&Otilde;", "&Ograve;", "&Oacute;", "&Ouml;", "&Ucirc;", "&Ugrave;", "&Uacute;", "&Uuml;", "&Yacute;", "&agrave;", "&acirc;", "&atilde;", "&auml;", "&aelig;", "&ccedil;", "&eacute;", "&egrave;", "&ecirc;", "&euml;", "&euro;", "&icirc;", "&iuml;", "&igrave;", "&iacute;", "&ocirc;",	"&otilde;",	"&ograve;", "&oacute;", "&ouml;", "&ugrave;", "&ucirc;", "&ugrave;", "&uacute;", "&uuml;", "&yuml;", "&copy;", "&reg;", "&times;", "&oelig;", "&iexcl;",	"&cent;", "&curren;", "&brvbar;", "&sect;", "&uml;", "&ordf;", "&not;", "&masr;", "&deg;", "&plusmn;", "&sup2;", "&sup3;", "&acute;", "&micro;", "&para;", "&middot;", "&cedil;", "&sup1;", "&ordm;", "&frac14;", "&frac12;", "&frac34;", "&iquest;", "&thorn;", "&szlig;", "&eth;", "&Ntilde;", "&ntilde;", "&divide;", "&oslash;", "&laquo;", "&raquo;", "&pound;");			
 		
-		this.xmlencode = function(text){
-			if( !this.test(text) ) {
+		this.xmlencode = function(t){
+			if( !this.test(t) ) {
 				return "";
 			}
 			var xml = "";
@@ -240,72 +231,72 @@
 				var car = String.fromCharCode(i).toString();
 				var r = new RegExp(car, "g");
 				xml = "&#" + (i).toString() + ";";
-				text = text.replace(r, xml);
+				t = t.replace(r, xml);
 			}
-			return text;					
+			return t;					
 		};
 		
 		this.xmldecode = function(xml){
 			if( !this.test(xml) ) {
 				return "";
 			}
-			var text = "";
+			var t = "";
 			var car = "";
 			for ( var i = 127; i <= 255; i++ ){
 				var car = "&#" + (i).toString() + ";";
 				var r = new RegExp(car, "g");
-				text = String.fromCharCode(i).toString();
-				xml = xml.replace(r, text);
+				t = String.fromCharCode(i).toString();
+				xml = xml.replace(r, t);
 			}
 			return xml;			
 		};
 		
-		this.encode = function(ch){					// encode les caractères spéciaux hors balises html
-			if( !this.test(ch) ) {
+		this.encode = function(s){					// encode les caractères spéciaux hors balises html
+			if( !this.test(s) ) {
 				return "";
 			}
-			ch = ch.toString();
+			s = s.toString();
 			for( var i = 0; i < this.ascii.length; i++ ){
-				if( ch.indexOf(this.ascii[i]) != -1 ){
+				if( s.indexOf(this.ascii[i]) != -1 ){
 					var r = new RegExp(this.ascii[i], "g");
-					ch = ch.replace(r, this.html[i]);
+					s = s.replace(r, this.html[i]);
 				}
 			}
-			return (ch).toString();			
+			return (s).toString();			
 		};
 
-		this.decode  = function(ch){					// décode les caractères spéciaux hors balises html
-			if( !this.test(ch) ) {
+		this.decode  = function(s){					// décode les caractères spéciaux hors balises html
+			if( !this.test(s) ) {
 				return "";
 			}
-			ch = ch.toString();
+			s = s.toString();
 			for( var i = 0; i < this.html.length; i++ ){
-				if( ch.indexOf(this.html[i]) != -1 ){
+				if( s.indexOf(this.html[i]) != -1 ){
 					var r = new RegExp(this.html[i], "g");
-					ch = ch.replace(r, this.ascii[i]);
+					s = s.replace(r, this.ascii[i]);
 				}
 			}
-			return (ch).toString();
+			return (s).toString();
 		};
 
-		this.htmlencode = function(html){				// encode les caractères spéciaux y compris les balises html
-			if( !this.test(html) ) {
+		this.htmlencode = function(s){				// encode les caractères spéciaux y compris les balises html
+			if( !this.test(s) ) {
 				return "";
 			}
-			html = this.encode(html.toString());
-			html = html.replace(/</g,"&lt;");
-			html = html.replace(/>/g,"&gt;");
-			return html;
+			s = this.encode(s.toString());
+			s = s.replace(/</g,"&lt;");
+			s = s.replace(/>/g,"&gt;");
+			return s;
 		};
 		
-		this.htmldecode = function(html){				// décode les caractères spéciaux y compris les balises html
-			if( !this.test(html) ) {
+		this.htmldecode = function(s){				// décode les caractères spéciaux y compris les balises html
+			if( !this.test(s) ) {
 				return "";
 			}
-			html = html.replace(/&lt;/g,"<");
-			html = html.replace(/&gt;/g,">");
-			html = this.decode(html.toString());
-			return html;
+			s = s.replace(/&lt;/g,"<");
+			s = s.replace(/&gt;/g,">");
+			s = this.decode(s.toString());
+			return s;
 		};
 		
 		this.filename = function(path){						// retourne le nom du fichier à partir de son chemin complet
@@ -344,10 +335,10 @@
 		
 		this.build = new function(){							//construction d'une chaine à l'aide d'un tableau
 			
-    	this.strings = new Array("");
+			this.strings = new Array("");
 			
-			this.append = function(text){
-				this.strings.push(text);
+			this.append = function(t){
+				this.strings.push(t);
 			};
 			
 			this.clear = function(){
@@ -426,19 +417,19 @@
 			this.name = "other";
 		}
 		
-		this.param = function(pos){						// retourne le paramètre passé dans l'url par sa position à partir de 0
-			if( isNaN(pos) ){
+		this.param = function(n){						// retourne le paramètre passé dans l'url par sa position à partir de 0
+			if( isNaN(n) ){
 				return "";
 			}
 			var p = (location.search).toString();
-			if( p == "" || pos < 0 ){
+			if( p == "" || n < 0 ){
 				return "";
 			}
 			p = p.split("&");
-			if( p[pos] == null ){
+			if( p[n] == null ){
 				return "";
 			}
-			p = new String(p[pos]);
+			p = new String(p[n]);
 			p = p.split("=");
 			if( p[1] == null ){
 				return "";
@@ -525,16 +516,16 @@
 			if( arguments.length == 0 ){
 				return false;
 			}			
-			var args = "";
+			var a = "";
 			for( var i = 0; i < arguments.length; i++ ){
-				args += (i == arguments.length -1) ? arguments[i] : arguments[i] + ",";
+				a += (i == arguments.length -1) ? arguments[i] : arguments[i] + ",";
 			}
 			if( !oNav.readyfull || oNav.inload){
-				window.setTimeout("oNav.loadimg('" + args + "')", 100);				
+				window.setTimeout("oNav.loadimg('" + a + "')", 100);				
 				return false;
 			}
 			oNav.inload = true;
-			oNav.loadimage.start(args);
+			oNav.loadimage.start(a);
 		};	
 			
 		this.size = function(){							// dimensions de la fenêtre du navigateur [browser]
@@ -613,13 +604,13 @@
 			}
 		};
 		
-		this.init_timer = function(timer){
-			if(timer != undefined && timer != null){
+		this.init_timer = function(t){
+			if(t != undefined && t != null){
 				try{
-					window.clearInterval(timer);
+					window.clearInterval(t);
 				}catch(e){
 					try{
-						window.clearTimeout(timer);
+						window.clearTimeout(t);
 					}catch(E){}
 				}
 			}			
@@ -689,7 +680,7 @@
 			// à effectuer lors de l'action de validation
 		};
 		
-		this.stopevent = function(event){		// limite la propagation de l'évènement
+		this.stopevent = function(event){		// limite la propagation de l'évènement à l'élèment
 			if( event.stopPropagation ){
 				event.stopPropagation();
 			}
@@ -776,24 +767,24 @@
 			return true;
 		};
 
-		this.goto = function(url, target){				// Aller à l'url indiquée
-			if( !oText.test(url) ){
+		this.goto = function(u, t){				// Aller à l'url indiquée
+			if( !oText.test(u) ){
 				return false;
 			}
 			oNav.lock.show();
-			if( !oText.test(target) ){
-				target = "";
+			if( !oText.test(t) ){
+				t = "";
 			}
-			switch (target){
+			switch (t){
 				case "_blank":
-					window.open(url);
+					window.open(u);
 					oNav.lock.show();
 					break;
 				case "_parent":
-					window.parent.location.href = url;
+					window.parent.location.href = u;
 					break;
 				default:
-					window.location.href = url;
+					window.location.href = u;
 			}			
 		};
 		
@@ -843,7 +834,6 @@
 					var t = ("<span class='jaria_tracehour'>" + oText.digit(d.getHours(), 2) + "h" + oText.digit(d.getMinutes(), 2) + "m" + oText.digit(d.getSeconds(), 2) + "s" + oText.digit(d.getMilliseconds(), 3) + "ms</span>" ).toString();
 					html = t + "&nbsp;" + text.toString() + "<br>" + html;
 					_this.debug.innerHTML = html;
-					//oEl.getframe(_this.debug, "trace").scrollIntoView(true);
 				}
 			};
 
@@ -1525,7 +1515,7 @@
 			if( !oText.test(id) ){
 				id = "undefined";
 			}
-			oBox.error("l'objet: <kbd>" + id + "</kbd> n'est pas trouv&eacute; !<br><div id=" + id + " style='display:none'></div>");
+			oBox.error("l'objet: <kbd>" + id + "</kbd> n'est pas trouvé !<br><div id=" + id + " style='display:none'></div>");
 			return document.getElementById(id);				
 		};
 		
@@ -1574,16 +1564,18 @@
 		};		
 		
 		
-		this.test = function(id){					// test l'élément par l'id passé en paramètre
-			if( !oText.test(id) ){
+		this.test = function(e){					// test l'élément par lui-même ou par l'id passé en paramètre
+			if(oEl.isobject(e) && e.tagName){
+				return e;
+			}
+			if( !oText.test(e) ){
 				return false;
 			}
-			if( oBox.html.substr(5, id.length+1) == id.toString() ){				
+			if( oBox.exist && oBox.html.indexOf("<kbd>" + e + "</kbd>") != -1 ){				
 				oBox.hide();				
 				return false;
 			}
-			if(document.getElementById(id)){return true;}
-			else{return false;}			
+			return (document.getElementById(e)) ? true : false;			
 		};
 		
 		this.create = function(tag){				// créé l'élément
@@ -1602,6 +1594,16 @@
 				el = undefined;
 			}
 			catch(e){}
+		};
+		
+		this.removeAll = function(el){				//Suppression de tout le contenu de l'élément
+			while (el.firstChild) {
+				el.removeChild(el.firstChild);
+			}
+		};
+		
+		this.removeFirst = function(el){				//Suppression du premier élément fils
+			el.removeChild(el.firstChild);
 		};
 		
 		this.getevent = function(e){

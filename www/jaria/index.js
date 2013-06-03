@@ -1,6 +1,10 @@
 oNav.addevent("onload", function(){
 	
 	oEl.get("ObtenirPersonne").onclick = function(){
+		var e = oEl.get("ObtenirPersonne");
+		alert(e.tagName)
+		var d = oEl.get(e);
+		
 		oAjax.init();
 		oAjax.adddata({"action":"obtenirPersonnes", "type":"personne"});
 		oAjax.send ("index.php", "post");
@@ -29,5 +33,5 @@ oNav.addevent("onload", function(){
 		//var j = JSON.parse(this.value)
 		//oEl.get("resultatjson").innerHTML = JSON.stringify(j)
 	};
-
+	
 });
