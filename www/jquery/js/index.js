@@ -204,30 +204,72 @@ $(function(){
 	      $('#souris').hide();
 	});
 	
-	//images survolées
-	var div = $("<div />")
-	$("body").append(div);
-	div.css({float: "left"});
-	div.append($("<img src='../img/img1.png' alt='' />"));
-	div.append($("<img src='../img/img2.png' alt='' />"));
-	div.append($("<img src='../img/img3.png' alt='' />"));
-	div.append($("<img src='../img/img4.png' alt='' />"));
+	//images survolées et draggables
+	Images.init();
 	
-	div.children().each(function(){
-		$(this).mouseover(function(){
-			$(this).animate({width : "+= 50", height: "+=50"}, {duration: 500, easing: "easeOutElastic"});
-		});
-		$(this).mouseout(function(){
-			$(this).animate({width : "-= 50", height: "-=50"}, {duration: 500, easing: "easeOutElastic"});
-		});
-	});
-	 
 	//Volet mobile
 	Volet.init();
-		
 	
 });
 
+
+var Images = new function(){
+	
+	var _this = this;
+	this.img1 = undefined;
+	this.img2 = undefined;
+	this.img3 = undefined;
+	this.img4 = undefined;
+	this.div = undefined;
+	this.bt = undefined;
+	
+	this.init = function(){
+		if(this.found(this.div)){
+			this.div.remove();
+			this.bt.remove();
+		}
+		this.div = $("<div />");
+		$("body").append(this.div);
+		this.img1 = $("<img src='../img/img1.png' alt='' />");
+		this.div.append(this.img1);
+		this.img2 = $("<img src='../img/img2.png' alt='' />");
+		this.div.append(this.img2);
+		this.img3 = $("<img src='../img/img3.png' alt='' />");
+		this.div.append(this.img3);
+		this.img4 = $("<img src='../img/img4.png' alt='' />");
+		this.div.append(this.img4);
+		this.div.children().each(function(){
+			$(this).draggable().dblclick(function(){
+				if(confirm("Confirmez la suppression de l'image " + _this.name(this) + " ?")){
+					$(this).remove();
+				}
+			}).mouseover(function(){
+				$(this).animate({width : "+= 50", height: "+=20"}, {duration: 100});
+			}).mouseout(function(){
+				$(this).animate({width : "-= 50", height: "-=20"}, {duration: 100});
+			});
+		});		
+		this.bt = $("<button>Initialiser les images</button>").click(function(){
+			_this.init();
+		});			
+		$("body").append($("<div />").append(this.bt));	
+	};	
+	
+	this.found = function(el){
+		if(el == undefined){
+			return 0;
+		}
+		return el.parent().find(el).length;
+	};
+	
+	this.name = function(el){
+		if(el.tagName.toLowerCase() == "img"){
+			return el.src.substring(el.src.lastIndexOf('/') +1, el.src.lastIndexOf('.'));
+		}		
+		return "";
+	};
+	
+}
 
 var Volet = new function(){
 	

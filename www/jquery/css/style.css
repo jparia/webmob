@@ -68,6 +68,7 @@ form img {
 	left: -290px;
 	top: 0px;
 	background-color: #df7708;
+	box-shadow: 5px 5px 3px #999;
 }
 .volet div {
 	width: 170px;
