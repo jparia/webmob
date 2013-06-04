@@ -2,8 +2,7 @@ oNav.addevent("onload", function(){
 	
 	oEl.get("ObtenirPersonne").onclick = function(){
 		var e = oEl.get("ObtenirPersonne");
-		alert(e.tagName)
-		var d = oEl.get(e);
+		alert(oEl.test(e));
 		
 		oAjax.init();
 		oAjax.adddata({"action":"obtenirPersonnes", "type":"personne"});
@@ -29,9 +28,21 @@ oNav.addevent("onload", function(){
 	};
 	
 	oEl.get("testjson").onchange = function(){
-		oEl.get("resultatjson").innerHTML = oText.isjson(this.value);
-		//var j = JSON.parse(this.value)
-		//oEl.get("resultatjson").innerHTML = JSON.stringify(j)
+		if(this.value == ""){
+			oEl.get("convertjson").innerHTML = ""
+			oEl.get("resultatjson").innerHTML = "";
+		}
+		else if(oText.isjson(this.value)){
+			var j = JSON.parse(this.value)
+			oEl.get("convertjson").innerHTML = JSON.stringify(j)
+			oEl.get("resultatjson").innerHTML = "<span style=\"color:#060\">La chaine JSON est valide</span>";
+		}
+		else{
+			oEl.get("convertjson").innerHTML = ""
+			oEl.get("resultatjson").innerHTML = "<span style=\"color:#900\">La chaine JSON est invalide !</span>";
+		}
+		
+
 	};
 	
 });

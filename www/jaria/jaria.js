@@ -152,11 +152,14 @@
 			return ( this.test(s) && s.search(e) != -1 ) ? true : false;
 		};
 		
-		this.isjson = function(s){
-			if(!this.test(s)){
-				return false;
+		this.isjson = function(s){					//Test le parsing JSON sur une chaine
+			try{
+				JSON.parse(s);					
+				return true;
 			}
-			return (!(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(s.replace(/"(\\.|[^"\\])*"/g,'')))) ? true : false;
+			catch(e){
+				return false;
+			}			
 		};
 		
 		this.nocarspec = function(s){				// return vrai si le texte ne contient pas de caractères spéciaux
@@ -1297,220 +1300,6 @@
 			this.get = function(){};
 		};
 		
-		this.chrono = new function(){	// fonction chronomètre
-			this.timer = null;
-			this.time = 0;
-			this.el = undefined;
-			
-			this.set = function(){
-				this.time++;
-				var timeEc = (this.time / 10);
-				this.el.value = timeEc.toString()
-			};
-			
-			this.start = function(){
-				if( arguments.length == 0 || this.timer != null ){
-					return false;
-				}
-				var id = arguments[0].toString();
-				if( oEl.test(id) ){
-					this.el = oEl.get(id);
-					this.timer = window.setInterval("oEl.chrono.set()", 100);
-				}				
-			};
-			
-			this.pause = function(){
-				if( this.timer != null ){
-					window.clearInterval(this.timer);
-					this.timer = null;
-				}
-			};
-			
-			this.stop = function(raz){
-				this.pause();				
-				if(raz && this.el != undefined)
-				{
-					this.el.value = "0";
-				}
-				this.init();
-			};
-			
-			this.init = function(){
-				this.time = 0;
-				this.el = undefined;
-			};
-		};
-		
-		this.inc = new function(){	// traitement des champs input de type text ayant la cla
-			this.el = [];							// collection d'éléments incrémentables
-			this.mini = [];						// valeurs mini des éléments
-			this.maxi = [];						// valeurs maxi des éléments
-			this.deft = [];						// valeur par défaut des éléments
-			this.step = [];						// valeurs de l'incrément des éléments			
-			this.cl = "jaria_inc";		// class utilisée pour les champs incrémentables
-			
-			this.get = function(el){		// retourne l'élement si déjà traité
-				if( !oEl.isobject(el) ){
-					if( !oEl.test(el) ){
-						return undefined;
-					}else{
-						el = oEl.get(el);
-					}
-				}
-				for( var i = 0; i < oEl.inc.el.length; i++ ){
-					if( oEl.inc.el[i] == el ){
-						return el;
-					}
-				}
-				return undefined;
-			};
-			
-			this.button = function(id, image, title, fc){
-				var img = oEl.create("img");
-				img.src = jaria.images + "button/button_" + image + ".png";
-				img.style.cursor = "pointer";
-				img.style.width = "12px";
-				img.style.height = "12px";
-				img.style.display = "block";
-				img.alt = id;
-				img.onclick = fc;
-				img.title = title;
-				img.onmouseover = function(){
-					this.src = jaria.images + "button/button_" + image + "_hover.png";
-				};
-				img.onmouseout = function(){
-					this.src = jaria.images + "button/button_" + image + ".png";
-				};
-				return img;
-			};
-			
-			this.getindex = function(el){			// retourne  l'index de l'élement si déjà traité
-				if( !oEl.isobject(el) ){
-					if( !oEl.test(el) ){
-						return -1;
-					}else{
-						el = oEl.get(el);
-					}
-				}
-				for( var i = 0; i < oEl.inc.el.length; i++ ){
-					if( oEl.inc.el[i].id == el.id ){
-						return i;
-					}
-				}
-				return -1;			
-			};
-			
-			this.params = function(){
-				/*
-					argument 0 obligatoire: élément ou identifiant de l'élément
-					argument 1 obligatoire: valeur mini (numérique)
-					argument 2 obligatoire: valeur maxi (numérique)
-					argument 3 obligatoire: valeur incr	 (numérique)
-					argument 4 facultatif:  valeur par défaut (numérique)
-				*/
-				if( arguments.length < 4 ){
-					return false;	
-				}
-				var el = arguments[0];				
-				if( !oEl.isobject(el) ){
-					if( oEl.test(el) ){
-						el = oEl.get(el);						
-					}
-				}
-				if( !oEl.isobject(el) || isNaN(arguments[1]) || isNaN(arguments[2]) || isNaN(arguments[3]) ){
-					return false;
-				}
-				var index = oEl.inc.getindex(el);
-				if( index == -1 ){
-					return false;
-				}
-				oEl.inc.mini[index] = parseFloat(arguments[1]);
-				oEl.inc.maxi[index] = parseFloat(arguments[2]);
-				oEl.inc.step[index] = parseFloat(arguments[3]);
-				oEl.inc.deft[index] = ( arguments.length > 4 ) ? parseFloat(arguments[4]) : "0";
-				el.maxLength = (oEl.inc.mini[index] > oEl.inc.maxi[index]) ? (oEl.inc.mini[index]).toString().length : (oEl.inc.maxi[index]).toString().length;	
-				el.value = oEl.inc.deft[index];
-			};
-			
-			this.make = function(el){				// contruit l'élément incrémentable
-				el.readOnly = "readonly";
-				var parent = el.parentNode;
-				parent.style.overflow = "hidden";
-				var divd = oEl.create("div");
-				if( oNav.msie ){
-					divd.style.styleFloat = "left";
-				}else{
-					divd.style.cssFloat = "left";
-				}				
-				divd.style.width = "11px";
-				divd.style.height = oText.toPx(el.offsetHeight);
-				divd.style.marginRight = "10px";
-				var divg = oEl.create("div");				
-				if( oNav.msie ){
-					divg.style.styleFloat = "left";
-				}else{
-					divg.style.cssFloat = "left";
-				}				
-				divg.style.width = oText.toPx(el.offsetWidth);												
-				parent.insertBefore(divd, el);
-				parent.insertBefore(divg, divd);
-				var newel = el.cloneNode(false);
-				divg.appendChild(newel);
-				parent.removeChild(el);
-				divd.appendChild(this.button(el.id, "more", "+", function(){
-					var el = oEl.get(this.alt);
-					var index = oEl.inc.getindex(el);
-					if( isNaN(el.value) ){
-						el.value = oEl.inc.deft[index];
-					}
-					var value = parseFloat(el.value) + parseFloat(oEl.inc.step[index]);
-					value = Math.round(value * 10000) / 10000;
-					if( value > oEl.inc.maxi[index] ){
-						value = oEl.inc.maxi[index] ;
-					}
-					el.value = (value).toString();
-					if( typeof(el.onchange) == "function" ){
-						 el.onchange();	
-					}
-				}));	
-				divd.appendChild(this.button(el.id, "less", "-", function(){
-					var el = oEl.get(this.alt);
-					var index = oEl.inc.getindex(el);
-					if( isNaN(el.value) ){
-						el.value = oEl.inc.deft[index];
-					}
-					var value = parseFloat(el.value) - parseFloat(oEl.inc.step[index]);
-					value = Math.round(value * 10000) / 10000;
-					if( value < oEl.inc.mini[index] ){
-						value = oEl.inc.mini[index] ;
-					}
-					el.value = (value).toString();
-					if( typeof(el.onchange) == "function" ){
-						 el.onchange();
-					}
-				}));				
-			};
-			
-			this.init = function(){				// initilise les champs incrémentables
-				var els = oEl.getclass(oEl.inc.cl, true);
-				if( els.length > 0 ){
-					for( var i = 0; i < els.length; i++ ){
-						var el = oEl.inc.get(els[i]);
-						if( !oEl.isobject(el) && els[i].tagName.toLowerCase() == "input" && els[i].type.toLowerCase() == "text" ){
-							oEl.inc.make(els[i]);											
-							var index = oEl.inc.el.length;
-							oEl.inc.el[index] = els[i];
-							oEl.inc.mini[index] = -999;
-							oEl.inc.maxi[index] = 999;
-							oEl.inc.deft[index] = 0;
-							oEl.inc.step[index] = 1;							
-							els[i].maxlength = "3";							
-						}
-					}
-				}				
-			};			
-		};
-
 		this.alert = function(id){					// élément introuvable
 			if( !oText.test(id) ){
 				id = "undefined";
@@ -1529,44 +1318,37 @@
 			return ( typeof(arguments[0]) == "object" ) ? true : false;
 		};
 		
-		this.istype = function() {					// teste le type de l'objet passé en paramètre			
+		this.istype = function(o, t) {					// teste le type de l'objet passé en paramètre			
 			/*
-				argument 0: object		objet à tester
-				argument 1:	string 		type testé ( string, array... )
+				o: object		objet à tester
+				t:	string 		type testé ( string, array... )
 			*/
-			if( arguments.length < 2 ){
+			if( typeof(t) != "string" ){
 				return false;
 			}
-			if( typeof(arguments[1]) != "string" ){
+			if (o.constructor.toString().toLowerCase().indexOf(t.toLowerCase()) == -1){
 				return false;
-			}
-			
-			var obj = arguments[0];
-			var type = arguments[1];
-			
-			if (obj.constructor.toString().toLowerCase().indexOf(type) == -1){
-				return false;
-			}
-			else{
-				return true;
-			}
+			}			
+			return true;
 		};
 	
-		this.get = function(id){					// retourne l'élément
-			if( !oText.test(id) ){
-				return oEl.alert(id);
+		this.get = function(e){					// retourne l'élément DOM par l'objet ou l'id
+			if(oEl.isobject(e) && e.tagName){
+				return e;
 			}
-			if( !oEl.test(id) ){
-				return oEl.alert(id);
+			if( !oText.test(e) ){
+				return oEl.alert(e.toString());
+			}
+			if( !oEl.test(e) ){
+				return oEl.alert(e);
 			}			
-			return document.getElementById(id);			
+			return document.getElementById(e);			
 	
 		};		
 		
-		
-		this.test = function(e){					// test l'élément par lui-même ou par l'id passé en paramètre
+		this.test = function(e){					// test l'élément par l'objet ou par l'id passé en paramètre
 			if(oEl.isobject(e) && e.tagName){
-				return e;
+				return true;
 			}
 			if( !oText.test(e) ){
 				return false;
@@ -1578,8 +1360,8 @@
 			return (document.getElementById(e)) ? true : false;			
 		};
 		
-		this.create = function(tag){				// créé l'élément
-			return document.createElement(tag);
+		this.create = function(t){				// créé l'élément
+			return document.createElement(t);
 		};
 		
 		this.del = function(el){					// suppression d'un élément
@@ -1811,7 +1593,7 @@
 			}
 		};
 		
-		this.getoffset = function(el, prop){		// retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
+		this.getoffset = function(el, p){		// retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
 			/*
 				argument 0 : obligatoire		élément
 				argument 1 : obligatoire		propriété (offsetLeft, offsetTop, offsetHeight, offsetWidth)
@@ -1820,16 +1602,16 @@
 			if( !oEl.isobject(el) ){
 				el = oEl.get(el);
 			}
-			if( !oEl.isobject(el) || !oText.test(prop) ){
+			if( !oEl.isobject(el) || !oText.test(p) ){
 				return 0;	
 			}
-			if( prop.indexOf("Height") != -1 || prop.indexOf("Width") != -1 ){
-				return eval("el." + prop + ";");
+			if( p.indexOf("Height") != -1 || p.indexOf("Width") != -1 ){
+				return eval("el." + p + ";");
 			}
 			var px = 0;
 			var t = ( oBox.exist && el.className == "jaria_listlock"  ) ? "div" : "body";
 			while (el && oText.lower(el.tagName) != t){
-				eval("px += el." + prop + ";");
+				eval("px += el." + p + ";");
 				el = el.offsetParent;
 			}
 			return px;		
@@ -2343,7 +2125,7 @@
 			};
 		};
 		
-		this.drag = new function(sens){								// actions sur le déplacement d'élément par la souris [this and drop]
+		this.drag = new function(sens){								// actions sur le déplacement d'élément par la souris (drag and drop)
 		
 			this.el = undefined;							// élement déplaçable
 			this.left = 0;									// position left en déplacement
@@ -2378,11 +2160,11 @@
 				};
 			}
 			
-			this.getstyleoffset = function(el, prop){
+			this.getstyleoffset = function(el, p){
 				if( oEl.getstyleclass(el, "position") == "absolute" ){
-					return oEl.getstyleclass(el, prop);
+					return oEl.getstyleclass(el, p);
 				}else{
-					return oText.toPx( oEl.getoffset(el, "offset" + oText.firstUp(prop)) );
+					return oText.toPx( oEl.getoffset(el, "offset" + oText.firstUp(p)) );
 				}
 			};
 			
@@ -2725,7 +2507,221 @@
 				// relance la fonction jusqu'a la position
 				Start();
 			};		
-		}
+		};
+		
+		this.inc = new function(){	// traitement des champs input de type text ayant la cla
+			this.el = [];						// collection d'éléments incrémentables
+			this.mini = [];						// valeurs mini des éléments
+			this.maxi = [];						// valeurs maxi des éléments
+			this.deft = [];						// valeur par défaut des éléments
+			this.step = [];						// valeurs de l'incrément des éléments			
+			this.cl = "jaria_inc";		// class utilisée pour les champs incrémentables
+			
+			this.get = function(el){		// retourne l'élement si déjà traité
+				if( !oEl.isobject(el) ){
+					if( !oEl.test(el) ){
+						return undefined;
+					}else{
+						el = oEl.get(el);
+					}
+				}
+				for( var i = 0; i < oEl.inc.el.length; i++ ){
+					if( oEl.inc.el[i] == el ){
+						return el;
+					}
+				}
+				return undefined;
+			};
+			
+			this.button = function(id, image, title, fc){
+				var img = oEl.create("img");
+				img.src = jaria.images + "button/button_" + image + ".png";
+				img.style.cursor = "pointer";
+				img.style.width = "12px";
+				img.style.height = "12px";
+				img.style.display = "block";
+				img.alt = id;
+				img.onclick = fc;
+				img.title = title;
+				img.onmouseover = function(){
+					this.src = jaria.images + "button/button_" + image + "_hover.png";
+				};
+				img.onmouseout = function(){
+					this.src = jaria.images + "button/button_" + image + ".png";
+				};
+				return img;
+			};
+			
+			this.getindex = function(el){			// retourne  l'index de l'élement si déjà traité
+				if( !oEl.isobject(el) ){
+					if( !oEl.test(el) ){
+						return -1;
+					}else{
+						el = oEl.get(el);
+					}
+				}
+				for( var i = 0; i < oEl.inc.el.length; i++ ){
+					if( oEl.inc.el[i].id == el.id ){
+						return i;
+					}
+				}
+				return -1;			
+			};
+			
+			this.params = function(){
+				/*
+					argument 0 obligatoire: élément ou identifiant de l'élément
+					argument 1 obligatoire: valeur mini (numérique)
+					argument 2 obligatoire: valeur maxi (numérique)
+					argument 3 obligatoire: valeur incr	 (numérique)
+					argument 4 facultatif:  valeur par défaut (numérique)
+				*/
+				if( arguments.length < 4 ){
+					return false;	
+				}
+				var el = arguments[0];				
+				if( !oEl.isobject(el) ){
+					if( oEl.test(el) ){
+						el = oEl.get(el);						
+					}
+				}
+				if( !oEl.isobject(el) || isNaN(arguments[1]) || isNaN(arguments[2]) || isNaN(arguments[3]) ){
+					return false;
+				}
+				var index = oEl.inc.getindex(el);
+				if( index == -1 ){
+					return false;
+				}
+				oEl.inc.mini[index] = parseFloat(arguments[1]);
+				oEl.inc.maxi[index] = parseFloat(arguments[2]);
+				oEl.inc.step[index] = parseFloat(arguments[3]);
+				oEl.inc.deft[index] = ( arguments.length > 4 ) ? parseFloat(arguments[4]) : "0";
+				el.maxLength = (oEl.inc.mini[index] > oEl.inc.maxi[index]) ? (oEl.inc.mini[index]).toString().length : (oEl.inc.maxi[index]).toString().length;	
+				el.value = oEl.inc.deft[index];
+			};
+			
+			this.make = function(el){				// contruit l'élément incrémentable
+				el.readOnly = "readonly";
+				var parent = el.parentNode;
+				parent.style.overflow = "hidden";
+				var divd = oEl.create("div");
+				if( oNav.msie ){
+					divd.style.styleFloat = "left";
+				}else{
+					divd.style.cssFloat = "left";
+				}				
+				divd.style.width = "11px";
+				divd.style.height = oText.toPx(el.offsetHeight);
+				divd.style.marginRight = "10px";
+				var divg = oEl.create("div");				
+				if( oNav.msie ){
+					divg.style.styleFloat = "left";
+				}else{
+					divg.style.cssFloat = "left";
+				}				
+				divg.style.width = oText.toPx(el.offsetWidth);												
+				parent.insertBefore(divd, el);
+				parent.insertBefore(divg, divd);
+				var newel = el.cloneNode(false);
+				divg.appendChild(newel);
+				parent.removeChild(el);
+				divd.appendChild(this.button(el.id, "more", "+", function(){
+					var el = oEl.get(this.alt);
+					var index = oEl.inc.getindex(el);
+					if( isNaN(el.value) ){
+						el.value = oEl.inc.deft[index];
+					}
+					var value = parseFloat(el.value) + parseFloat(oEl.inc.step[index]);
+					value = Math.round(value * 10000) / 10000;
+					if( value > oEl.inc.maxi[index] ){
+						value = oEl.inc.maxi[index] ;
+					}
+					el.value = (value).toString();
+					if( typeof(el.onchange) == "function" ){
+						 el.onchange();	
+					}
+				}));	
+				divd.appendChild(this.button(el.id, "less", "-", function(){
+					var el = oEl.get(this.alt);
+					var index = oEl.inc.getindex(el);
+					if( isNaN(el.value) ){
+						el.value = oEl.inc.deft[index];
+					}
+					var value = parseFloat(el.value) - parseFloat(oEl.inc.step[index]);
+					value = Math.round(value * 10000) / 10000;
+					if( value < oEl.inc.mini[index] ){
+						value = oEl.inc.mini[index] ;
+					}
+					el.value = (value).toString();
+					if( typeof(el.onchange) == "function" ){
+						 el.onchange();
+					}
+				}));				
+			};
+			
+			this.init = function(){				// initilise les champs incrémentables
+				var els = oEl.getclass(oEl.inc.cl, true);
+				if( els.length > 0 ){
+					for( var i = 0; i < els.length; i++ ){
+						var el = oEl.inc.get(els[i]);
+						if( !oEl.isobject(el) && els[i].tagName.toLowerCase() == "input" && els[i].type.toLowerCase() == "text" ){
+							oEl.inc.make(els[i]);											
+							var index = oEl.inc.el.length;
+							oEl.inc.el[index] = els[i];
+							oEl.inc.mini[index] = -999;
+							oEl.inc.maxi[index] = 999;
+							oEl.inc.deft[index] = 0;
+							oEl.inc.step[index] = 1;							
+							els[i].maxlength = "3";							
+						}
+					}
+				}				
+			};			
+		};
+		
+		this.chrono = new function(){	// fonction chronomètre
+			this.timer = null;
+			this.time = 0;
+			this.el = undefined;
+			
+			this.set = function(){
+				this.time++;
+				var timeEc = (this.time / 10);
+				this.el.value = timeEc.toString()
+			};
+			
+			this.start = function(){
+				if( arguments.length == 0 || this.timer != null ){
+					return false;
+				}
+				var id = arguments[0].toString();
+				if( oEl.test(id) ){
+					this.el = oEl.get(id);
+					this.timer = window.setInterval("oEl.chrono.set()", 100);
+				}				
+			};
+			
+			this.pause = function(){
+				if( this.timer != null ){
+					window.clearInterval(this.timer);
+					this.timer = null;
+				}
+			};
+			
+			this.stop = function(raz){
+				this.pause();				
+				if(raz && this.el != undefined)
+				{
+					this.el.value = "0";
+				}
+				this.init();
+			};
+			
+			this.init = function(){
+				this.time = 0;
+				this.el = undefined;
+			};
+		};
 	};
 
 	function Box(){										// boîtes de dialogues personalisées [box]		
