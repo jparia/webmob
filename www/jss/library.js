@@ -118,9 +118,30 @@ var Nav = new function(){
 }
 
 var El = new function(){
+	
+	this.fn = function(el){
+		if(el.tagName.toLowerCase() == "input"){
+			el.val = function(t){
+				if(typeof(t)=="string"){this.value = t};
+				return this.value;
+			};
+		}
+		else{
+			el.html = function(t){
+				this.innerHTML = t;
+			};
+			el.text = function(t){				
+				El.removeAll(el);
+				El.addtext(el, t);
+			};
+		}
+		
+	};	
 	this.get = function(id){
 		if(document.getElementById(id)){
-			return document.getElementById(id);			
+			var el = document.getElementById(id);
+			this.fn(el);
+			return el;			
 		}
 		return undefined;
 	};

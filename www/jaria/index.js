@@ -2,7 +2,7 @@ oNav.addevent("onload", function(){
 	
 	oEl.get("ObtenirPersonne").onclick = function(){
 		var e = oEl.get("ObtenirPersonne");
-		alert(oEl.test(e));
+		alert(oNav.boxs.length);
 		
 		oAjax.init();
 		oAjax.adddata({"action":"obtenirPersonnes", "type":"personne"});

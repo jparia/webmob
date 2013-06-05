@@ -112,6 +112,10 @@ window.onload = function(){
 	Index.navigator();
 	Editor.init("editor_text");
 	
+	El.get("div1").html("<b>html</b>");
+	El.get("div2").text("<b>texte/b>");
+	El.get("text1").val("valeur");
+	
 	var drag1 = new El.drag();
 	drag1.init("drag1");
 	var drag2 = new El.drag();

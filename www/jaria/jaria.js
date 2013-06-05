@@ -7,7 +7,7 @@
 		this.images = "jaria/images/";			// Chemin des images
 	};
 	
-	var oText = new function(){								// Gestion des textes
+	var oText = new function(){								// Gestion des textes (string)
 	
 		this.test = function(){
 			// argument 0: string		facultatif
@@ -229,10 +229,10 @@
 				return "";
 			}
 			var xml = "";
-			var car = "";
+			var c = "";
 			for ( var i = 127; i <= 255; i++ ){
-				var car = String.fromCharCode(i).toString();
-				var r = new RegExp(car, "g");
+				var c = String.fromCharCode(i).toString();
+				var r = new RegExp(c, "g");
 				xml = "&#" + (i).toString() + ";";
 				t = t.replace(r, xml);
 			}
@@ -244,10 +244,10 @@
 				return "";
 			}
 			var t = "";
-			var car = "";
+			var c = "";
 			for ( var i = 127; i <= 255; i++ ){
-				var car = "&#" + (i).toString() + ";";
-				var r = new RegExp(car, "g");
+				var c = "&#" + (i).toString() + ";";
+				var r = new RegExp(c, "g");
 				t = String.fromCharCode(i).toString();
 				xml = xml.replace(r, t);
 			}
@@ -302,41 +302,41 @@
 			return s;
 		};
 		
-		this.filename = function(path){						// retourne le nom du fichier à partir de son chemin complet
-			if( !this.test(path) ) {
+		this.filename = function(p){				// retourne le nom du fichier à partir de son chemin complet
+			if( !this.test(p) ) {
 				return "";
 			}
-			var fullname = this.filefullname(path);
-			var pos = fullname.toString().lastIndexOf(".");
+			var n = this.filefullname(p);
+			var pos = n.toString().lastIndexOf(".");
 			if( pos == -1 ){
-				return fullname;
+				return n;
 			}
-			return fullname.substr(0 , pos);
+			return n.substr(0 , pos);
 		};
 		
-		this.filefullname = function(path){					// retourne le nom du fichier avec son extension à partir de son chemin complet
-			if( !this.test(path) ) {
+		this.filefullname = function(p){			// retourne le nom du fichier avec son extension à partir de son chemin complet
+			if( !this.test(p) ) {
 				return "";
 			}	
-			var pos = path.toString().lastIndexOf("/");
+			var pos = p.toString().lastIndexOf("/");
 			if( pos == -1 ){
-				return path;
+				return p;
 			}
-			return path.substr(pos + 1, path.length);
+			return p.substr(pos + 1, p.length);
 		};
 
-		this.filepath = function(path){						// retourne le nom du chemin à partir du chemin complet d'un fichier
-			if( !this.test(path) ) {
+		this.filepath = function(p){				// retourne le nom du chemin à partir du chemin complet d'un fichier
+			if( !this.test(p) ) {
 				return "";
 			}
-			var pos = path.toString().lastIndexOf("/");
+			var pos = p.toString().lastIndexOf("/");
 			if( pos == -1 ){
-				return path;
+				return p;
 			}
-			return path.substr(0, pos + 1);
+			return p.substr(0, pos + 1);
 		};
 		
-		this.build = new function(){							//construction d'une chaine à l'aide d'un tableau
+		this.build = new function(){				//construction d'une chaine à l'aide d'un tableau
 			
 			this.strings = new Array("");
 			
@@ -351,10 +351,18 @@
 			this.tostring = function(){
 				return this.strings.join("");				
 			};			
-		};		
+		};
+		
+	};
+	
+	Array.prototype.unset = function(val){			//Gestion supplémentaires des tableaux (Array)
+		var i = this.indexOf(v);					//Supprime un élèment d'un tableau			
+		if(i > -1){
+			this.splice(i, 1);
+		}
 	};
 		
-	var oNav = new function(){										// fonctions de base du navigateur
+	var oNav = new function(){						// fonctions de base du navigateur
 	
 		this.screenX = 0;
 		this.screenY = 0;
@@ -379,9 +387,9 @@
 		this.body = null;
 		this.location = null;
 		this.timer = null;
-		this.ready = false;							// chargement document terminée
+		this.ready = false;						// chargement document terminée
 		this.readyfull = false;					// chargement document terminée y compris le préchargement des images
-		this.inload = false;						// lot d'images en cours de chargement
+		this.inload = false;					// lot d'images en cours de chargement
 		
 		if( this.a.indexOf("chrome") != -1 ){
 			this.chrome=true;
@@ -554,11 +562,9 @@
 				oNav.lock.el.style.width = oText.toPx(oNav.screenX);
 				oNav.lock.el.style.height = oText.toPx(oNav.screenY );		
 				oNav.lock.setText();	
-			}			
-			if( oBox.exist ){ oEl.setinscreen(oBox.el); }
+			}
 			if( oCal.datepicker.el != undefined ){ oEl.setinscreen(oCal.datepicker.el); }
 			if( oCal.timepicker.el != undefined ){ oEl.setinscreen(oCal.timepicker.el); }
-			if( oColor.picker.el != undefined ){ oEl.setinscreen(oColor.picker.el); }
 		};
 			
 		this.scroll = function(){							// infos sur les ascenceurs [scroll] de la fenêtre du navigateur [browser]	
@@ -569,15 +575,6 @@
 			}else{
 				oNav.scrollX = window.scrollX;
 				oNav.scrollY = window.scrollY;
-			}
-			if( oBox.exist ){
-				// position centrale de la box
-				var x = parseInt( (oNav.screenX / 2) - (oBox.el.offsetWidth / 2) + oNav.scrollX + oBox.posX );
-				var y = parseInt( (oNav.screenY / 2) - (oBox.el.offsetHeight / 2) + oNav.scrollY + oBox.posY );
-				oBox.el.style.left = oText.toPx(x);
-				oBox.el.style.top = oText.toPx(y);				
-				oEl.setinscreen(oBox.el);
-				oBox.setshadow();
 			}
 			if( oNav.trace.box.exist ){
 				oNav.trace.pos();
@@ -590,17 +587,12 @@
 		};
 		
 		this.hideallbox = function(esc){
-			if(oBox.el != undefined){
-				
-				oBox.hide();
-			}
 			if( oNav.lock.escape && esc ){
 				oNav.lock.hide();
 			}
 			oEl.title.hide();
 			oCal.datepicker.hide();
 			oCal.timepicker.hide();
-			oColor.picker.hide();
 			oEl.list.hide();
 			if(oEl.editor.emoticons != undefined){
 				oEl.editor.emoticons.hide();
@@ -1378,16 +1370,6 @@
 			catch(e){}
 		};
 		
-		this.removeAll = function(el){				//Suppression de tout le contenu de l'élément
-			while (el.firstChild) {
-				el.removeChild(el.firstChild);
-			}
-		};
-		
-		this.removeFirst = function(el){				//Suppression du premier élément fils
-			el.removeChild(el.firstChild);
-		};
-		
 		this.getevent = function(e){
 			if( oEl.isobject(e) ){
 				if( e.tagName != undefined ){
@@ -1424,13 +1406,13 @@
 			}
 		};
 		
-		this.deltags = function(tag, parent){
-			var p = ( parent == null ) ? document : parent;	
-			while ( oEl.gettags(tag, p).length > 0 ){
-				var elems = oEl.gettags(tag, p);
+		this.deltags = function(t, p){					// supprime tous les balises nommées du parent ou du document
+			var e = ( p == null ) ? document : p;	
+			while ( oEl.gettags(t, e).length > 0 ){
+				var elems = oEl.gettags(t, e);
 				for (var i = 0; i < elems.length; i++ ){
 					try{
-						p.removeChild(elems[i]);
+						e.removeChild(elems[i]);
 					}catch(e){}
 				}
 			}
@@ -1447,6 +1429,10 @@
 					p.removeChild(c[i-1]);
 				}
 			}
+		};
+		
+		this.delfirst = function(el){				//Suppression du premier élément fils
+			el.removeChild(el.firstChild);
 		};
 		
 		this.getframe = function(el, id){			// Retourne le document de l'iframe l'élément du document de l'iframe
@@ -2903,9 +2889,6 @@
 					this.el.Body.style.borderRadius = "0px 0px 7px 7px";				
 				}	
 			}
-//			if( this.shadow ){
-//				this.el.style.boxShadow = "4px 4px 8px #999";
-//			}
 			if( oColor.iscolor(this.color) ){
 				this.el.Html.style.color = this.color;
 			}
@@ -2992,6 +2975,17 @@
 			if( this.bts && this.focus ){
 				this.el.BtOk.focus();	// focus sur le bouton Ok ou Oui
 			}
+			
+			/* redéfini la fonction oNav.hideallbox pour prendre en compte la box dans l'événement de la touche ESCAPE */
+			var hideallbox = new oNav.hideallbox();	
+			oNav.hideallbox = function(){
+				hideallbox;
+				_this.hide();
+			};
+			
+			oNav.addevent("onresize", _this.center);
+			oNav.addevent("onscroll", _this.center);	
+			
 		};
 		
 		this.setTitleWidth = function(){
@@ -3012,6 +3006,8 @@
 				}
 				oNav.body.appendChild(_this.el.shadow);
 				oEl.opacity(_this.el.shadow, 20);
+//CSS3
+//				_this.el.style.boxShadow = "4px 4px 8px #999";
 			}			
 		};
 		
@@ -3051,11 +3047,23 @@
 			_this.el = undefined;
 			_this.fader = true;
 			_this.shadow = true;
+			oNav.delevent("onresize", _this.center);
+			oNav.delevent("onscroll", _this.center);	
 		};
 		
 		this.drag = function(event){					// démarrage du déplacement de la box
 			oEl.drag.opacity = 65;						// transparence de l'élément pendant le déplacement
 			oEl.drag.start(_this.el, event);
+		};
+		
+		this.center = function(){						//Centre la box et son ombre dans la fenêtre du navigateur
+			// position centrale de la box
+			var x = parseInt( (oNav.screenX / 2) - (_this.el.offsetWidth / 2) + oNav.scrollX + oBox.posX );
+			var y = parseInt( (oNav.screenY / 2) - (_this.el.offsetHeight / 2) + oNav.scrollY + oBox.posY );
+			_this.el.style.left = oText.toPx(x);
+			_this.el.style.top = oText.toPx(y);				
+			oEl.setinscreen(_this.el);
+			_this.setshadow();		
 		};
 		
 		this.resizeY = function(height){      			// redimentionne la hauteur de la box 
