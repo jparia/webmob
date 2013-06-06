@@ -3,7 +3,7 @@
 		sources développeur */
 		
 	var jaria = new function(){					// paramètres globaux à la bilbiothèque
-		this.version = "20130306";				// Date au format AAAAMMJJ de la version de la bibliothèque
+		this.version = "20130606";				// Date au format AAAAMMJJ de la version de la bibliothèque
 		this.images = "jaria/images/";			// Chemin des images
 	};
 	
@@ -43,11 +43,12 @@
 			if( typeof(el.onselectstart) != "undefined" ){				
 				el.onselectstart = function(){
 					return state;
-				}
-			}else{
+				};
+			}
+			else{
 				el.onmousedown = function(){
 					return state;
-				}
+				};
 			}			
 		};
 		
@@ -122,27 +123,27 @@
 			return ( n.toString().length == 1 ) ? "0" + n.toString() : n.toString();
 		};
 		
-		this.isemail = function(t){					// contrôle le format email
+		this.isemail = function(t){					// contrÃ´le le format email
 			var e = /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+([\.][a-z]+)+$/;
 			return ( this.test(t) && t.search(e) != -1 ) ? true : false;
 		};
-		
-		this.isphone = function(t, s){				// contrôle le format téléphone
+		var e = "";
+		this.isphone = function(t, s){				// contrÃ´le le format téléphone
 			switch(s){
 				case null :								// accepte tous les séparateurs ou aucun
-					var e = /^0[1-68]([-. ]?[0-9]{2}){4}$/;				//var e = /^([+][0-9]{1,3}|0)[1-68][-. ]?(?:[0-9]{2,3}[-. ]?){3,4}$/;
+					e = /^0[1-68]([-. ]?[0-9]{2}){4}$/;				//var e = /^([+][0-9]{1,3}|0)[1-68][-. ]?(?:[0-9]{2,3}[-. ]?){3,4}$/;
 					break;
 				case "." :								// oblige le séparateur [.]
-					var e = /^0[1-68](\.[0-9]{2}){4}$/;
+					e = /^0[1-68](\.[0-9]{2}){4}$/;
 					break;					
 				case "-" :								// oblige le séparateur [-]
-					var e = /^0[1-68]([-][0-9]{2}){4}$/;
+					e = /^0[1-68]([-][0-9]{2}){4}$/;
 					break;
 				case " " :								// oblige le séparateur  espace
-					var e = /^0[1-68]([ ][0-9]{2}){4}$/;
+					e = /^0[1-68]([ ][0-9]{2}){4}$/;
 					break;
 				default :								// n'accepte aucun séparateur
-					var e = /^0[1-68][0-9]{8}$/;
+					e = /^0[1-68][0-9]{8}$/;
 			}
 			return ( t.search(e) != -1 ) ? true : false;
 		};
@@ -188,7 +189,7 @@
 			return new Array( n + 1 ).join( t );
 		};
 		
-		this.conjugue = function(t, n){
+		this.pluriel = function(t, n){
 			if (n <= 1){
 				return t;	
 			}
@@ -220,38 +221,36 @@
 			return t + c;
 		};
 		
-		this.ascii = new Array("\"", "%", "&&", " & ", "& ", "Â", "Ã", "Ä", "Æ", "È", "É", "Ê", "Ë", "Î", "Ï", "Ì", "Í", "Ô", "Õ", "Ò", "Ó", "Ö", "Û", "Ù", "Ú", "Ü", "Ý", "à", "â", "ã", "ä", "æ", "ç", "é", "è", "ê", "ë", "€", "î", "ï", "ì", "í", "ô", "õ", "ò", "ó", "ö", "ù", "û", "ù", "ú", "ü", "ÿ", "©", "®", "×", "œ", "¡", "¢", "¤", "¦", "§", "¨", "ª", "¬", "¯", "°", "±", "²", "³", "´", "µ", "¶", "·", "¸", "¹", "º", "¼", "½", "¾", "¿", "Þ", "ß", "Ð", "Ñ", "ñ", "÷", "Ø", "«", "»", "£");
+		this.ascii = new Array("\"","%","&&"," & ","& ","Â","Ã","Ä","Æ","È","É","Ê","Ë","Î","Ï","Ì","Í","Ô","Õ","Ò","Ó","Ö","Û","Ù","Ú","Ü","Ý","à","â","ã","ä","æ","ç","é","è","ê","ë","€","î","ï","ì","í","ô","õ","ò","ó","ö","ù","û","ù","ú","ü","ÿ","©","®","×","œ","¡","¢","¤","¦","§","¨","ª","¬","¯","°","±","²","³","´","µ","¶","·","¸","¹","º","¼","½","¾","¿","Þ","ß","Ð","Ñ","ñ","÷","Ø","«","»","£");
 		
-		this.html =  new Array("&quot;", "&#37;", "&amp;&amp;", " &amp; ", "&amp; ", "&Acirc;", "&Atilde;", "&Auml;", "&AElig;", "&Egrave;", "&Eacute;", "&Ecric;", "&Euml;", "&Icirc;", "&Iuml;", "&Igrave;", "&Iacute;", "&Ocirc;", "&Otilde;", "&Ograve;", "&Oacute;", "&Ouml;", "&Ucirc;", "&Ugrave;", "&Uacute;", "&Uuml;", "&Yacute;", "&agrave;", "&acirc;", "&atilde;", "&auml;", "&aelig;", "&ccedil;", "&eacute;", "&egrave;", "&ecirc;", "&euml;", "&euro;", "&icirc;", "&iuml;", "&igrave;", "&iacute;", "&ocirc;",	"&otilde;",	"&ograve;", "&oacute;", "&ouml;", "&ugrave;", "&ucirc;", "&ugrave;", "&uacute;", "&uuml;", "&yuml;", "&copy;", "&reg;", "&times;", "&oelig;", "&iexcl;",	"&cent;", "&curren;", "&brvbar;", "&sect;", "&uml;", "&ordf;", "&not;", "&masr;", "&deg;", "&plusmn;", "&sup2;", "&sup3;", "&acute;", "&micro;", "&para;", "&middot;", "&cedil;", "&sup1;", "&ordm;", "&frac14;", "&frac12;", "&frac34;", "&iquest;", "&thorn;", "&szlig;", "&eth;", "&Ntilde;", "&ntilde;", "&divide;", "&oslash;", "&laquo;", "&raquo;", "&pound;");			
+		this.html =  new Array("&quot;","&#37;","&amp;&amp;"," &amp; ","&amp; ","&Acirc;","&Atilde;","&Auml;","&AElig;","&Egrave;","&Eacute;","&Ecric;","&Euml;","&Icirc;","&Iuml;","&Igrave;","&Iacute;","&Ocirc;","&Otilde;","&Ograve;","&Oacute;","&Ouml;","&Ucirc;","&Ugrave;","&Uacute;","&Uuml;","&Yacute;","&agrave;","&acirc;","&atilde;","&auml;","&aelig;","&ccedil;","&eacute;","&egrave;","&ecirc;","&euml;","&euro;","&icirc;","&iuml;","&igrave;","&iacute;","&ocirc;",	"&otilde;",	"&ograve;","&oacute;","&ouml;","&ugrave;","&ucirc;","&ugrave;","&uacute;","&uuml;","&yuml;","&copy;","&reg;","&times;","&oelig;","&iexcl;",	"&cent;","&curren;","&brvbar;","&sect;","&uml;","&ordf;","&not;","&masr;","&deg;","&plusmn;","&sup2;","&sup3;","&acute;","&micro;","&para;","&middot;","&cedil;","&sup1;","&ordm;","&frac14;","&frac12;","&frac34;","&iquest;","&thorn;","&szlig;","&eth;","&Ntilde;","&ntilde;","&divide;","&oslash;","&laquo;","&raquo;","&pound;");			
 		
 		this.xmlencode = function(t){
 			if( !this.test(t) ) {
 				return "";
 			}
-			var xml = "";
-			var c = "";
+			var c, r, x;
 			for ( var i = 127; i <= 255; i++ ){
-				var c = String.fromCharCode(i).toString();
-				var r = new RegExp(c, "g");
-				xml = "&#" + (i).toString() + ";";
-				t = t.replace(r, xml);
+				c = String.fromCharCode(i).toString();
+				r = new RegExp(c, "g");
+				x = "&#" + (i).toString() + ";";
+				t = t.replace(r, x);
 			}
 			return t;					
 		};
 		
-		this.xmldecode = function(xml){
-			if( !this.test(xml) ) {
+		this.xmldecode = function(x){
+			if( !this.test(x) ) {
 				return "";
 			}
-			var t = "";
-			var c = "";
+			var c, r, t;
 			for ( var i = 127; i <= 255; i++ ){
-				var c = "&#" + (i).toString() + ";";
-				var r = new RegExp(c, "g");
+				c = "&#" + (i).toString() + ";";
+				r = new RegExp(c, "g");
 				t = String.fromCharCode(i).toString();
-				xml = xml.replace(r, t);
+				x = x.replace(r, t);
 			}
-			return xml;			
+			return x;			
 		};
 		
 		this.encode = function(s){					// encode les caractères spéciaux hors balises html
@@ -355,13 +354,13 @@
 		
 	};
 	
-	Array.prototype.unset = function(val){			//Gestion supplémentaires des tableaux (Array)
-		var i = this.indexOf(v);					//Supprime un élèment d'un tableau			
+	Array.prototype.unset = function(v){			//Gestion supplémentaires des tableaux (Array)
+		var i = this.indexOf(v);					//Supprime un élèment d'un tableau par sa valeur		
 		if(i > -1){
 			this.splice(i, 1);
 		}
 	};
-		
+	
 	var oNav = new function(){						// fonctions de base du navigateur
 	
 		this.screenX = 0;
@@ -388,7 +387,7 @@
 		this.location = null;
 		this.timer = null;
 		this.ready = false;						// chargement document terminée
-		this.readyfull = false;					// chargement document terminée y compris le préchargement des images
+		this.readyfull = false;				// chargement document terminée y compris le préchargement des images
 		this.inload = false;					// lot d'images en cours de chargement
 		
 		if( this.a.indexOf("chrome") != -1 ){
@@ -563,8 +562,6 @@
 				oNav.lock.el.style.height = oText.toPx(oNav.screenY );		
 				oNav.lock.setText();	
 			}
-			if( oCal.datepicker.el != undefined ){ oEl.setinscreen(oCal.datepicker.el); }
-			if( oCal.timepicker.el != undefined ){ oEl.setinscreen(oCal.timepicker.el); }
 		};
 			
 		this.scroll = function(){							// infos sur les ascenceurs [scroll] de la fenêtre du navigateur [browser]	
@@ -591,12 +588,6 @@
 				oNav.lock.hide();
 			}
 			oEl.title.hide();
-			oCal.datepicker.hide();
-			oCal.timepicker.hide();
-			oEl.list.hide();
-			if(oEl.editor.emoticons != undefined){
-				oEl.editor.emoticons.hide();
-			}
 		};
 		
 		this.init_timer = function(t){
@@ -654,17 +645,6 @@
 		this.keydown = function(event){					// appelle les fonctions sur évènements du clavier
 			oNav.keyb.esc(event);
 			oNav.keyb.enter(event);
-			oNav.keyb.sel(event);
-		};
-		
-		this.hideliste = function(event){					// referme les éventuelles listes ouvertes
-			if( !oNav.ready ){
-				return false;
-			}
-			var el = ( !oNav.msie ) ? event.target : window.event.srcElement;
-			if( el.className.toString().indexOf("jaria_list") == -1 && el.className.toString().indexOf("jaria_slist") == -1 ){
-				oEl.list.hide();
-			}
 		};
 		
 		this.annul = function(){
@@ -698,6 +678,7 @@
 			var ev = arguments[0];
 			var fc = arguments[1];
 			var el = arguments[2];
+			var obj;
 			
 			oNav.delevent(ev, fc, el);
 			
@@ -705,11 +686,11 @@
 				return false;
 			}
 			if( oEl.isobject(el)){
-				var obj = el;		 
+				obj = el;		 
 			}else if( ev.indexOf("scroll") != -1 || ev.indexOf("load") != -1 || ev.indexOf("resize") != -1 ){
-				var obj = window;
+				obj = window;
 			}else{
-				var obj = document;
+				obj = document;
 			}
 			try{
 				obj.attachEvent(ev, fc);
@@ -738,16 +719,17 @@
 			var ev = arguments[0];
 			var fc = arguments[1];
 			var el = arguments[2];
+			var obj;
 			
 			if( typeof(fc) != "function" ){
 				return false;
 			}			
 			if( oEl.isobject(el)){
-				var obj = el;		 
+				obj = el;		 
 			}else if( ev.indexOf("scroll") != -1 || ev.indexOf("load") != -1 || ev.indexOf("resize") != -1 ){
-				var obj = window;
+				obj = window;
 			}else{
-				var obj = document;
+				obj = document;
 			}
 			try{
 				obj.detachEvent(ev, fc);
@@ -762,7 +744,7 @@
 			return true;
 		};
 
-		this.goto = function(u, t){				// Aller à l'url indiquée
+		this.gotourl = function(u, t){				// Aller à l'url indiquée
 			if( !oText.test(u) ){
 				return false;
 			}
@@ -797,7 +779,7 @@
 				if( _this.box.exist ){
 					var w = oEl.getoffset(_this.box.el, "offsetWidth");
 					var h = oEl.getoffset(_this.box.el, "offsetHeight");
-					switch (_this.position){
+					switch( _this.position ){
 						case "right bottom":
 							_this.box.el.style.left = oText.toPx(oNav.screenX - w - _this.marge + oNav.scrollX);
 							_this.box.el.style.top = oText.toPx(oNav.screenY - h - _this.marge + oNav.scrollY);
@@ -818,17 +800,15 @@
 				}
 			};
 		
-			this.add = function(text){					// ajout d'une ligne de trace de debug
-				if( oText.test(text) && !_this.stop ){
+			this.add = function(s){					// ajout d'une ligne de trace de debug
+				if( oText.test(s) && !_this.stop ){
 					if( !_this.box.exist ){
 						_this.show();
 					}				
-					var html = _this.debug.innerHTML;
-					var text = oText.htmlencode(text);
+					var h = _this.debug.innerHTML;
 					var d = new  Date();
 					var t = ("<span class='jaria_tracehour'>" + oText.digit(d.getHours(), 2) + "h" + oText.digit(d.getMinutes(), 2) + "m" + oText.digit(d.getSeconds(), 2) + "s" + oText.digit(d.getMilliseconds(), 3) + "ms</span>" ).toString();
-					html = t + "&nbsp;" + text.toString() + "<br>" + html;
-					_this.debug.innerHTML = html;
+					_this.debug.innerHTML += t + "&nbsp;" + oText.htmlencode(s) + "<br>" + h;
 				}
 			};
 
@@ -858,7 +838,6 @@
 				_this.box.borderColor = "#c6b01e";
 				_this.box.backColor = "#ffffff";
 				_this.box.shadow = false;
-				_this.box.scroll = function(){};
 				_this.box.show();
 				_this.box.resizeX(300);
 				_this.debug = oEl.create("div");
@@ -942,7 +921,7 @@
 			this.Y = 0;
 			
 			this.move = function(e){
-				var e = e || window.event;
+				e = e || window.event;
 				oNav.mouse.X = e.clientX;
 				oNav.mouse.Y = e.clientY;
 			};
@@ -951,7 +930,7 @@
 		this.keyb = new function(e){
 			
 			this.esc = function(e){						// sur la touche échape [escape]
-				var e = e || window.event;
+				e = e || window.event;
 				// cache l'éventuelle boîte de dialogue
 				if( e.keyCode == 27 ){
 					oNav.hideallbox(true);
@@ -973,24 +952,11 @@
 				}
 			};
 			
-			this.sel = function(e){						// déploie la liste sur la touche flèche bas / haut
-				var e = e || window.event;
-				var el = ( window.event ) ? e.srcElement : e.target;
-				if( (e.keyCode == 40 || e.keyCode == 38 || e.keyCode == 13 ) && oText.lower(el.tagName) == "input" && el.className == "jaria_listlock" ){
-					if( e.keyCode == 13 ){
-						oEl.list.hide();
-					}else{
-						oEl.list.get(el, e);
-					}
-				}
-				
-			};
-
-			this.valid = function(){					
+			this.valid = function(){			
 				// action sur un évènement du clavier
 			};
 			
-			this.annul = function(){					
+			this.annul = function(){		
 				// annulation sur un évènement du clavier
 			};
 		};
@@ -1089,7 +1055,7 @@
 					argument 0: class
 					argument 1: title
 					argument 2: texte
-					argument 3: N° page
+					argument 3: NÂ° page
 				*/	
 				
 				var span = oEl.create("span");
@@ -1281,15 +1247,69 @@
 	
 		this.timer = null;		// timer pour le déplacement de l'élément
 		
-		this.editor = new function(){					// fonction externalisée redéfinie dans le fichier jaria_editor.js
-			this.emoticones = new function(){
-				this.hide = function(){};
+		this.addcss = function(el, o){								//Ajoute un ou plusieurs style CSS à l'élèment
+			for (var d in o){
+				n = d.toString();					//nom
+				v = o[d].toString();				//valeur
+				v = v.toLowerCase();
+				if(n == "float"){
+					n = "cssFloat";
+				}				
+				if(d.indexOf("-")!=-1){					
+					n = n.replace(n.substr(n.indexOf("-"), 2), n.substr(n.indexOf("-")+1, 1).toUpperCase()); 
+				}
+				eval("el.style." + n + "=\"" + v + "\"");				
 			}
 		};
 		
-		this.list = new function(){						// fonction externalisée redéfinie dans le fichier jaria_list.js
-			this.hide = function(){};
-			this.get = function(){};
+		this.addfn = function(el){								//Ajoute des fonctions à un élément
+			if(!el.tagName){
+				return false;
+			}
+			if(el.tagName.toLowerCase() == "input"){			//Pour les champs de formulaire
+				el.val = function(t){
+					if(typeof(t)=="string"){this.value = t;}
+					return this.value;
+				};
+			}
+			else{												//Pour les autres élèment
+				el.html = function(t){							//.val(valeur) remplace .value=valeur
+					this.innerHTML = t.toString();
+				};
+				el.text = function(t){							//.test(valeur) pour ajouter un node de texte
+					oEl.delallchilds(this);
+					oEl.addtext(this, t.toString());
+				};
+				var b = new Array("br", "hr", "img");			//élément non conteneur
+				if(b.indexOf(el.tagName.toLowerCase()) == -1){
+					el.appendFirst = function(e){				//Ajoute un élément en premier
+						var f = this.firstChild;
+						if(f){
+							f.parentNode.insertBefore(e, f);
+						}
+						else{
+							this.appendChild(e);
+						}						
+					};
+					el.AppendBefore = function(e){				//Ajoute un élèment avant
+						this.parentNode.insertBefore(e, this);
+					};
+					el.AppendAfter = function(e){				//Ajoute un élément après
+						 this.parentNode.insertBefore(e, this.nextSibling);
+					};					
+				}
+				el.remove = function(){
+					this.parentNode.removeChild(this);
+				};
+			}
+			el.css = function(o){								//.css(valeur(s)) remplace les .style.
+				if(oEl.isobject(o)){							//Valeurs sous forme d'objet JSON
+					oEl.addcss(el, o);
+				}
+				else if(typeof(o) == "string" && oText.isjson(o)){
+					oEl.addcss(el, JSON.parse(o));
+				}
+			};
 		};
 		
 		this.alert = function(id){					// élément introuvable
@@ -1326,15 +1346,18 @@
 	
 		this.get = function(e){					// retourne l'élément DOM par l'objet ou l'id
 			if(oEl.isobject(e) && e.tagName){
+				this.addfn(e);
 				return e;
 			}
 			if( !oText.test(e) ){
-				return oEl.alert(e.toString());
+				return oEl.alert(typeof(e));
 			}
 			if( !oEl.test(e) ){
 				return oEl.alert(e);
-			}			
-			return document.getElementById(e);			
+			}
+			e = document.getElementById(e);
+			this.addfn(e);
+			return e;			
 	
 		};		
 		
@@ -1445,7 +1468,7 @@
 			el = el.contentWindow.document;
 			id = ( typeof(id) != "string" ) ? "null" : id.toString();
 			if( el.getElementById(id) ){
-				return el.getElementById(id)
+				return el.getElementById(id);
 			}else{
 				return el;
 			}
@@ -1463,6 +1486,10 @@
 		
 		this.text = function(text){					// créé le node texte
 			return document.createTextNode(text);
+		};
+		
+		this.addtext = function(el, t){				//Ajoute un node texte à un élément
+			el.appendChild(this.text(t));
 		};
 		
 		this.opacity = function(el, value){			// transparence de l'élément de 0 à 100 [opacity]
@@ -1495,8 +1522,9 @@
 			if(!oEl.isobject(el)){
 				return 0;
 			}
+			var op = 100;
 			if( oNav.msie && oNav.version < 9 ){
-				var op = el.style.filter.toString();
+				op = el.style.filter.toString();
 				
 				op = op.split("=");
 				if( op.length > 0 ){
@@ -1507,7 +1535,7 @@
 					op = 100;
 				}
 			}else{
-				var op = parseFloat(el.style.opacity) * 100;
+				op = parseFloat(el.style.opacity) * 100;
 				if( isNaN(op) ){
 					el.style.opacity = 1;
 					op = 100;
@@ -1528,13 +1556,12 @@
 			if( !oText.test(arguments[0]) ){
 				return [];
 			}
-			var mcl = false;
 			var p = ( oEl.isobject(arguments[1]) ) ? arguments[1] : document;
 			var mcl = ( typeof(arguments[1]) == "boolean" ) ? arguments[1] : false;
 			mcl = ( typeof(arguments[2]) == "boolean" ) ? arguments[2] : mcl;
 			var els = [];
 			var cl = oText.trim(arguments[0]);
-			var p = p.getElementsByTagName("*");
+			p = p.getElementsByTagName("*");
 			for( var i = 0; i < p.length; i++ ){
 				if ( mcl && p[i].className.indexOf(cl) != -1 ){		// si plusieurs classes et classe trouvée
 					els.push(p[i]);
@@ -1827,6 +1854,7 @@
 				var posY = oNav.mouse.Y + oNav.scrollY;
 				var dimArrow = 0;					// largeur et hauteur de la flèche et du scroll de la fenêtre du navigateur
 				var width = 150;
+				var cont = undefined;
 				var i = parseInt(arguments[0]);
 				if( this.actif[i] == 0 ){					
 					var text = oText.trim(this.titre[i]);
@@ -1862,7 +1890,7 @@
 					}
 					oEl.title.hide();			
 					if( text.substr(0, 11) == "this.width=" && !isNaN(text.substr(text.indexOf("=") + 1, text.indexOf(";")-text.indexOf("=") - 1 )) ){
-						var width = parseInt(text.substr( text.indexOf("=") + 1, text.indexOf(";")-text.indexOf("=") - 1 ));
+						width = parseInt(text.substr( text.indexOf("=") + 1, text.indexOf(";")-text.indexOf("=") - 1 ));
 						width = ( width < 25 ) ? 25 : width;
 						width = ( width > 1000 ) ? 1000 : width;
 						text = text.substr(text.indexOf(";") + 1, text.length);
@@ -1897,7 +1925,7 @@
 					var e=this.bubble;e.className = "jaria_bubble";
 					e.style.width = oText.toPx(width);
 					this.arrow = oEl.create("div");
-					var cont = oEl.create("div");
+					cont = oEl.create("div");
 					cont.className = "jaria_bubblecont";
 					this.arrow.className = "jaria_bubblearrowhaut";
 					e.appendChild(this.arrow);
@@ -1913,7 +1941,7 @@
 				if( oEl.isobject(this.bubble) ){
 					var screenX = oNav.screenX + oNav.scrollX;
 					var screenY = oNav.screenY + oNav.scrollY;
-					var width = this.bubble.offsetWidth;				// largeur de la bulle
+					width = this.bubble.offsetWidth;					// largeur de la bulle
 					var height = this.bubble.offsetHeight;				// hauteur de la bulle
 					
 					dimArrow = parseFloat(oEl.getstyleclass(this.arrow, "height")) - oNav.marginLeft;
@@ -1957,7 +1985,7 @@
 		};
 		
 		
-		this.prev = new function(){		// prévisualistation au survol d'un lien façon Vista
+		this.prev = new function(){		// prévisualistation au survol d'un lien faÃ§on Vista
 			this.el = undefined;
 			this.text = undefined;
 			this.show = function(){
@@ -2113,7 +2141,7 @@
 		
 		this.drag = new function(sens){								// actions sur le déplacement d'élément par la souris (drag and drop)
 		
-			this.el = undefined;							// élement déplaçable
+			this.el = undefined;							// élement déplaÃ§able
 			this.left = 0;									// position left en déplacement
 			this.top = 0;									// position top en déplacement
 			this.X = 0;										// position X de la souris en déplacement
@@ -2127,7 +2155,7 @@
 			this.elex = undefined;							// élément précedent positionné dans le récepteur
 			this.elp = [];									// tableau d'élément(s) pour le déplacement progressif
 			this.onreceptor = false;						// éléments en collision
-			this.opacity = 100;								// opacité de l'élément déplaçable
+			this.opacity = 100;								// opacité de l'élément déplaÃ§able
 			this.hlight = new Hlight();						// élément avertisseur de collision de className highlight
 			
 			function Hlight(){
@@ -2167,14 +2195,14 @@
 						}
 						
 						// positionne l'élément dans le récepteur
-						var margeLeft = 0;
-						var margeTop = 0;
+						var mLeft = 0;
+						var mTop = 0;
 						if( oEl.getstyleclass(oEl.drag.el, "position") != "absolute" ){
-							var margeLeft = oEl.getoffset(oEl.drag.el.parentNode, "offsetLeft");
-							var margeTop = oEl.getoffset(oEl.drag.el.parentNode, "offsetTop");
+							mLeft = oEl.getoffset(oEl.drag.el.parentNode, "offsetLeft");
+							mTop = oEl.getoffset(oEl.drag.el.parentNode, "offsetTop");
 						}
-						oEl.drag.el.style.left = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetLeft") - margeLeft );
-						oEl.drag.el.style.top  = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetTop") - margeTop );
+						oEl.drag.el.style.left = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetLeft") - mLeft );
+						oEl.drag.el.style.top  = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetTop") - mTop );
 						
 						// supprime l'avertisseur de collision
 						oEl.drag.hlight.hide();
@@ -2198,10 +2226,10 @@
 			};
 			
 			this.go = function(e){						// déplacement en cours...
-				var evt = e || window.event;
-				var Px, Py;
-				var X = evt.clientX + oNav.scrollX;
-				var Y = evt.clientY + oNav.scrollY;
+				e = e || window.event;
+				var Px = 0, Py = 0;
+				var X = e.clientX + oNav.scrollX;
+				var Y = e.clientY + oNav.scrollY;
 				if( (X > 0) && (Y > 0) ){
 					if ( oEl.drag.sens != null && (oEl.drag.sens == "x" || oEl.drag.sens == "y" ) ){
 						Py = eval("P" +  oEl.drag.sens);
@@ -2247,10 +2275,10 @@
 					}
 				} 
 				if( !oNav.msie && !oNav.opera ){
-					evt.preventDefault();
+					e.preventDefault();
 				}else{
-					evt.cancelBubble = true;
-					evt.returnValue = false;
+					e.cancelBubble = true;
+					e.returnValue = false;
 				}
 				if( oEl.drag.el.shadow != undefined){
 					oEl.opacity(oBox.el.shadow, 10);
@@ -2667,13 +2695,13 @@
 		
 		this.chrono = new function(){	// fonction chronomètre
 			this.timer = null;
-			this.time = 0;
+			this.time = 0;			
 			this.el = undefined;
 			
 			this.set = function(){
 				this.time++;
-				var timeEc = (this.time / 10);
-				this.el.value = timeEc.toString()
+				var t = (this.time / 10);
+				this.el.value = t.toString();
 			};
 			
 			this.start = function(){
@@ -2825,7 +2853,7 @@
 		
 		this.setColorText = function(c){
 			try{
-				var c = (c == null) ? this.el.style.backgroundColor : c;
+				c = (c == null) ? this.el.style.backgroundColor : c;
 				var rgb = ( oColor.iscolor(c) ) ? oColor.hexa_rgb(c) : c;
 				//var rgb = ( !oColor.navcolor(c) ) ? oColor.hexa_rgb(c) : c;
 				var t = rgb.toString().split(/,/g);
@@ -2855,56 +2883,56 @@
 				oNav.lock.show();
 			}
 			oText.select(false);
-			this.el = oEl.create("div");
-			this.el.id = "oBox";
-			this.el.Head = oEl.create("div");
-			this.el.Title = oEl.create("div");
-			this.el.Quit = oEl.create("div");
-			this.el.Body = oEl.create("div");
-			this.el.Html = oEl.create("div");
-			this.el.Bts = oEl.create("div");			
-			this.el.className = "jaria_box";			
-			if( this.borderColor != null ){
-				this.el.style.backgroundColor = this.borderColor;
+			_this.el = oEl.create("div");
+			_this.el.id = "oBox";
+			_this.el.Head = oEl.create("div");
+			_this.el.Title = oEl.create("div");
+			_this.el.Quit = oEl.create("div");
+			_this.el.Body = oEl.create("div");
+			_this.el.Html = oEl.create("div");
+			_this.el.Bts = oEl.create("div");			
+			_this.el.className = "jaria_box";			
+			if( _this.borderColor != null ){
+				_this.el.style.backgroundColor = _this.borderColor;
 			}
-			this.el.Title.style.color = this.setColorText();
-			this.width = ( _this.width != null && !isNaN(_this.width) && _this.width > 400 && _this.width <= 2000 ) ? _this.width : 400;
+			_this.el.Title.style.color = _this.setColorText();
+			_this.width = ( _this.width != null && !isNaN(_this.width) && _this.width > 400 && _this.width <= 2000 ) ? _this.width : 400;
 			// décalages paramétrés x et y
-			this.posX = ( !isNaN(this.posX) ) ? parseInt(this.posX) : 0;
-			this.posY = ( !isNaN(this.posY) ) ? parseInt(this.posY) : 0;
-			this.lineheight = ( !isNaN(_this.lineheight) && parseFloat(_this.lineheight) >= 15 && parseFloat(_this.lineheight) <= 100 ) ? parseInt(_this.lineheight) : 15;
-			this.el.style.width = oText.toPx(this.width);										
-			this.el.Head.onmousedown = function(event){
+			_this.posX = ( !isNaN(_this.posX) ) ? parseInt(_this.posX) : 0;
+			_this.posY = ( !isNaN(_this.posY) ) ? parseInt(_this.posY) : 0;
+			_this.lineheight = ( !isNaN(_this.lineheight) && parseFloat(_this.lineheight) >= 15 && parseFloat(_this.lineheight) <= 100 ) ? parseInt(_this.lineheight) : 15;
+			_this.el.style.width = oText.toPx(_this.width);										
+			_this.el.Head.onmousedown = function(event){
 				_this.drag(event);
 			};
-			this.el.Head.className = "jaria_boxhead";
-			this.el.Title.title = "Déplacer";
-			this.el.Title.className = "jaria_boxtitre";
-			this.el.Title.innerHTML = ( this.title != "" ) ? oText.encode(oText.firstUp(this.title)) : "&nbsp;";
-			this.el.Html.className = "jaria_boxhtml";
-			this.el.Body.className = "jaria_boxbody";
-			if( this.radius ){
-				this.el.style.borderRadius = "7px";
-				if( !this.status ){
-					this.el.Body.style.borderRadius = "0px 0px 7px 7px";				
+			_this.el.Head.className = "jaria_boxhead";
+			_this.el.Title.title = "Déplacer";
+			_this.el.Title.className = "jaria_boxtitre";
+			_this.el.Title.innerHTML = ( _this.title != "" ) ? oText.encode(oText.firstUp(_this.title)) : "&nbsp;";
+			_this.el.Html.className = "jaria_boxhtml";
+			_this.el.Body.className = "jaria_boxbody";
+			if( _this.radius ){
+				_this.el.style.borderRadius = "7px";
+				if( !_this.status ){
+					_this.el.Body.style.borderRadius = "0px 0px 7px 7px";				
 				}	
 			}
-			if( oColor.iscolor(this.color) ){
-				this.el.Html.style.color = this.color;
+			if( oColor.iscolor(_this.color) ){
+				_this.el.Html.style.color = _this.color;
 			}
-			if( oColor.iscolor(this.backColor) ){
-				this.el.Body.style.backgroundColor = this.backColor;
+			if( oColor.iscolor(_this.backColor) ){
+				_this.el.Body.style.backgroundColor = _this.backColor;
 			}
-			if( this.backImage != null ){
-				this.el.Body.style.backgroundImage = "url(" + this.backImage + ")";
+			if( _this.backImage != null ){
+				_this.el.Body.style.backgroundImage = "url(" + _this.backImage + ")";
 			}
-			if( this.lineheight != null ){
-				this.el.Html.style.lineHeight = oText.toPx(this.lineheight);
+			if( _this.lineheight != null ){
+				_this.el.Html.style.lineHeight = oText.toPx(_this.lineheight);
 			}
-			this.el.Quit.className = "jaria_boxclose";
-			this.el.Html.innerHTML = oText.encode(this.html);
-			this.el.Head.appendChild(this.el.Title);
-			if( this.quit ){
+			_this.el.Quit.className = "jaria_boxclose";
+			_this.el.Html.innerHTML = oText.encode(_this.html);
+			_this.el.Head.appendChild(_this.el.Title);
+			if( _this.quit ){
 				var img = oEl.create("img");
 				img.src = jaria.images + "box/btclose.png";
 				img.alt = "";
@@ -2912,79 +2940,78 @@
 				img.style.cursor = "pointer";
 				img.style.marginTop = "3px";
 				img.onmouseover = function(){
-					this.src = jaria.images + "box/btclose_hover.png";
+					_this.src = jaria.images + "box/btclose_hover.png";
 				};
 				img.onmouseout = function(){
-					this.src = jaria.images + "box/btclose.png";
+					_this.src = jaria.images + "box/btclose.png";
 				};
 				img.onclick = function(){
 					_this.annul();
 				};
-				this.el.Quit.appendChild(img);
-				this.el.Head.appendChild(_this.el.Quit);
+				_this.el.Quit.appendChild(img);
+				_this.el.Head.appendChild(_this.el.Quit);
 			}			
-			this.el.appendChild(this.el.Head);			
-			this.el.Body.appendChild(this.el.Html);			
-			if( this.bts ){
-				this.el.Bts.className = "jaria_boxboutons";				
-				this.el.BtOk = oEl.create("button");
-				this.el.BtOk.className = "jaria_button";
-				this.el.BtOk.style.width = "50px";
-				this.el.BtOk.innerHTML = "Ok";
-				this.el.BtOk.onclick = function(){
+			_this.el.appendChild(_this.el.Head);			
+			_this.el.Body.appendChild(_this.el.Html);			
+			if( _this.bts ){
+				_this.el.Bts.className = "jaria_boxboutons";				
+				_this.el.BtOk = oEl.create("button");
+				_this.el.BtOk.className = "jaria_button";
+				_this.el.BtOk.style.width = "50px";
+				_this.el.BtOk.innerHTML = "Ok";
+				_this.el.BtOk.onclick = function(){
 					_this.hide();
 				};
-				this.el.Bts.appendChild(this.el.BtOk);
-				this.el.Body.appendChild(this.el.Bts);
+				_this.el.Bts.appendChild(_this.el.BtOk);
+				_this.el.Body.appendChild(_this.el.Bts);
 			}
-			this.el.appendChild(this.el.Body);
-			oNav.body.appendChild(this.el);
-			this.exist = this.type;	
-			if( this.fader ){
-				oEl.opacity(this.el, 0);
-				oEl.fader.plus(this.el);
+			_this.el.appendChild(_this.el.Body);
+			oNav.body.appendChild(_this.el);
+			_this.exist = _this.type;	
+			if( _this.fader ){
+				oEl.opacity(_this.el, 0);
+				oEl.fader.plus(_this.el);
 			}		
 			
-			this.setTitleWidth();
+			_this.setTitleWidth();
 			
-			if( this.status ){
-				this.el.status = oEl.create("div");
-				this.el.status.className = "jaria_boxstatus";
-				this.el.status.innerHTML = "&nbsp;";
-				this.el.status.title = "Redimensionner";
-				oEl.addclass(this.el.Html, "jaria_boxscroll");
-				this.el.status.onmousedown = this.ResizeStart;
-				this.el.status.onmouseup = this.ResizeStop;
-				document.onmouseup = this.ResizeStop;
-				oNav.lock.el.onmouseup = this.ResizeStop;
-				this.el.Html.onmouseup =  this.ResizeStop;
-				this.el.Bts.onmouseup =  this.ResizeStop;
-				this.el.posStartX = null;
-				this.el.posStartY = null;
-				this.el.Html.startX = this.el.Body.offsetWidth;
-				this.el.Html.startY = this.el.Body.offsetHeight;
-				this.el.appendChild(this.el.status);
-				this.el.Body.style.marginBottom = "0px";
-				if( this.radius ){
-					this.el.status.style.borderRadius = "0px 0px 7px 7px";
+			if( _this.status ){
+				_this.el.status = oEl.create("div");
+				_this.el.status.className = "jaria_boxstatus";
+				_this.el.status.innerHTML = "&nbsp;";
+				_this.el.status.title = "Redimensionner";
+				oEl.addclass(_this.el.Html, "jaria_boxscroll");
+				_this.el.status.onmousedown = _this.ResizeStart;
+				_this.el.status.onmouseup = _this.ResizeStop;
+				document.onmouseup = _this.ResizeStop;
+				oNav.lock.el.onmouseup = _this.ResizeStop;
+				_this.el.Html.onmouseup =  _this.ResizeStop;
+				_this.el.Bts.onmouseup =  _this.ResizeStop;
+				_this.el.posStartX = null;
+				_this.el.posStartY = null;
+				_this.el.Html.startX = _this.el.Body.offsetWidth;
+				_this.el.Html.startY = _this.el.Body.offsetHeight;
+				_this.el.appendChild(_this.el.status);
+				_this.el.Body.style.marginBottom = "0px";
+				if( _this.radius ){
+					_this.el.status.style.borderRadius = "0px 0px 7px 7px";
 				}
 			}					
-			oNav.scroll();
-			// pour le positionnement centrale de la box et la prise en compte de la hauteur réelle de la box			
-			this.timer = window.setTimeout(_this.scroll, 100);						
-			if( this.bts && this.focus ){
-				this.el.BtOk.focus();	// focus sur le bouton Ok ou Oui
+			_this.center();						//centre la box
+
+			if( _this.bts && _this.focus ){
+				_this.el.BtOk.focus();	// focus sur le bouton Ok ou Oui
 			}
 			
 			/* redéfini la fonction oNav.hideallbox pour prendre en compte la box dans l'événement de la touche ESCAPE */
-			var hideallbox = new oNav.hideallbox();	
+			var fn = oNav.hideallbox;
 			oNav.hideallbox = function(){
-				hideallbox;
+				fn();
 				_this.hide();
 			};
 			
 			oNav.addevent("onresize", _this.center);
-			oNav.addevent("onscroll", _this.center);	
+			oNav.addevent("onscroll", _this.center);
 			
 		};
 		
@@ -2993,7 +3020,7 @@
 		};
 		
 		this.setshadow = function(){
-			if( _this.shadow && _this.exist ){
+			if( _this.el && _this.shadow && _this.exist ){
 				oEl.del(_this.el.shadow);
 				_this.el.shadow = oEl.create("div");
 				_this.el.shadow.className = "jaria_boxshadow";				
@@ -3006,49 +3033,44 @@
 				}
 				oNav.body.appendChild(_this.el.shadow);
 				oEl.opacity(_this.el.shadow, 20);
-//CSS3
-//				_this.el.style.boxShadow = "4px 4px 8px #999";
+				//CSS3//_this.el.style.boxShadow = "4px 4px 8px #999";
 			}			
 		};
 		
-		this.scroll = function(){
-			window.scrollBy(0, 1);
-			window.clearTimeout(_this.timer);
-			oNav.scroll();
-			_this.setshadow();
-		};
-		
 		this.hide = function(){							// détruit la box
-			if(_this.modal){
-				oNav.lock.hide();
+			if(_this.el){
+				if(_this.modal){
+					oNav.lock.hide();
+				}
+				oNav.delevent("onresize", _this.center);
+				oNav.delevent("onscroll", _this.center);	
+				_this.type = 1;
+				_this.exist = 0;
+				_this.html = "";
+				_this.title = "";
+				_this.posX = 0;
+				_this.posY = 0;
+				_this.width = null;
+				_this.bts = 1;
+				_this.quit = 1;
+				_this.status = false;
+				_this.focus = 1;
+				_this.lineheight = 15;
+				_this.color = null;
+				_this.borderColor = null;
+				_this.backColor = null;
+				_this.backImage = null;
+				oText.select(true);	
+				oEl.title.hide();							// détruit l'éventuelle infobulle
+				oEl.del(_this.el);
+				try{
+					oEl.del(_this.el.shadow);
+				}catch(e){}
+				_this.el = undefined;
+				_this.fader = true;
+				_this.shadow = true;
+
 			}
-			_this.type = 1;
-			_this.exist = 0;
-			_this.html = "";
-			_this.title = "";
-			_this.posX = 0;
-			_this.posY = 0;
-			_this.width = null;
-			_this.bts = 1;
-			_this.quit = 1;
-			_this.status = false;
-			_this.focus = 1;
-			_this.lineheight = 15;
-			_this.color = null;
-			_this.borderColor = null;
-			_this.backColor = null;
-			_this.backImage = null;
-			oText.select(true);	
-			oEl.title.hide();							// détruit l'éventuelle infobulle
-			oEl.del(_this.el);
-			try{
-				oEl.del(_this.el.shadow);
-			}catch(e){}
-			_this.el = undefined;
-			_this.fader = true;
-			_this.shadow = true;
-			oNav.delevent("onresize", _this.center);
-			oNav.delevent("onscroll", _this.center);	
 		};
 		
 		this.drag = function(event){					// démarrage du déplacement de la box
@@ -3057,6 +3079,10 @@
 		};
 		
 		this.center = function(){						//Centre la box et son ombre dans la fenêtre du navigateur
+			if(_this.el == undefined){
+				return false;
+			}
+			oNav.scroll();
 			// position centrale de la box
 			var x = parseInt( (oNav.screenX / 2) - (_this.el.offsetWidth / 2) + oNav.scrollX + oBox.posX );
 			var y = parseInt( (oNav.screenY / 2) - (_this.el.offsetHeight / 2) + oNav.scrollY + oBox.posY );
@@ -3067,16 +3093,19 @@
 		};
 		
 		this.resizeY = function(height){      			// redimentionne la hauteur de la box 
-				_this.el.Html.style.height = oText.toPx(height);
-				_this.el.style.height = oText.toPx(_this.el.Head.offsetHeight + _this.el.Html.offsetHeight + _this.el.Bts.offsetHeight + _this.el.status.offsetHeight + 3);
-				_this.setshadow();
-
+				if(_this.el){
+					_this.el.Html.style.height = oText.toPx(height);
+					_this.el.style.height = oText.toPx(_this.el.Head.offsetHeight + _this.el.Html.offsetHeight + _this.el.Bts.offsetHeight + _this.el.status.offsetHeight + 3);
+					_this.setshadow();
+				}
 		};
 	
 		this.resizeX = function(width){      			// redimentionne la largeur de la box
-				_this.el.Html.style.width = oText.toPx(width);
-				_this.el.style.width = oText.toPx(_this.el.Html.offsetWidth);
-				_this.setshadow();
+				if(_this.el){
+					_this.el.Html.style.width = oText.toPx(width);
+					_this.el.style.width = oText.toPx(_this.el.Html.offsetWidth);
+					_this.setshadow();
+				}
 		};
 		
 		this.onResize = function(){
@@ -3127,19 +3156,21 @@
 		};
 		
 		this.ResizeStop = function(){					// arrêt du redimensionnmeent de la box
-			oEl.opacity(_this.el, 100);
-			oEl.opacity(_this.el.shadow, 20);
-			_this.el.posStartX = null;
-			_this.el.posStartY = null;
-			document.onmouseup = null;
-			oNav.lock.el.style.cursor = "default";
-			_this.el.style.cursor = "default";
-			oText.select(true);
-			_this.el.Html.startY = _this.el.Body.offsetHeight;
-			_this.el.Html.startX = _this.el.Body.offsetWidth;
-			_this.el.status.onmousemove = function(){return false;};
-			oNav.lock.el.onmousemove = function(){return false;};
-			_this.el.Html.onmousemove = function(){return false;};			
+			if(_this.el){
+				oEl.opacity(_this.el, 100);
+				oEl.opacity(_this.el.shadow, 20);
+				_this.el.posStartX = null;
+				_this.el.posStartY = null;
+				document.onmouseup = null;
+				oNav.lock.el.style.cursor = "default";
+				_this.el.style.cursor = "default";
+				oText.select(true);
+				_this.el.Html.startY = _this.el.Body.offsetHeight;
+				_this.el.Html.startX = _this.el.Body.offsetWidth;
+				_this.el.status.onmousemove = function(){return false;};
+				oNav.lock.el.onmousemove = function(){};
+				_this.el.Html.onmousemove = function(){};
+			}
 		};	
 		
 	}
@@ -3149,66 +3180,63 @@
 		var _this = this;
 		
 		this.datepicker = new function(){			// fonction externalisée redéfinie dans le fichier jaria_datepicker.js
-			this.hide = function(){}
+			this.hide = function(){};
 		};
 		
 		this.timepicker = new function(){			// fonction externalisée redéfinie dans le fichier jaria_timepicker.js
-			this.hide = function(){}
+			this.hide = function(){};
 		};
 		
-		this.daymonth = function(month, year){			// retourne le nombre de jours dans un mois de l'année
-			var day = 28;
-			if( _this.bissextile( parseInt(year) ) ){
-				day = 29;
-			};
-			var tab = new Array(31, dayfeb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-			return parseInt( tab[parseInt(month)-1] );			
+		this.daymonth = function(m, y){				// retourne le nombre de jours dans un mois de l'année
+			var d = ( _this.bissextile(parseInt(y)) ) ? 29 : 28;
+			var t = new Array(31, d, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+			return parseInt( t[parseInt(m)-1] );			
 		};
 		
-		this.addday = function(date, inc){
-			if( !_this.isdate(date) ){
+		this.addday = function(dt, inc){
+			if( !_this.isdate(dt) ){
 				return "";
 			}
 			if( isNaN(inc) ){
-				return date;
+				return dt;
 			}
-			var tab = date.toString().split("/");
-			var newdate = new Date( parseFloat(tab[2]), parseFloat(tab[1]) - 1, parseFloat(tab[0]) );	
-			var date = new Date( newdate.getTime() + (1000 * 60 * 60 * 24 * parseInt(inc)) );
-			var day = date.getDate();
-			var month = date.getMonth() + 1;
-			var year = date.getFullYear();
-			date = ((day < 10) ? "0" + day : day) + "/" + ((month < 10) ? "0" + month : month) + "/" + ((year < 1900) ? 1900 : year);
-			return date;
+			var t = dt.toString().split("/");
+			var nd = new Date( parseFloat(t[2]), parseFloat(t[1]) - 1, parseFloat(t[0]) );	
+			dt = new Date( nd.getTime() + (1000 * 60 * 60 * 24 * parseInt(inc)) );
+			var d = dt.getDate();
+			var m = dt.getMonth() + 1;
+			var y = dt.getFullYear();
+			dt = ((d < 10) ? "0" + d : d) + "/" + ((m < 10) ? "0" + m : m) + "/" + ((y < 1900) ? 1900 : y);
+			return dt;
 		};
 		
-		this.addmonth = function(date, inc){
-			if( !_this.isdate(date) ){
+		this.addmonth = function(dt, inc){
+			if( !_this.isdate(dt) ){
 				return "";
 			}
 			if( isNaN(inc) ){
-				return date;
+				return dt;
 			}
-			var tab = date.toString().split("/");
-			var newdate = new Date( parseFloat(tab[2]), parseFloat(tab[1]) + inc - 1, parseFloat(tab[0]) );
-			var year = newdate.getFullYear();
-			var month = newdate.getMonth() + 1;
-			var day = newdate.getDate();
-			date = ((day < 10) ? "0" + day : day) + "/" + ((month < 10) ? "0" + month : month) + "/" + ((year < 1900) ? 1900 : year);
-			return date;
+			var tab = dt.toString().split("/");
+			var nd = new Date( parseFloat(tab[2]), parseFloat(tab[1]) + inc - 1, parseFloat(tab[0]) );
+			var y = nd.getFullYear();
+			var m = nd.getMonth() + 1;
+			var d = nd.getDate();
+			dt = ((d < 10) ? "0" + d : d) + "/" + ((m < 10) ? "0" + m : m) + "/" + ((y < 1900) ? 1900 : y);
+			return dt;
 		};
 		
-		this.addyear = function(date, inc){
-			if( !_this.isdate(date) ){
+		this.addyear = function(dt, inc){
+			if( !_this.isdate(dt) ){
 				return "";
 			}
-			var tab = date.toString().split("/");
-			var newdate = new Date( parseFloat(tab[2]) + inc, parseFloat(tab[1]) - 1, parseFloat(tab[0]) );
-			var year = newdate.getFullYear();
-			var month = newdate.getMonth() + 1;
-			var day = newdate.getDate();			
-			date = ((day < 10) ? "0" + day : day) + "/" + ((month < 10) ? "0" + month : month) + "/" + ((year < 1900) ? 1900 : year);
-			return date;
+			var tab = dt.toString().split("/");
+			var nd = new Date( parseFloat(tab[2]) + inc, parseFloat(tab[1]) - 1, parseFloat(tab[0]) );
+			var y = nd.getFullYear();
+			var m = nd.getMonth() + 1;
+			var day = nd.getDate();			
+			dt = ((day < 10) ? "0" + day : day) + "/" + ((m < 10) ? "0" + m : m) + "/" + ((y < 1900) ? 1900 : y);
+			return dt;
 		};
 		
 		this.datediff = function(du, au){				// retourne le nombre de jours entre 2 dates
@@ -3218,106 +3246,98 @@
 			if( !_this.isdate(du) || !_this.isdate(au) ){
 				return 0;
 			}
-			var tabdu = du.split("/");
-			var tabau = au.split("/");
-			var jours = 1000 * 60 * 60 * 24;
-			var datedu = new Date();
-			var dateau = new Date();
-			datedu.setDate( parseFloat(tabdu[0]) );
-			datedu.setMonth(parseFloat(tabdu[1]) - 1 );
-			datedu.setFullYear(parseFloat(tabdu[2]) );			
-			dateau.setDate( parseFloat(tabau[0]) );
-			dateau.setMonth( parseFloat(tabau[1]) - 1 );
-			dateau.setFullYear( parseFloat(tabau[2]) );
-			return ( parseInt(dateau.getTime() / jours) - parseInt(datedu.getTime() / jours) );		
+			var tdu = du.split("/");
+			var tau = au.split("/");
+			var j = 1000 * 60 * 60 * 24;
+			du = new Date();
+			au = new Date();
+			du.setDate( parseFloat(tdu[0]) );
+			du.setMonth(parseFloat(tdu[1]) - 1 );
+			du.setFullYear(parseFloat(tdu[2]) );			
+			au.setDate( parseFloat(tau[0]) );
+			au.setMonth( parseFloat(tau[1]) - 1 );
+			au.setFullYear( parseFloat(tau[2]) );
+			return ( parseInt(au.getTime() / j) - parseInt(du.getTime() / j) );		
 		};
 		
-		this.bissextile = function(year){				// année bissextile
-			if( isNaN(year) ){
+		this.bissextile = function(y){				// année bissextile
+			if( isNaN(y) ){
 				return false;
 			}
-			if( year%100 == 0 ){
-				if( year%400 == 0 ){
-					return true;
-				}else{
-					return false;
-				}
+			if( y%100 == 0 ){
+				return ( y%400 == 0 ) ? true : false;
 			}else{
-				if( year%4 == 0 ){
-					return true;
-				}else{
-					return false;
-				}
+				return ( y%4 == 0 ) ? true : false;
 			}
 		};
 				
-		this.isdate = function(date, format){					// contrôle la date
+		this.isdate = function(dt, f){					// contrÃ´le la date
 			
 				/* 
 				argument 0 obligatoire : string date
 				argument 1 facultatif : format					ex: [AA]AAMMJJ, JJ/MM/[AA]AA, MM-JJ-[AA]AA... par défaut: JJ/MM/AAAA
 			*/		
 		
-			if( !oText.test(date) ){
+			if( !oText.test(dt) ){
 				return false;
-			}			
-			if( oText.test(format) ){
-				var day, month, year;
-				if( date.length != format.length ){
+			}
+			var d, m, y;
+			if( oText.test(f) ){				
+				if( dt.length != f.length ){
 					return false;
 				}
-				if( date.length > 10 ){
+				if( dt.length > 10 ){
 					return false;
 				}
-				if ( format.indexOf("AAAA") != -1 ) {
-					year = date.substr( format.indexOf("AAAA"), 4);					
+				if ( f.indexOf("AAAA") != -1 ) {
+					y = dt.substr(f.indexOf("AAAA"), 4);					
 				}
-				else if( format.indexOf("AA") != -1 ) {
-					year = "20" + date.substr( format.indexOf("AA"), 2);				
+				else if( f.indexOf("AA") != -1 ) {
+					y = "20" + dt.substr(f.indexOf("AA"), 2);				
 				}
-				if ( format.indexOf("MM") != -1 ) {
-					month = date.substr( format.indexOf("MM"), 2);
+				if ( f.indexOf("MM") != -1 ) {
+					m = dt.substr(f.indexOf("MM"), 2);
 				}
-				if ( format.indexOf("JJ") != -1 ) {
-					day = date.substr( format.indexOf("JJ"), 2);
+				if ( f.indexOf("JJ") != -1 ) {
+					d = dt.substr(f.indexOf("JJ"), 2);
 				}
-				if ( day == "" || month == "" || year == "" ){
+				if ( d == "" || m == "" || y == "" ){
 					return false;
 				}
-				date =  day + "/" + month + "/" + year;	
+				dt =  d + "/" + m + "/" + y;	
 			}
 			
-			if( !(date.search(/^(\d\d)(\/)(\d\d)(\/)(\d\d\d\d)$/) != -1) ){
+			if( !(dt.search(/^(\d\d)(\/)(\d\d)(\/)(\d\d\d\d)$/) != -1) ){
 				return false;
 			}		
 
-			var tab = date.split("/");
-			if( tab.length != 3 ){
+			var t = dt.split("/");
+			if( t.length != 3 ){
 				return false;
 			}
 			
 			for( var i = 0; i < 3; i++ ){
-				if( isNaN(tab[i]) ){
+				if( isNaN(t[i]) ){
 					return false;
 				}
-				if( i == 0 && (parseFloat(tab[i]) < 1 || parseFloat(tab[i]) > 31) ){
+				if( i == 0 && (parseFloat(t[i]) < 1 || parseFloat(t[i]) > 31) ){
 					return false;
 				}
-				if( i == 1 && (parseFloat(tab[i]) < 1 || parseFloat(tab[i]) > 12) ){
+				if( i == 1 && (parseFloat(t[i]) < 1 || parseFloat(t[i]) > 12) ){
 					return false;
 				}
-				if( i == 2 && (parseFloat(tab[i]) < 1900 || tab[i].length > 4) ){
+				if( i == 2 && (parseFloat(t[i]) < 1900 || t[i].length > 4) ){
 					return false;
 				}
 			}
-			if( (parseFloat(tab[0]) > 30) && (parseFloat(tab[1]) == 4 || parseFloat(tab[1]) == 6 || parseFloat(tab[1]) == 9 || parseFloat(tab[1]) == 11) ){
+			if( (parseFloat(t[0]) > 30) && (parseFloat(t[1]) == 4 || parseFloat(t[1]) == 6 || parseFloat(t[1]) == 9 || parseFloat(t[1]) == 11) ){
 				return false;
 			}
-			var day = 28;
-			if( _this.bissextile(parseFloat(tab[2])) ){
+			day = 28;
+			if( _this.bissextile(parseFloat(t[2])) ){
 				day = 29;
 			}
-			if( parseFloat(tab[0]) > day && parseFloat(tab[1]) == 2 ){
+			if( parseFloat(t[0]) > day && parseFloat(t[1]) == 2 ){
 				return false;
 			};
 			return true;		
@@ -3351,26 +3371,26 @@
 				oBox.error("Il manque des arguments à la function Cal.format()!");
 				return "";
 			}
-			var date = arguments[0].toString();
-			var format = arguments[1].toString().toUpperCase();
-			if( !_this.isdate(date) && ( !isNaN(date) && date.length != 8 ) ){
-				oBox.error("Le format de date <kbd>" + date + "</kbd> passé à la fonction Cal.format() est incorrecte!");
+			var dt = arguments[0].toString();
+			var f = arguments[1].toString().toUpperCase();
+			if( !_this.isdate(dt) && ( !isNaN(dt) && dt.length != 8 ) ){
+				oBox.error("Le format de date <kbd>" + dt + "</kbd> passé à la fonction Cal.format() est incorrecte!");
 				return "";				
 			}
-			if( _this.isdate(date) ){
-				var tab = date.split("/");
-				var day = tab[0];
-				var month = tab[1];
-				var year = tab[2];				
-			}else if( !isNaN(date) && date.length == 8 ){
-				var day = date.substr(6, 2);
-				var month = date.substr(4, 2);
-				var year = date.substr(0, 4);
+			if( _this.isdate(dt) ){
+				var t = dt.split("/");
+				var d = t[0];
+				var m = t[1];
+				var y = t[2];				
+			}else if( !isNaN(dt) && dt.length == 8 ){
+				var d = dt.substr(6, 2);
+				var m = dt.substr(4, 2);
+				var y = dt.substr(0, 4);
 			}
-			format = ( format.indexOf("AAAA") != -1 ) ? format.replace("AAAA", year) : format.replace("AA", year.substr(2, 2));
-			format = format.replace("MM", month);
-			format = format.replace("JJ", day);
-			return format;			
+			f = ( f.indexOf("AAAA") != -1 ) ? f.replace("AAAA", y) : f.replace("AA", y.substr(2, 2));
+			f = f.replace("MM", m);
+			f = f.replace("JJ", d);
+			return f;			
 		};
 		
 	}
@@ -3445,37 +3465,11 @@
 			return hexa;			
 		};		
 		this.hexa_rgb = function(c){
-			var y = 0;
-			var tab = new Array();
-			for ( var i = 0; i < 7; i++ ){
-				tab[i] = c.charAt(i);
-				var car = tab[i];
-				if( car == "#" ){
-					y++;
-				}
-				if( car == "A" ){
-					tab[i] = 10;
-				}
-				if( car == "B" ){
-					tab[i] = 11;
-				}
-				if( car == "C" ){
-					tab[i] = 12;
-				}
-				if( car == "D" ){
-					tab[i] = 13;
-				}
-				if( car == "E" ){
-					tab[i] = 14;
-				}
-				if( car == "F" ){
-					tab[i] = 15;
-				}
-			}
-			var rgb = ( (tab[0+y] * 16) - - tab[1+y]);
-			rgb += "," + ( (tab[2 + y] * 16) - - tab[3+y] );
-			rgb += "," + ( (tab[4 + y] * 16) - - tab[5+y] );
-			return rgb;
+			var s = (c.charAt(0)=="#") ? c.substring(1,7) : c;
+			var r = parseInt(s.substring(0,2),16);
+			var g = parseInt(s.substring(2,4),16);
+			var b = parseInt(s.substring(4,6),16);
+			return r + "," + g + "," + b		
 		};
 	}
 
@@ -3669,7 +3663,6 @@
 	window.onresize = oNav.size;					// au redimentonnement de la fenêtre du navigateur	
 	document.onmousemove = oNav.mouse.move;			// au déplacement de la souris	
 	document.onkeydown = oNav.keydown;				// lors d'une action sur les touches du clavier
-	document.onclick = oNav.hideliste;				// referme les éventuelles listes ouvertes
 	
 	// précharge toutes les images de la librairie jaria
 	oNav.addevent("onload", function(){
