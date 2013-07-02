@@ -12,6 +12,17 @@ var Jaria = {
 		
 	},
 	
+	txt : new function(){
+		
+		var $ = this;
+		$.test = function(s){
+			if( typeof(s) != "string" || s == "" ){
+				return false;
+			}
+			return true;
+		}
+	},
+	
 	//fonction à instancier
 	box: function() {
 		
@@ -19,10 +30,11 @@ var Jaria = {
 		$.texte = "";
 		
 		$.show = function() {
-			if($.texte != "") {
-				alert($.__proto__.__proto__.images);
+			
+			if(Jaria.txt.test($.texte)) {
 				alert(Jaria.version + " " + $.texte);
 			}
+			
 		}
 		
 	}
