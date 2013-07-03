@@ -198,6 +198,7 @@ var Jaria = {
 				$.scrollY = window.scrollY;
 			}
 			
+			
 			/*if( $.trace.box.exist ){
 				$.trace.pos();
 			}
