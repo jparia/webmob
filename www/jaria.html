@@ -2,17 +2,45 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   	<meta charset="UTF-8" />
-  	<meta name="author" content="Jean-Pierre ARIA" lang="fr" xml:lang="fr" />
 	<title>Formation JavaScript</title>
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	<!--
-		oBox.texte = oNav.version;
-		oBox.show();
-	-->
+		function affBox(){
+			oBox.txt = oNav.version;
+			oBox.show();
+		}
+		
+		function affNewBox(){
+			var b = new Jaria.box();
+			b.txt = "box instancié";
+			b.show();
+		}
+		
+		function Ajax(){
+			var a = new Jaria.Ajax();
+			a.adddata({nom: "ARIA", prenom: "Jean-pierre", format: "XML"});
+			a.send("ajax.php", "POST", function(){	
+				var r = arguments[0];
+				if( r == undefined ){
+				 	return false;
+				}
+				if(Jaria.txt.isxml(r)){
+					alert("c'est du XML");
+				}else if(Jaria.txt.isjson(r)){
+					alert("c'est du JSON");
+				}else if(Jaria.txt.test(r)){
+					alert("c'est une chaine : " + r);
+				}else{
+					alert("format inconnu !");
+				}	
+			})
+		}
 	</script>
 </head>
 <body>
 <div id="info">&nbsp;</div>
+<button onclick="affBox()">test oBox</button>
+<button onclick="affNewBox()">test nouvelle instance box</button>
+<button onclick="Ajax()">test Ajax</button>
 </body>
 </html>
