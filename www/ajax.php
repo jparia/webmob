@@ -20,7 +20,11 @@
 	
 	if($v1 == ""){
 		$v1 = Post("nom", "");
+	}
+	if($v2 == ""){
 		$v2 = Post("prenom", "");
+	}
+	if($v3 == ""){
 		$v3 = Post("format", "");
 	}
 	

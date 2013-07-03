@@ -17,11 +17,12 @@
 		}
 		
 		function Ajax(){
-			var a = new Jaria.Ajax();
+			var a = new Jaria.ajax();
 			a.adddata({nom: "ARIA", prenom: "Jean-pierre", format: "XML"});
-			a.send("ajax.php", "POST", function(){	
+			a.send("ajax.php", "GET", "XML", function(){	
 				var r = arguments[0];
 				if( r == undefined ){
+					alert("format inconnu !");
 				 	return false;
 				}
 				if(Jaria.txt.isxml(r)){
@@ -35,6 +36,19 @@
 				}	
 			})
 		}
+		
+		function mouse(){
+			Jaria.el.get("info").html("mouse - X: " + Jaria.nav.mouseX + " - Y: " + Jaria.nav.mouseY);
+		}
+		
+		Jaria.nav.addevent("onmousemove", mouse);	
+		Jaria.nav.addevent("onload", function(){
+			Jaria.nav.keyb.valid = function(){
+				alert(arguments[0].value);
+			};
+		});	
+		//Jaria.nav.delevent("onmousemove", mouse)
+		
 	</script>
 </head>
 <body>
@@ -42,5 +56,6 @@
 <button onclick="affBox()">test oBox</button>
 <button onclick="affNewBox()">test nouvelle instance box</button>
 <button onclick="Ajax()">test Ajax</button>
+<input type="text" class="jaria_enter" value="" />
 </body>
 </html>

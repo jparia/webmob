@@ -3,51 +3,34 @@
 		sources développeur */
 		
 	var jaria = new function(){					// paramètres globaux à la bilbiothèque
-		this.version = "20130606";				// Date au format AAAAMMJJ de la version de la bibliothèque
+		this.version = "20130629";				// Date au format AAAAMMJJ de la version de la bibliothèque
 		this.images = "jaria/images/";			// Chemin des images
 	};
 	
 	var oText = new function(){								// Gestion des textes (string)
 	
-		this.test = function(){
+		this.test = function(s){
 			// argument 0: string		facultatif
-			if( arguments.length == 0 ){
-				return false;	
-			}
-			if( typeof(arguments[0]) != "string" || arguments[0] == "" ){
-				return false;
-			}
-			return true;
+			return ( typeof(s) == "string" && s != "" ) ? true : false;
 		};
 		
-		this.select = function(){
+		this.select = function(b, o){
 			/*
 				argument 0: boolean		obligatoire
 				argument 1: object		facultatif
 			*/
-			if( arguments.length == 0 ){
-				return false;	
-			}
-			var state = arguments[0];
-			if( typeof(state) != "boolean"){
+			if( typeof(b) != "boolean"){
 				return false;
 			}
-			var el = ( arguments.length == 2 ) ? arguments[1] : undefined;			
-			if( !oEl.isobject(el) ){
-				if ( oEl.test(el) ) {
-					el = oEl.get(el);
-				}else{
-					el = document;
-				}
-			}
+			el = ( oEl.test(o) ) ? oEl.get(o) : document;
 			if( typeof(el.onselectstart) != "undefined" ){				
 				el.onselectstart = function(){
-					return state;
+					return b;
 				};
 			}
 			else{
 				el.onmousedown = function(){
-					return state;
+					return b;
 				};
 			}			
 		};
@@ -57,10 +40,7 @@
 			    return "";
 			}
 			var t = (s).toString();
-			if (n > t.length){
-			    return t;
-			}
-			return t.substring(0, n);
+			return (n > t.length) ? t : t.substring(0, n);
 		};
 		
 		this.right = function(s, n){			
@@ -68,11 +48,8 @@
 		       return "";
 		    }
 		    var t = (s).toString();
-		    if (n > t.length){
-		       return t;
-		    }
-		    var l = (t).length;
-		    return (t).substring(l, l - n);
+				var l = t.length;
+		    return (n > t.length) ? t : (t).substring(l, l - n);
 		};
 		
 		this.upper = function(s){				// tout en majuscule
@@ -317,22 +294,22 @@
 			if( !this.test(p) ) {
 				return "";
 			}	
-			var pos = p.toString().lastIndexOf("/");
-			if( pos == -1 ){
+			var n = p.toString().lastIndexOf("/");
+			if( n == -1 ){
 				return p;
 			}
-			return p.substr(pos + 1, p.length);
+			return p.substr(n + 1, p.length);
 		};
 
 		this.filepath = function(p){				// retourne le nom du chemin à partir du chemin complet d'un fichier
 			if( !this.test(p) ) {
 				return "";
 			}
-			var pos = p.toString().lastIndexOf("/");
-			if( pos == -1 ){
+			var n = p.toString().lastIndexOf("/");
+			if( n == -1 ){
 				return p;
 			}
-			return p.substr(0, pos + 1);
+			return p.substr(0, n + 1);
 		};
 		
 		this.build = new function(){				//construction d'une chaine à l'aide d'un tableau
@@ -354,12 +331,16 @@
 		
 	};
 	
-	Array.prototype.unset = function(v){			//Gestion supplémentaires des tableaux (Array)
-		var i = this.indexOf(v);					//Supprime un élèment d'un tableau par sa valeur		
-		if(i > -1){
-			this.splice(i, 1);
+	if(!Array.indexOf){									//Redéfinie la methode indexOf pour les anciens IE
+		Array.prototype.indexOf = function(o){
+			for(var i = 0; i < this.length; i++){
+				if(this[i] == o){
+				return i;
+				}
+			}
+			return -1;
 		}
-	};
+	}
 	
 	var oNav = new function(){						// fonctions de base du navigateur
 	
@@ -379,10 +360,9 @@
 		this.konqueror = false;	
 		this.gecko = false;
 		this.robot = false;
-		this.other = false;
-		this.a = oText.lower(navigator.userAgent);
+		this.other = false;	
 		this.host = oText.lower(window.location.host);
-		this.version = (this.a.match( /.+(?:firefox|version|pera|chrome|onqueror|msie)[\/: ]([\d.]+)/ ) || [])[1];
+		this.version = "";
 		this.body = null;
 		this.location = null;
 		this.timer = null;
@@ -390,42 +370,47 @@
 		this.readyfull = false;				// chargement document terminée y compris le préchargement des images
 		this.inload = false;					// lot d'images en cours de chargement
 		
-		if( this.a.indexOf("chrome") != -1 ){
-			this.chrome=true;
-			this.name = "chrome";
-		}
-		else if( this.a.indexOf("safari") != -1 ){
-			this.safari=true;
-			this.name = "safari";
-		}
-		else if( this.a.indexOf("firefox") != -1 ){
-			this.firefox = true;
-			this.name = "firefox";
-		}
-		else if( this.a.indexOf("opera") != -1 ){
-			this.opera = true;
-			this.name = "opera";
-		}
-		else if( this.a.indexOf("konqueror") != -1 ){
-			this.konqueror=true;
-			this.name = "konqueror";
-		}
-		else if( this.a.indexOf("msie") != -1 ){
-			this.msie = true;
-			this.name = "msie";
-		}
-		else if( this.a.indexOf("gecko") != -1 ){
-			this.gecko = true;
-			this.name = "gecko";
-		}
-		else if(this.a.indexOf("@") != -1 || this.a.indexOf("www") != -1 || this.a.indexOf("http:") != -1 ){
-			this.robot = true;
-			this.name = "robot";
-		}
-		else{
-			this.other = true;
-			this.name = "other";
-		}
+		this.type = function(){
+			var n = oNav;
+			var s = oText.lower(navigator.userAgent);
+			n.version = (s.match( /.+(?:firefox|version|pera|chrome|onqueror|msie)[\/: ]([\d.]+)/ ) || [])[1];
+			if( s.indexOf("chrome") != -1 ){
+				n.chrome = true;
+				n.name = "chrome";
+			}
+			else if( s.indexOf("safari") != -1 ){
+				n.safari = true;
+				n.name = "safari";
+			}
+			else if( s.indexOf("firefox") != -1 ){
+				n.firefox = true;
+				n.name = "firefox";
+			}
+			else if( s.indexOf("opera") != -1 ){
+				n.opera = true;
+				n.name = "opera";
+			}
+			else if( s.indexOf("konqueror") != -1 ){
+				n.konqueror = true;
+				n.name = "konqueror";
+			}
+			else if( s.indexOf("msie") != -1 ){
+				n.msie = true;
+				n.name = "msie";
+			}
+			else if( s.indexOf("gecko") != -1 ){
+				n.gecko = true;
+				n.name = "gecko";
+			}
+			else if(s.indexOf("@") != -1 || s.indexOf("www") != -1 || s.indexOf("http:") != -1 ){
+				n.robot = true;
+				n.name = "robot";
+			}
+			else{
+				n.other = true;
+				n.name = "other";
+			}
+		};
 		
 		this.param = function(n){						// retourne le paramètre passé dans l'url par sa position à partir de 0
 			if( isNaN(n) ){
@@ -675,29 +660,29 @@
 				return false;
 			}
 			
-			var ev = arguments[0];
-			var fc = arguments[1];
+			var v = arguments[0];
+			var f = arguments[1];
 			var el = arguments[2];
-			var obj;
+			var o;
 			
-			oNav.delevent(ev, fc, el);
+			oNav.delevent(v, f, el);
 			
-			if( typeof(fc) != "function" ){
+			if( typeof(f) != "function" ){
 				return false;
 			}
 			if( oEl.isobject(el)){
-				obj = el;		 
-			}else if( ev.indexOf("scroll") != -1 || ev.indexOf("load") != -1 || ev.indexOf("resize") != -1 ){
-				obj = window;
+				o = el;		 
+			}else if( v.indexOf("scroll") != -1 || v.indexOf("load") != -1 || v.indexOf("resize") != -1 ){
+				o = window;
 			}else{
-				obj = document;
+				o = document;
 			}
 			try{
-				obj.attachEvent(ev, fc);
+				o.attachEvent(v, f);
 			}catch(e){
 				try{
-					ev = ev.toString().replace("on", "");
-					obj.addEventListener(ev , fc, false);
+					v = v.toString().replace("on", "");
+					o.addEventListener(v , f, false);
 				}catch(E){
 					return false;
 				}
@@ -705,7 +690,7 @@
 			return true;
 		};
 		
-		this.delevent = function(ev, fc){
+		this.delevent = function(v, f){
 			/*
 				argument 0 : obligatoire		évènement
 				argument 1 : obligatoire:		la fonction à ajouter
@@ -716,27 +701,25 @@
 				return false;
 			}
 			
-			var ev = arguments[0];
-			var fc = arguments[1];
-			var el = arguments[2];
-			var obj;
+			var e = arguments[2];
+			var o;
 			
-			if( typeof(fc) != "function" ){
+			if( typeof(f) != "function" ){
 				return false;
 			}			
-			if( oEl.isobject(el)){
-				obj = el;		 
-			}else if( ev.indexOf("scroll") != -1 || ev.indexOf("load") != -1 || ev.indexOf("resize") != -1 ){
-				obj = window;
+			if( oEl.isobject(e)){
+				o = e;		 
+			}else if( v.indexOf("scroll") != -1 || v.indexOf("load") != -1 || v.indexOf("resize") != -1 ){
+				o = window;
 			}else{
-				obj = document;
+				o = document;
 			}
 			try{
-				obj.detachEvent(ev, fc);
+				o.detachEvent(v, f);
 			}catch(e){
 				try{
-					ev = ev.toString().replace("on", "");
-					obj.removeEventListener(ev , fc, false);
+					v = v.toString().replace("on", "");
+					o.removeEventListener(v , f, false);
 				}catch(e){
 					return false;
 				}
@@ -777,8 +760,8 @@
 			
 			this.pos = function(){						// position de la boîte des traces de debug
 				if( _this.box.exist ){
-					var w = oEl.getoffset(_this.box.el, "offsetWidth");
-					var h = oEl.getoffset(_this.box.el, "offsetHeight");
+					var w = oEl.getoffset(_this.box.el, "width");
+					var h = oEl.getoffset(_this.box.el, "height");
 					switch( _this.position ){
 						case "right bottom":
 							_this.box.el.style.left = oText.toPx(oNav.screenX - w - _this.marge + oNav.scrollX);
@@ -842,7 +825,7 @@
 				_this.box.resizeX(300);
 				_this.debug = oEl.create("div");
 				_this.debug.className = "jaria_tracedebug";
-				_this.debug.style.width = oText.toPx(oEl.getoffset(_this.box.el, "offsetWidth") -7);
+				_this.debug.style.width = oText.toPx(oEl.getoffset(_this.box.el, "width") -7);
 				_this.box.el.Html.innerHTML = "";
 				_this.box.el.Html.appendChild(_this.debug);
 				_this.box.el.Html.style.padding = "0px";
@@ -922,8 +905,8 @@
 			
 			this.move = function(e){
 				e = e || window.event;
-				oNav.mouse.X = e.clientX;
-				oNav.mouse.Y = e.clientY;
+				oNav.mouse.X = parseInt(e.clientX);
+				oNav.mouse.Y = parseInt(e.clientY);
 			};
 		};
 		
@@ -939,7 +922,7 @@
 			
 			this.enter = function(e){					// sur la touche entrer [enter]
 				var el = oEl.getevent(e);
-				if(typeof(el.tagName) != "string"){
+				if(el == undefined){
 					return false;
 				}
 				// execute un traitement sur la touche Enter et si l'élément à la classe jaria_enter
@@ -1010,7 +993,7 @@
 					}
 					div.innerHTML = this.texte;						
 					this.el.appendChild(div);
-					div.style.top = oText.toPx((oEl.getoffset(this.el, "offsetHeight") / 2) + 40);
+					div.style.top = oText.toPx((oEl.getoffset(this.el, "height") / 2) + 40);
 				}			
 			};
 			this.hide = function(){						// dégrise  [unlock]
@@ -1241,48 +1224,39 @@
 		};
 	};
 	
+	oNav.type();
+	
 	var oEl = new function(){									// Gestion des éléments du DOM
 	
 		_this = this;
 	
-		this.timer = null;		// timer pour le déplacement de l'élément
+		this.timer = null;											// timer pour le déplacement de l'élément
 		
-		this.addcss = function(el, o){								//Ajoute un ou plusieurs style CSS à l'élèment
-			for (var d in o){
-				n = d.toString();					//nom
-				v = o[d].toString();				//valeur
-				v = v.toLowerCase();
-				if(n == "float"){
-					n = "cssFloat";
-				}				
-				if(d.indexOf("-")!=-1){					
-					n = n.replace(n.substr(n.indexOf("-"), 2), n.substr(n.indexOf("-")+1, 1).toUpperCase()); 
-				}
-				eval("el.style." + n + "=\"" + v + "\"");				
-			}
-		};
-		
-		this.addfn = function(el){								//Ajoute des fonctions à un élément
-			if(!el.tagName){
+		this.fn = function(e){									//Ajoute des fonctions à un élément
+			if(!oEl.test(e)){
 				return false;
 			}
-			if(el.tagName.toLowerCase() == "input"){			//Pour les champs de formulaire
-				el.val = function(t){
+			if(e.tagName.toLowerCase() == "input"){	//Pour les champs de formulaire		
+				e.val = function(t){
 					if(typeof(t)=="string"){this.value = t;}
 					return this.value;
 				};
-			}
-			else{												//Pour les autres élèment
-				el.html = function(t){							//.val(valeur) remplace .value=valeur
-					this.innerHTML = t.toString();
+				e.change = function(fn){
+						this.onchange = fn;
 				};
-				el.text = function(t){							//.test(valeur) pour ajouter un node de texte
+			}
+			else{																		//Pour les autres élèment
+				e.html = function(t){									//affecte ou/et retourne du HTML
+					if(typeof(t)=="string"){this.innerHTML = t.toString();}
+					return this.innerHTML;
+				};
+				e.txt = function(t){									//ajoute un node de texte
 					oEl.delallchilds(this);
 					oEl.addtext(this, t.toString());
-				};
-				var b = new Array("br", "hr", "img");			//élément non conteneur
-				if(b.indexOf(el.tagName.toLowerCase()) == -1){
-					el.appendFirst = function(e){				//Ajoute un élément en premier
+				};		
+				var b = new Array("br", "hr", "img");	//élément non conteneur
+				if(b.indexOf(e.tagName.toLowerCase()) == -1){
+					e.first = function(e){					//ajoute un élément en premier
 						var f = this.firstChild;
 						if(f){
 							f.parentNode.insertBefore(e, f);
@@ -1291,78 +1265,71 @@
 							this.appendChild(e);
 						}						
 					};
-					el.AppendBefore = function(e){				//Ajoute un élèment avant
-						this.parentNode.insertBefore(e, this);
-					};
-					el.AppendAfter = function(e){				//Ajoute un élément après
-						 this.parentNode.insertBefore(e, this.nextSibling);
-					};					
 				}
-				el.remove = function(){
-					this.parentNode.removeChild(this);
-				};
 			}
-			el.css = function(o){								//.css(valeur(s)) remplace les .style.
-				if(oEl.isobject(o)){							//Valeurs sous forme d'objet JSON
-					oEl.addcss(el, o);
+			//Tous les types d'éléments
+			e.tag = function(){											//retourne le nom du tag de l'élèment ou "" si pas du DOM
+					if(!this.tagName){
+						return "";
+					}
+					return this.tagName.toLowerCase();
+			};
+			e.parent = function(){									//parent de l'élèment ou lui-même si pas de parent
+					if(!this.parentNode.tagName){
+						return this;
+					}
+					oEl.fn(this.parentNode);
+					return this.parentNode;
+			};
+			e.before = function(e){					//ajoute un élèment avant
+				this.parentNode.insertBefore(e, this);
+			};
+			e.after = function(e){						//ajoute un élément après
+				 this.parentNode.insertBefore(e, this.nextSibling);
+			};					
+			e.del = function(){									//supprime l'élément
+				this.parentNode.removeChild(this);
+			};		
+			e.css = function(o){											//affecte un ou plusierus styles CSS
+				if(oEl.isobject(o)){										//Valeurs sous forme d'objet JSON
+					oEl.css(this, o);
 				}
 				else if(typeof(o) == "string" && oText.isjson(o)){
-					oEl.addcss(el, JSON.parse(o));
+					oEl.css(this, JSON.parse(o));
 				}
 			};
+			e.top = function(){
+				return oEl.getoffset(this, "top");
+			};
+			e.left = function(){
+				return oEl.getoffset(this, "left");
+			};
+			e.sizeX = function(){
+				return oEl.getoffset(this, "width");
+			};	
+			e.sizeY = function(){
+				return oEl.getoffset(this, "height");
+			};	
 		};
 		
-		this.alert = function(id){					// élément introuvable
-			if( !oText.test(id) ){
-				id = "undefined";
-			}
-			oBox.error("l'objet: <kbd>" + id + "</kbd> n'est pas trouvé !<br><div id=" + id + " style='display:none'></div>");
+		this.alert = function(id){									// élément introuvable par son id ou par lui-même
+			if( !oText.test(id) ){id = "undefined";}
+			oBox.error("l'objet: <kbd>" + id + "</kbd> n'est pas trouvé !<br id=\"" + id + "\" />");
 			return document.getElementById(id);				
 		};
 		
-		this.isobject = function(){
+		this.isobject = function(o){								// test un objet (élément DOM ou XML)
 			/*
 				argument 0: object obligatoire		élément
 			*/
 			if( arguments.length == 0 ){
 				return false;
 			}
-			return ( typeof(arguments[0]) == "object" ) ? true : false;
+			return ( typeof(o) == "object" ) ? true : false;
 		};
-		
-		this.istype = function(o, t) {					// teste le type de l'objet passé en paramètre			
-			/*
-				o: object		objet à tester
-				t:	string 		type testé ( string, array... )
-			*/
-			if( typeof(t) != "string" ){
-				return false;
-			}
-			if (o.constructor.toString().toLowerCase().indexOf(t.toLowerCase()) == -1){
-				return false;
-			}			
-			return true;
-		};
-	
-		this.get = function(e){					// retourne l'élément DOM par l'objet ou l'id
-			if(oEl.isobject(e) && e.tagName){
-				this.addfn(e);
-				return e;
-			}
-			if( !oText.test(e) ){
-				return oEl.alert(typeof(e));
-			}
-			if( !oEl.test(e) ){
-				return oEl.alert(e);
-			}
-			e = document.getElementById(e);
-			this.addfn(e);
-			return e;			
-	
-		};		
 		
 		this.test = function(e){					// test l'élément par l'objet ou par l'id passé en paramètre
-			if(oEl.isobject(e) && e.tagName){
+			if(oEl.isobject(e) && e.tagName && e.style){
 				return true;
 			}
 			if( !oText.test(e) ){
@@ -1374,61 +1341,64 @@
 			}
 			return (document.getElementById(e)) ? true : false;			
 		};
-		
-		this.create = function(t){				// créé l'élément
-			return document.createElement(t);
+	
+		this.get = function(e){					//retourne l'élément DOM par l'objet ou l'id
+			if( oText.test(e) && oEl.test(e) ){
+				e = document.getElementById(e);
+			}
+			if( !oEl.test(e) ){
+				return this.alert(e);
+			}
+			this.fn(e);
+			return e;	
 		};
 		
-		this.del = function(el){					// suppression d'un élément
-			if( !oEl.isobject(el) ){
-				if( !oEl.test(el) ){
+		this.gettags = function(s, e){			//récupère une collection d'élements du DOM ou XML par leur nom du tag
+			var s = s.toString();
+			var t = ( oEl.isobject(e) ) ? e.getElementsByTagName(s) : document.getElementsByTagName(s);
+			if( oEl.test(e) ){
+				for( var i = 0; i < t.length; i++){
+						this.fn(t[i]);
+				}
+			}
+			return t;
+		};
+		
+		this.gettag = function(s, n, p){			// résupère l'élément par le nom du tag selon la position à partir de 1
+			var t = oEl.gettags(s, p);
+			return (t[n-1]) ? t[n-1] : t[0];
+		};
+		
+		this.create = function(t){				// créé l'élément
+			var e = document.createElement(t);
+			this.fn(e);
+			return e;
+		};
+		
+		this.del = function(e){					// suppression d'un élément
+			if( !oEl.isobject(e) ){
+				if( !oEl.test(e) ){
 					return false;
 				}
-				el = oEl.get(el);
+				e = oEl.get(e);
 			}
 			try{
-				el.parentNode.removeChild(el);
-				el = undefined;
+				e.parentNode.removeChild(e);
+				e = undefined;
 			}
 			catch(e){}
 		};
 		
 		this.getevent = function(e){
-			if( oEl.isobject(e) ){
-				if( e.tagName != undefined ){
-						return e;
-				}
-				if( e.type != undefined ){
-						return ( !oNav.msie ) ? e.target : window.event.srcElement;
-				}
+			if( oEl.test(e) ){
+				return e;
+			}
+			if( oEl.isobject(e) && e.type != undefined ){
+				return ( !oNav.msie ) ? e.target : window.event.srcElement;
 			}
 			return undefined;
 		};
-		
-		this.gettags = function(){			// récupère une collection d'élements par leur nom [tagName]
-			/*
-				argument 0: obligatoire		nom du tag
-				argument 1: facultatif		élément parent
-			*/
-			if( arguments.length == 0 ){
-				return [];
-			}
-			var tag = arguments[0].toString();
-			if( arguments.length > 1 ){
-				var el = arguments[1];
-				if( !oEl.isobject(el) ){
-					if( oEl.test(el) ){
-						el = oEl.get(el);
-					}else{
-						return [];
-					}
-				}
-				return el.getElementsByTagName(tag);
-			}else{
-				return document.getElementsByTagName(tag);
-			}
-		};
-		
+
 		this.deltags = function(t, p){					// supprime tous les balises nommées du parent ou du document
 			var e = ( p == null ) ? document : p;	
 			while ( oEl.gettags(t, e).length > 0 ){
@@ -1454,225 +1424,220 @@
 			}
 		};
 		
-		this.delfirst = function(el){				//Suppression du premier élément fils
-			el.removeChild(el.firstChild);
+		this.delfirst = function(e){				//Suppression du premier élément fils
+			e.removeChild(e.firstChild);
 		};
 		
-		this.getframe = function(el, id){			// Retourne le document de l'iframe l'élément du document de l'iframe
-			if( !oEl.isobject(el) ){
-				el = oEl.get(el);
+		this.getframe = function(e, id){			// Retourne le document de l'iframe l'élément du document de l'iframe
+			if( !oEl.isobject(e) ){
+				e = oEl.get(e);
 			}
-			if( !oEl.isobject(el) ){
-				oEl.alert(el);
+			if( !oEl.isobject(e) ){
+				oEl.alert(e);
 			}
-			el = el.contentWindow.document;
+			e = e.contentWindow.document;
 			id = ( typeof(id) != "string" ) ? "null" : id.toString();
-			if( el.getElementById(id) ){
-				return el.getElementById(id);
-			}else{
-				return el;
-			}
+			return ( e.getElementById(id) ) ? e.getElementById(id) : e;
 		};
 
-		this.getparent = function(el){
-			if( !oEl.isobject(el) ){
-				el = oEl.get(el);
+		this.getparent = function(e){
+			if( !oEl.test(e) ){
+				e = oEl.get(e);
 			}
-			if( parent.opener ){
-				return parent.opener.document.getElementById(el.id);
-			}
-			return el.parentNode;			
+			return ( parent.opener ) ? parent.opener.document.getElementById(e.id) : e.parent();			
 		};
 		
-		this.text = function(text){					// créé le node texte
-			return document.createTextNode(text);
+		this.text = function(t){					// créé le node texte
+			return document.createTextNode(t);
 		};
 		
-		this.addtext = function(el, t){				//Ajoute un node texte à un élément
-			el.appendChild(this.text(t));
+		this.addtext = function(e, t){				//Ajoute un node texte à un élément
+			e.appendChild(this.text(t));
 		};
 		
-		this.opacity = function(el, value){			// transparence de l'élément de 0 à 100 [opacity]
+		this.opacity = function(e, v){			// transparence de l'élément de 0 à 100 [opacity]
 			if( arguments.length < 2){
 				return false;
 			}
-			if( !oEl.isobject(el) ){
-				if( !oEl.test(el) ){
+			if( !oEl.test(e) ){
 					return false;
-				}
-				el = oEl.get(el);
 			}
-			if( !isNaN(value) ){
-				if( parseInt(value) < 0 ){
-					value = 0;
+			e = oEl.get(e);
+			if( !isNaN(v) ){
+				if( parseInt(v) < 0 ){
+					v = 0;
 				}
-				if( parseInt(value) > 100 ){
-					value = 100;
+				if( parseInt(v) > 100 ){
+					v = 100;
 				}				
 				if( oNav.msie && oNav.version < 9  ){
-					el.style.filter = "alpha(opacity=" + parseInt(value) + ")";
+					e.style.filter = "alpha(opacity=" + parseInt(v) + ")";
 				}
 				else{
-					el.style.opacity = Math.round((parseFloat(value)/100)*10)/10;
+					e.style.opacity = Math.round((parseFloat(v)/100)*10)/10;
 				}
 			}
 		};
 		
-		this.getopacity = function(el){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
-			if(!oEl.isobject(el)){
+		this.getopacity = function(e){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
+			if(!oEl.test(e)){
 				return 0;
 			}
-			var op = 100;
+			var v = 100;
 			if( oNav.msie && oNav.version < 9 ){
-				op = el.style.filter.toString();
-				
-				op = op.split("=");
-				if( op.length > 0 ){
-					op =  parseFloat(op[op.length - 1]);
+				v = e.style.filter.toString();				
+				v = v.split("=");
+				if( v.length > 0 ){
+					v = parseFloat(v[v.length - 1]);
 				}
-				if( isNaN(op) ){
-					el.style.filter = "alpha(opacity=100)";
-					op = 100;
+				if( isNaN(v) ){
+					e.style.filter = "alpha(opacity=100)";
+					v = 100;
 				}
 			}else{
-				op = parseFloat(el.style.opacity) * 100;
-				if( isNaN(op) ){
-					el.style.opacity = 1;
-					op = 100;
+				v = parseFloat(e.style.opacity) * 100;
+				if( isNaN(v) ){
+					e.style.opacity = 1;
+					v = 100;
 				}
 			}
-			return op;
+			return v;
 		};
 		
-		this.getclass = function(){					// retourne un tableau d'élément(s) par la classe CSS passée en paramètre
+		this.css = function(e, o){								//Ajoute un ou plusieurs style CSS à l'élèment à partir d'un objet JSON
+			for (var d in o){
+				n = d.toString();					//nom
+				v = o[d].toString();			//valeur
+				v = v.toLowerCase();
+				if(n == "float"){
+					n = "cssFloat";
+				}				
+				if(d.indexOf("-")!=-1){					
+					n = n.replace(n.substr(n.indexOf("-"), 2), n.substr(n.indexOf("-")+1, 1).toUpperCase()); 
+				}
+				eval("e.style." + n + "=\"" + v + "\"");				
+			}
+		};
+		
+		this.getclass = function(s, p, b){					// retourne un tableau d'élément(s) par la classe CSS passée en paramètre
 			/*
-				argument 0: obligatoire			nom de la classe CSS
-				argument 1: facultatif			élément parent (document par défaut)
+				argument 0: obligatoire				nom de la classe CSS
+				argument 1: facultatif				élément parent (document par défaut)
 				argument 1 ou 2: facultatif		faux = classe seule (par défaut), vrai = parmi plusieurs classes affectées
 			*/
-			if( arguments.length == 0 ){
+			
+			if( !oText.test(s) ){
 				return [];
 			}
-			if( !oText.test(arguments[0]) ){
-				return [];
-			}
-			var p = ( oEl.isobject(arguments[1]) ) ? arguments[1] : document;
-			var mcl = ( typeof(arguments[1]) == "boolean" ) ? arguments[1] : false;
-			mcl = ( typeof(arguments[2]) == "boolean" ) ? arguments[2] : mcl;
-			var els = [];
-			var cl = oText.trim(arguments[0]);
-			p = p.getElementsByTagName("*");
+			
+			var p = ( oEl.test(p) ) ? p : document;
+
+			var m = ( typeof(p) == "boolean" ) ? p : false;
+			m = (  typeof(p) != "boolean" && typeof(b) == "boolean" ) ? b : m;
+			var e = [];
+			var s = oText.trim(s);
+			p = p.getElementsByTagName("*");			
 			for( var i = 0; i < p.length; i++ ){
-				if ( mcl && p[i].className.indexOf(cl) != -1 ){		// si plusieurs classes et classe trouvée
-					els.push(p[i]);
-				}else{
-					if( p[i].className == cl ){						// si classe identique
-						els.push(p[i]);
-					}
+				if ( m && p[i].className.indexOf(s) != -1 ){		// si plusieurs classes et classe trouvée
+					e.push(p[i]);					
+				}else	if( p[i].className == s ){						// si classe identique
+						e.push(p[i]);
 				}					
 			}
-			return els;			
+			return e;			
 		};
 		
-		this.addclass = function(){			// ajoute une class à l'élément [className]
+		this.addclass = function(e, s){			// ajoute une class à l'élément [className]
 			/*
 				argument 0 : obligatoire		élément
 				argument 1 : obligatoire		nom de la classe CSS
 			*/			
-			if( arguments.length == 2 && oEl.isobject(arguments[0]) && oText.test(arguments[1]) ){
-				var el = arguments[0];
-				var cl = oText.trim(arguments[1]);
-				var c = el.className.toString();
-				if( c.lastIndexOf(cl) == -1 ){
-					c += " " + cl;
+			if(oEl.test(e) && oText.test(s) ){
+				s = oText.trim(s);
+				var c = e.className.toString();
+				if( c.lastIndexOf(s) == -1 ){
+					c += " " + s;
 				}
-				el.className = c;
+				e.className = c;
 			}
 		};
 		
-		this.delclass = function(el, cl){			// supprime une class à l'élément [className]
+		this.delclass = function(e, s){			// supprime une class à l'élément [className]
 			/*
 				argument 0 : obligatoire		élément
 				argument 1 : obligatoire		nom de la classe CSS
 			*/	
-			if( arguments.length == 2 && oEl.isobject(arguments[0]) && oText.test(arguments[1]) ){
-				var el = arguments[0];
-				var cl = oText.trim(arguments[1]);
-				var c = el.className.toString();
-				if( c.lastIndexOf(cl) != -1 ){
-					c = c.replace(cl, "");
+			if( oEl.isobject(e) && oText.test(s) ){
+				var s = oText.trim(s);
+				var c = e.className.toString();
+				if( c.lastIndexOf(s) != -1 ){
+					c = c.replace(s, "");
 				}
-				el.className = oText.trim(c);
+				e.className = oText.trim(c);
 			}
 		};
 		
-		this.getoffset = function(el, p){		// retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
+		this.getoffset = function(e, s){		// retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
 			/*
 				argument 0 : obligatoire		élément
-				argument 1 : obligatoire		propriété (offsetLeft, offsetTop, offsetHeight, offsetWidth)
+				argument 1 : obligatoire		propriété (left, top, height, width)
 				argument 1 : optionnel			parent
 			*/
-			if( !oEl.isobject(el) ){
-				el = oEl.get(el);
+			if( !oEl.test(e) || !oText.test(s) ){
+				return 0;
 			}
-			if( !oEl.isobject(el) || !oText.test(p) ){
-				return 0;	
+			e = oEl.get(e);
+			s = s.replace("offset", "");
+			s = "offset" + oText.firstUp(s);
+			if( s.indexOf("Height") != -1 || s.indexOf("Width") != -1 ){
+				return eval("e." + s + ";");
 			}
-			if( p.indexOf("Height") != -1 || p.indexOf("Width") != -1 ){
-				return eval("el." + p + ";");
+			var a = 0;
+			var t = ( oBox.exist && e.className == "jaria_listlock"  ) ? "div" : "body";
+			while (e && oText.lower(e.tagName) != t){
+				eval("a += e." + s + ";");
+				e = e.offsetParent;
 			}
-			var px = 0;
-			var t = ( oBox.exist && el.className == "jaria_listlock"  ) ? "div" : "body";
-			while (el && oText.lower(el.tagName) != t){
-				eval("px += el." + p + ";");
-				el = el.offsetParent;
-			}
-			return px;		
+			return a;		
 		};
 
 		
-		this.getstyleclass = function(el, st){		// retourne la valeur du style de la class css d'un élément
-			if ( !oEl.isobject(el)){
-				if ( oEl.test(el) ) {
-					el = oEl.get(el);
-				}else{
-					return "";
-				}
+		this.getstyleclass = function(e, st){		// retourne la valeur du style de la class css d'un élément
+			if ( oEl.test(e) ) {
+				e = oEl.get(e);
+			}else{
+				return "";
 			}
 			if( !oNav.msie ){
-				return eval("window.getComputedStyle(el, null)." + st);
+				return eval("window.getComputedStyle(e, null)." + st);
 			}else{
-				return eval("el.currentStyle." + st);
+				return eval("e.currentStyle." + st);
 			}
 		};
 		
 		this.setinscreen = function(){		// repositionne progressivement l'élément dans la fenêtre du navigateur			
 			// argument 0 : element à repositionner		obligatoire
-			var el = arguments[0];
-			if( !oEl.isobject(el) ){
-				if( oEl.test(el) ){
-					el = oEl.get(el);
-				}else{
-					return false;
-				}
+			var e = arguments[0];
+			if( oEl.test(e) ){
+				e = oEl.get(e);
+			}else{
+				return false;
 			}
-			if( el.id == ""){		// attribut un id obligatoire
-				el.id = "JARIA_SETINESCREEN";
-			}
-			
+			if( e.id == ""){		// attribut un id obligatoire
+				e.id = "JARIA_SETINESCREEN";
+			}			
 			function Stop(){
-				if( el.id == "JARIA_SETINESCREEN"){
-					el.id = "";
+				if( e.id == "JARIA_SETINESCREEN"){
+					e.id = "";
 				}
 				window.clearTimeout(oEl.timer);
 				oEl.timer = null;
-				oEl.isinscreen(el);			// repositionnement terminé
-			}
-			
-			var left = parseFloat(el.offsetLeft);
-			var top = parseFloat(el.offsetTop);
-			var width = parseFloat(el.offsetWidth);
-			var height = parseFloat(el.offsetHeight);
+				oEl.isinscreen(e);			// repositionnement terminé
+			}			
+			var left = parseFloat(e.offsetLeft);
+			var top = parseFloat(e.offsetTop);
+			var width = parseFloat(e.offsetWidth);
+			var height = parseFloat(e.offsetHeight);
 			var paddingW = 0; 
 			var paddingH = 0;
 			var marge = 60;
@@ -1683,11 +1648,11 @@
 
 			if( left < oNav.scrollX ){
 				// repositionne la box à gauche
-				el.style.left = oText.toPx(left + paddingW);
+				e.style.left = oText.toPx(left + paddingW);
 			}			
 			if( top < oNav.scrollY ){
 				// repositionne la box en haut
-				el.style.top = oText.toPx(top + paddingH);
+				e.style.top = oText.toPx(top + paddingH);
 			}
 			// fenêtre plus petite que l'élément
 			if (  ( left <= 0 && right >= oNav.screenX ) || ( top <= 0 && bottom >= oNav.screenY )  ){
@@ -1705,15 +1670,15 @@
 				return false;				
 			}
 			if( right > oNav.screenX ){
-				el.style.left = oText.toPx(left - (paddingW + marge));
+				e.style.left = oText.toPx(left - (paddingW + marge));
 			}
 			if( bottom > oNav.screenY ){
-				el.style.top = oText.toPx(top - (paddingH + marge));
+				e.style.top = oText.toPx(top - (paddingH + marge));
 			}
 			if( oBox.exist ){
 				oBox.setshadow();
 			}
-			oEl.timer = window.setTimeout("oEl.setinscreen('" + el.id + "')", 20);		
+			oEl.timer = window.setTimeout("oEl.setinscreen('" + e.id + "')", 20);		
 		};
 		
 		// fonction à redéfinir  executée lorsque le repositionnement de l'élément déplacée par la fonction oEl.setinscreen est terminée 
@@ -1723,15 +1688,15 @@
 		
 		this.isvisible = function(){
 			// argument 0 : obligatoire		élément
-			var el = arguments[0];
-			if( !oEl.isobject(el) ){
-				if( !oEl.test(el) ){
+			var e = arguments[0];
+			if( !oEl.isobject(e) ){
+				if( !oEl.test(e) ){
 					return false;
 				}else{
-					el = oEl.get(el);
+					e = oEl.get(e);
 				}
 			}			
-			return ( oEl.getstyleclass(el, "display") != "none" ) ? true : false;
+			return ( oEl.getstyleclass(e, "display") != "none" ) ? true : false;
 		};
 		
 		this.visible = function(){
@@ -1739,49 +1704,49 @@
 				argument 0 : obligatoire		élément
 				argument 1 : obligatoire		état true ou false
 			*/
-			var el = arguments[0];
-			if( !oEl.isobject(el) ){
-				if( !oEl.test(el) ){
+			var e = arguments[0];
+			if( !oEl.isobject(e) ){
+				if( !oEl.test(e) ){
 					return false;
 				}else{
-					el = oEl.get(el);
+					e = oEl.get(e);
 				}
 			}
 			var state = arguments[1];
 			if ( typeof(state) != "boolean" ){
 				return false;
 			}
-			var tag = oText.lower(el.tagName);
+			var tag = oText.lower(e.tagName);
 			if(state){
 				if(oNav.msie && oNav.version < 8){
-					el.style.display = "inline";
+					e.style.display = "inline";
 				}else{
 					switch( tag ){
 						case "thead":
 						case "tfoot":
 						case "tbody":
-							el.style.display="table-row-group";
+							e.style.display="table-row-group";
 							break;
 						case "table":
-							el.style.display = "table";
+							e.style.display = "table";
 							break;
 						case "tr":
-							el.style.display = "table-row";
+							e.style.display = "table-row";
 							break;
 						case "td":
-							el.style.display = "table-cell";
+							e.style.display = "table-cell";
 							break;
 						case "div":
 						case "iframe":
-							el.style.display = "block";
+							e.style.display = "block";
 							break;
 						default:
-							el.style.display = "inline";
+							e.style.display = "inline";
 					}
 				}
 			}
 			else{
-				el.style.display = "none";
+				e.style.display = "none";
 			}
 		};
 		this.title = new function(){						// remplace l'infobulle de l'attribut title par une infobulle html	
@@ -2002,8 +1967,8 @@
 				// création du conteneur
 				var div = oEl.create("div");
 				div.className = "jaria_previsu";
-				div.style.left =  oText.toPx(oEl.getoffset(el, "offsetLeft"));
-				div.style.top = oText.toPx(oEl.getoffset(el, "offsetTop") + 30 + oNav.marginTop);
+				div.style.left =  oText.toPx(oEl.getoffset(el, "left"));
+				div.style.top = oText.toPx(oEl.getoffset(el, "top") + 30 + oNav.marginTop);
 				// création du cadre
 				var divc = oEl.create("div");
 				divc.className = "jaria_previsu_cadre";
@@ -2055,11 +2020,11 @@
 				return -1;
 			};
 			
-			this.inc = function(inc, i, t){			//incrémente l'opacité de l'élément				
-				var el = this.el[i];	
-				if( oEl.isobject(el) ){					
-					oEl.opacity( el , (parseInt(oEl.getopacity(el)) + parseInt(inc)) );				
-					if( (parseFloat(inc) > 0 && oEl.getopacity(el) >= 100) || (parseFloat(inc) < 0 && oEl.getopacity(el) <= 0) ){
+			this.inc = function(c, i, t){			//incrémente l'opacité de l'élément				
+				var e = this.el[i];	
+				if( oEl.test(e) ){					
+					oEl.opacity( e , (parseInt(oEl.getopacity(e)) + parseInt(c)) );				
+					if( (parseFloat(c) > 0 && oEl.getopacity(e) >= 100) || (parseFloat(c) < 0 && oEl.getopacity(e) <= 0) ){
 						this.clear(i);
 					}
 				}
@@ -2069,49 +2034,45 @@
 				return false;
 			};
 			
-			this.plus = function(el, t){			//Transition progressive positive de l'opacité de l'élément
+			this.plus = function(e, t){			//Transition progressive positive de l'opacité de l'élément
 			
-				if( !oEl.isobject(el) ){			//test l'objet
-					if( oEl.test(el) ){
-						el = oEl.get(el);
-					}else{
-						return false;
-					}
-				}				
-				var i = this.get(el);				//vérifie si l'objet est existant			
+				if( oEl.test(e) ){
+					e = oEl.get(e);
+				}else{
+					return false;
+				}
+				var i = this.get(e);				//vérifie si l'objet est existant			
 				if( i == -1 ){
 					i = this.el.length;
-					this.el[i] = el;
+					this.el[i] = e;
 				}else{
 					this.clear(i);					//arrête le timer
 				}				
-				el = this.el[i];
-				if( oEl.getopacity(el) >= 100 ){
-					oEl.opacity(el, 0);	
+				e = this.el[i];
+				if( oEl.getopacity(e) >= 100 ){
+					oEl.opacity(e, 0);	
 				}
 				t = ( t == null || isNaN(t) ) ? 10 : parseInt(t);
 				this.timer[i] = window.setInterval("oEl.fader.inc(10, " + i + ")", t);
 			};
 			
-			this.moins = function(el, t){			//Transition progressive négative de l'opacité de l'élément
+			this.moins = function(e, t){			//Transition progressive négative de l'opacité de l'élément
 			
-				if( !oEl.isobject(el) ){			//test l'objet
-					if( oEl.test(el) ){
-						el = oEl.get(el);
-					}else{
-						return false;
-					}
-				}				
-				var i = oEl.fader.get(el);			//vérifie si l'objet est existant				
+				if( oEl.test(e) ){
+					e = oEl.get(e);
+				}else{
+					return false;
+				}
+				var i = oEl.fader.get(e);			//vérifie si l'objet est existant				
 				if( i == -1 ){
 					i = oEl.fader.el.length;
-					this.el[i] = el;
+					this.el[i] = e;
 				}else{
 					this.clear(i);					//arrête le timer
 				}
-				el = this.el[i];
-				if( oEl.getopacity(el) <= 0 ){
-					oEl.opacity(el, 100);	
+				e = this.el[i];
+				if( oEl.getopacity(e) <= 0 ){
+					oEl.opacity(e, 100);	
 				}
 				t = ( t == null || isNaN(t) ) ? 10 : parseInt(t);	
 				this.timer[i] = window.setInterval("oEl.fader.inc(-10, " + i + ")", t);
@@ -2198,11 +2159,11 @@
 						var mLeft = 0;
 						var mTop = 0;
 						if( oEl.getstyleclass(oEl.drag.el, "position") != "absolute" ){
-							mLeft = oEl.getoffset(oEl.drag.el.parentNode, "offsetLeft");
-							mTop = oEl.getoffset(oEl.drag.el.parentNode, "offsetTop");
+							mLeft = oEl.getoffset(oEl.drag.el.parentNode, "left");
+							mTop = oEl.getoffset(oEl.drag.el.parentNode, "top");
 						}
-						oEl.drag.el.style.left = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetLeft") - mLeft );
-						oEl.drag.el.style.top  = oText.toPx( oEl.getoffset(oEl.drag.receptor, "offsetTop") - mTop );
+						oEl.drag.el.style.left = oText.toPx( oEl.getoffset(oEl.drag.receptor, "left") - mLeft );
+						oEl.drag.el.style.top  = oText.toPx( oEl.getoffset(oEl.drag.receptor, "top") - mTop );
 						
 						// supprime l'avertisseur de collision
 						oEl.drag.hlight.hide();
@@ -2282,8 +2243,8 @@
 				}
 				if( oEl.drag.el.shadow != undefined){
 					oEl.opacity(oBox.el.shadow, 10);
-					oEl.drag.el.shadow.style.left = oText.toPx(oEl.getoffset(oEl.drag.el, "offsetLeft") + 8);
-					oEl.drag.el.shadow.style.top = oText.toPx(oEl.getoffset(oEl.drag.el, "offsetTop") + 8);
+					oEl.drag.el.shadow.style.left = oText.toPx(oEl.getoffset(oEl.drag.el, "left") + 8);
+					oEl.drag.el.shadow.style.top = oText.toPx(oEl.getoffset(oEl.drag.el, "top") + 8);
 				}
 			};		
 			
@@ -2532,22 +2493,18 @@
 			this.cl = "jaria_inc";		// class utilisée pour les champs incrémentables
 			
 			this.get = function(el){		// retourne l'élement si déjà traité
-				if( !oEl.isobject(el) ){
-					if( !oEl.test(el) ){
-						return undefined;
-					}else{
-						el = oEl.get(el);
-					}
-				}
-				for( var i = 0; i < oEl.inc.el.length; i++ ){
-					if( oEl.inc.el[i] == el ){
-						return el;
+				if( oEl.test(el) ){
+					el = oEl.get(el);
+					for( var i = 0; i < oEl.inc.el.length; i++ ){
+						if( oEl.inc.el[i] == el ){
+							return el;
+						}
 					}
 				}
 				return undefined;
 			};
 			
-			this.button = function(id, image, title, fc){
+			this.button = function(id, image, title, f){
 				var img = oEl.create("img");
 				img.src = jaria.images + "button/button_" + image + ".png";
 				img.style.cursor = "pointer";
@@ -2555,7 +2512,7 @@
 				img.style.height = "12px";
 				img.style.display = "block";
 				img.alt = id;
-				img.onclick = fc;
+				img.onclick = f;
 				img.title = title;
 				img.onmouseover = function(){
 					this.src = jaria.images + "button/button_" + image + "_hover.png";
@@ -2599,7 +2556,7 @@
 						el = oEl.get(el);						
 					}
 				}
-				if( !oEl.isobject(el) || isNaN(arguments[1]) || isNaN(arguments[2]) || isNaN(arguments[3]) ){
+				if( !oEl.test(el) || isNaN(arguments[1]) || isNaN(arguments[2]) || isNaN(arguments[3]) ){
 					return false;
 				}
 				var index = oEl.inc.getindex(el);
@@ -2674,19 +2631,19 @@
 			};
 			
 			this.init = function(){				// initilise les champs incrémentables
-				var els = oEl.getclass(oEl.inc.cl, true);
-				if( els.length > 0 ){
-					for( var i = 0; i < els.length; i++ ){
-						var el = oEl.inc.get(els[i]);
-						if( !oEl.isobject(el) && els[i].tagName.toLowerCase() == "input" && els[i].type.toLowerCase() == "text" ){
-							oEl.inc.make(els[i]);											
+				var a = oEl.getclass(oEl.inc.cl, "", true);
+				if( a.length > 0 ){
+					for( var i = 0; i < a.length; i++ ){
+						var e = oEl.inc.get(a[i]);					 
+						if( e == undefined && a[i].tagName.toLowerCase() == "input" && a[i].type.toLowerCase() == "text" ){
+							oEl.inc.make(a[i]);											
 							var index = oEl.inc.el.length;
-							oEl.inc.el[index] = els[i];
+							oEl.inc.el[index] = a[i];
 							oEl.inc.mini[index] = -999;
 							oEl.inc.maxi[index] = 999;
 							oEl.inc.deft[index] = 0;
 							oEl.inc.step[index] = 1;							
-							els[i].maxlength = "3";							
+							a[i].maxlength = "3";							
 						}
 					}
 				}				
@@ -2809,6 +2766,7 @@
 			this.width = width;
 			this.show();
 		};
+
 		
 		this.error = function(text, title, width){							// affiche la box d'erreur
 			this.borderColor = "#ea5247";
@@ -2834,14 +2792,14 @@
 			// validation de la confirmation de la box
 		};
 		
-		this.addbutton = function(lib, fc){
-			if( !_this.exist || typeof(lib) != "string" || lib == "" || typeof(fc) != "function" ){
+		this.addbutton = function(lib, f){
+			if( !_this.exist || typeof(lib) != "string" || lib == "" || typeof(f) != "function" ){
 				return false;
 			}
 			var bt = oEl.create("button");
 			var sp = oEl.create("span");
 			bt.onclick = function(){
-				fc();
+				f();
 			};
 			bt.innerHTML = lib;
 			bt.className = "jaria_button";
@@ -2855,7 +2813,6 @@
 			try{
 				c = (c == null) ? this.el.style.backgroundColor : c;
 				var rgb = ( oColor.iscolor(c) ) ? oColor.hexa_rgb(c) : c;
-				//var rgb = ( !oColor.navcolor(c) ) ? oColor.hexa_rgb(c) : c;
 				var t = rgb.toString().split(/,/g);
 				var r = parseFloat(t[0].replace("rgb(", ""));
 				var g = parseFloat(t[1]);
@@ -3024,10 +2981,10 @@
 				oEl.del(_this.el.shadow);
 				_this.el.shadow = oEl.create("div");
 				_this.el.shadow.className = "jaria_boxshadow";				
-				_this.el.shadow.style.width = oText.toPx(oEl.getoffset(_this.el, "offsetWidth"));
-				_this.el.shadow.style.height = oText.toPx(oEl.getoffset(_this.el, "offsetHeight"));
-				_this.el.shadow.style.top = oText.toPx(oEl.getoffset(_this.el, "offsetTop") + 8);
-				_this.el.shadow.style.left = oText.toPx(oEl.getoffset(_this.el, "offsetLeft") + 8);
+				_this.el.shadow.style.width = oText.toPx(oEl.getoffset(_this.el, "width"));
+				_this.el.shadow.style.height = oText.toPx(oEl.getoffset(_this.el, "height"));
+				_this.el.shadow.style.top = oText.toPx(oEl.getoffset(_this.el, "top") + 8);
+				_this.el.shadow.style.left = oText.toPx(oEl.getoffset(_this.el, "left") + 8);
 				if( this.radius ){
 					_this.el.shadow.style.borderRadius = "7px";
 				}
@@ -3126,8 +3083,8 @@
 						_this.el.style.width = oText.toPx(_this.el.Html.offsetWidth);
 					}
 					if( _this.shadow ){
-						_this.el.shadow.style.height = oText.toPx(oEl.getoffset(_this.el, "offsetHeight"));
-						_this.el.shadow.style.width = oText.toPx(oEl.getoffset(_this.el, "offsetWidth"));
+						_this.el.shadow.style.height = oText.toPx(oEl.getoffset(_this.el, "height"));
+						_this.el.shadow.style.width = oText.toPx(oEl.getoffset(_this.el, "width"));
 					}
 					_this.setTitleWidth();
 					_this.onResize();
@@ -3489,7 +3446,7 @@
 		this.asynchrone = true;							// transfert asynchrone
 
 		this.create = function(){						// Création de l'objet Ajax
-			if ( !oEl.isobject(oAjax.el) ){
+			if ( !oEl.isobject(_this.el) ){
 				try{
 					_this.el = new ActiveXObject("Msxml2.XMLHTTP");
 				}catch(e){
@@ -3555,7 +3512,7 @@
 				if(arguments.length == 2 && !oText.test(arguments[0]) && !oText.test(arguments[1])){
 					return false;
 				}				
-				if( oEl.isobject(oAjax.el) && arguments.length == 2 ){				
+				if( oEl.isobject(_this.el) && arguments.length == 2 ){				
 					if( _this.data != "" ){
 						_this.data += "&";
 					}
@@ -3565,7 +3522,7 @@
 		};
 
 		this.init = function(){
-			if ( !oEl.isobject(oAjax.el) ){
+			if ( !oEl.isobject(_this.el) ){
 				_this.create();
 			}
 			_this.data = "";
@@ -3643,25 +3600,25 @@
 			_this.timer = window.setTimeout(_this.onready, _this.delai);			
 		};
 		
-		this.xmltostring = function(){
-			var s = (oNav.msie) ? arguments[0].xml : (new XMLSerializer()).serializeToString(arguments[0]);
+		this.xmltostring = function(o){
+			var s = (oNav.msie) ? o.xml : (new XMLSerializer()).serializeToString(o);
 			return s;			
-		}
+		};
 
 	}
 	
 	// fonctions pouvant être réinstenciées
 
-	var oBox = new Box();							// Boîtes de dialogues personnalisées
-	var oCal = new Cal();							// Gestion des dates
+	var oBox = new Box();								// Boîtes de dialogues personnalisées
+	var oCal = new Cal();								// Gestion des dates
 	var oColor = new Color();						// Objet sélecteur de couleurs et fonctions couleurs
 	var oAjax = new Ajax();							// Objet d'accès au host par Ajax
 	
 	// actions sur évènement
-	window.onscroll = oNav.scroll;					// au déplacement des ascenseurs de la fenêtre du navigateur	
-	window.onload = oNav.load;						// après chargement du document	
-	window.onresize = oNav.size;					// au redimentonnement de la fenêtre du navigateur	
-	document.onmousemove = oNav.mouse.move;			// au déplacement de la souris	
+	window.onscroll = oNav.scroll;						// au déplacement des ascenseurs de la fenêtre du navigateur	
+	window.onload = oNav.load;								// après chargement du document	
+	window.onresize = oNav.size;							// au redimentonnement de la fenêtre du navigateur	
+	document.onmousemove = oNav.mouse.move;		// au déplacement de la souris	
 	document.onkeydown = oNav.keydown;				// lors d'une action sur les touches du clavier
 	
 	// précharge toutes les images de la librairie jaria
