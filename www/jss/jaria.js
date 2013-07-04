@@ -1,25 +1,138 @@
 var Jaria = {
 		
-	version: "20130701",
+	version: "20130704",
 	images: "jaria/images",
 	
 	//*********************
 	//fonctions instanciées
 	//*********************
 	
-	init: new function(){
+	//Fonctions diverses appelées avant le chargement du DOM
+	init: function($){
 		
-		//Gestion supplémentaires des tableaux (Array)
-		Array.prototype.unset = function(v){			
-			var i = this.indexOf(v);					//Supprime un élèment d'un tableau par sa valeur	
+		//Supprime un élèment d'un tableau par sa valeur
+		Array.prototype.unset = function(v){
+			var i = this.indexOf(v);			
 			if(i > -1){
 				this.splice(i, 1);
 			}
 		}
-
+		
+		//Ajoute les fonctions du navigateur au évènements
+		$.nav.addevent("onscroll", $.nav.scroll);			//Au déplacement des ascenseurs de la fenêtre du navigateur
+		$.nav.addevent("onresize", $.nav.size);				//Au redimentonnement de la fenêtre du navigateur
+		$.nav.addevent("onmousemove", $.nav.mouse.move);	//Au déplacement de la souris
+		$.nav.addevent("onkeydown", $.nav.keydown);			//Sur touche du clavier
+		$.nav.addevent("onload", $.nav.load);				//Après le chargement du DOM
+		
+		//Intances des fonctions pouvant être réinstanciées
+		Jaria.box = new Jaria.Box();
+		
 	},
 	
-	nav: new function(){
+	//Fonctions des chaines de caractères
+	txt: new function(){
+		
+		var $ = this;
+		
+		//Test le parsing JSON sur une chaine
+		$.isjson = function(s){
+			try{
+				JSON.parse(s);					
+				return true;
+			}
+			catch(e){
+				return false;
+			}			
+		};
+		
+		//Test la chaine XML
+		$.isxml = function(o){
+			try{
+				(Jaria.nav.msie) ? o.xml : (new XMLSerializer()).serializeToString(o);
+				return true;
+			}
+			catch(e){
+				return false;
+			}
+		}
+		
+		//Test la chaine		
+		$.test = function(s){
+			if( typeof(s) != "string" || s == "" ){
+				return false;
+			}
+			return true;
+		};
+		
+		//Supprime les espaces avant et après la chaine
+		$.trim = function(s){
+			return ( $.test(s) ) ? s.toString().replace(/(^\s*)|(\s*$)/g,'') : "";
+		};
+		
+		//Tout en majuscule
+		$.upper = function(s){
+			return ( $.test(s) ) ? s.toString().toUpperCase() : "";
+		};
+		
+		//Tout en minuscule
+		$.lower = function(s){
+			return ( $.test(s) ) ? s.toString().toLowerCase() : "";
+		};
+		
+		//Retourne la partie gauche
+		$.left = function(s, n){
+			if (parseFloat(n) <= 0){
+			    return "";
+			}
+			var t = (s).toString();
+			if (n > t.length){
+			    return t;
+			}
+			return t.substring(0, n);
+		};
+		
+		//Retourne la partie droite
+		$.right = function(s, n){
+		    if (parseFloat(n) <= 0){
+		       return "";
+		    }
+		    var t = (s).toString();
+		    if (n > t.length){
+		       return t;
+		    }
+		    var l = (t).length;
+		    return (t).substring(l, l - n);
+		};
+	
+		//Active ou désactive la sélection du texte
+		$.select = function(b, e){
+			
+			/*
+				argument 0: boolean				obligatoire
+				argument 1: élement parent		facultatif
+			*/
+
+			if( typeof(b) != "boolean"){
+				return false;
+			}
+			var el = ( !Jaria.el.test(e) ) ? Jaria.el.get(el) : document;
+			if( typeof(el.onselectstart) != "undefined" ){				
+				el.onselectstart = function(){
+					return state;
+				}
+			}
+			else{
+				el.onmousedown = function(){
+					return state;
+				}
+			}
+		}
+		
+	},
+	
+	//Fonctions du navigateur
+	nav: new function(){		
 		
 		var $ = this;
 		var a = navigator.userAgent;
@@ -33,6 +146,21 @@ var Jaria = {
 		$.gecko = false;
 		$.robot = false;
 		$.other = false;
+		$.screenX = 0;
+		$.screenY = 0;
+		$.scrollX = 0;
+		$.scrollY = 0;
+		$.mouseX = 0;
+		$.mouseY = 0;
+		$.marginLeft = 0;
+		$.marginRight = 0;
+		$.marginTop = 0;
+		$.marginBottom = 0;
+		$.location = null;
+		$.ready = false;					// chargement document terminée
+		$.readyfull = false;				// chargement document terminée y compris le préchargement des images
+		$.inload = false;					// lot d'images en cours de chargement
+		$.timer = null;
 		
 		if(a.indexOf("chrome") != -1){
 			$.chrome=true;
@@ -70,51 +198,320 @@ var Jaria = {
 			$.other = true;
 			$.name = "other";
 		}
-		
-	},
-	
-	txt : new function(){
-		
-		var $ = this;
-		
-		$.isjson = function(s){					//Test le parsing JSON sur une chaine
-			try{
-				JSON.parse(s);					
-				return true;
+				
+		//Propriétés à obtenir après le chargement du DOM
+		$.load = function(){
+			$.body = window.document.body;
+			$.location = window.document.location;
+			// marge du document
+			$.marginLeft = $.body.style.marginLeft;
+			$.marginRight = $.body.style.marginRight;
+			$.marginTop = $.body.style.marginTop;
+			$.marginBottom = $.body.style.marginBottom;
+			if($.marginLeft == ""){
+				if($.msie){
+					$.marginLeft = (isNaN($.body.leftMargin)) ? 0 : parseFloat($.body.leftMargin);
+				}
+				else{
+					$.marginLeft = 0;
+				}
 			}
-			catch(e){
-				return false;
-			}			
+			else{
+				$.marginLeft = parseFloat($.marginLeft);
+			}
+			if($.marginRight == ""){
+				if( $.msie ){
+					$.marginRight = (isNaN($.body.rightMargin)) ? 0 : parseFloat($.body.rightMargin);
+				}
+				else{
+					$.marginLeft = 0;
+				}
+			}
+			else{
+				$.marginRight = parseFloat($.marginRight);
+			}
+			if($.marginTop == ""){
+				if($.msie){
+					$.marginTop = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.topMargin);
+				}else{
+					$.marginTop = 0;
+				}
+			}
+			else{
+				$.marginTop = parseFloat($.marginTop);
+			}
+			if($.marginBottom == ""){
+				if($.msie){
+					$.marginBottom = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.bottomMargin);
+				}else{
+					$.marginBottom = 0;
+				}
+			}
+			else{
+				$.marginBottom = parseFloat($.marginBottom);
+			}
+			$.size();
+			$.ready = true;
+		};
+				
+		//Retourne le paramètre passé dans l'url par sa position à partir de 0
+		$.param = function(n){
+			if( isNaN(n) ){
+				return "";
+			}
+			var p = (location.search).toString();
+			if( p == "" || n < 0 ){
+				return "";
+			}
+			p = p.split("&");
+			if( p[n] == null ){
+				return "";
+			}
+			p = new String(p[n]);
+			p = p.toString().split("=");
+			if( p[1] == null ){
+				return "";
+			}
+			return unescape((p[1]).toString());			
 		};
 		
-		$.isxml = function(o){
+		//Obtient les dimensions de la fenêtre du navigateur
+		$.size = function(){
+			
+			if( typeof(window.innerHeight) == "number" ){
+				$.screenY = window.innerHeight;
+			}
+			else if( document.documentElement && document.documentElement.clientHeight ){
+				$.screenY = document.documentElement.clientHeight;
+			}
+			else if( oNav.body && oNav.body.clientHeight ){
+				$.screenY = oNav.body.clientHeight;
+			}
+			if( typeof(window.innerWidth) == "number"){
+				$.screenX = window.innerWidth;
+			}
+			else if( document.documentElement && document.documentElement.clientWidth ){
+				$.screenX = document.documentElement.clientWidth;
+			}
+			else if( oNav.body && oNav.body.clientWidth ){
+				$.screenX = oNav.body.clientWidth;
+			}
+			
+			/*if($.lock.exist){
+				$.lock.el.style.width = Jaria.txt.toPx(oNav.screenX);
+				$.lock.el.style.height = Jaria.txt.toPx(oNav.screenY );		
+				$.lock.setText();	
+			}*/
+		};
+			
+		//Obtient la position des ascenseurs du navigateur
+		$.scroll = function(){
+			
+			if( $.msie || $.opera ){
+				// ! la balise doctype doit être présente dans le document html 
+				$.scrollX = (parseFloat(oNav.version) < 6 ) ? document.body.scrollLeft : document.documentElement.scrollLeft;
+				$.scrollY = (parseFloat(oNav.version) < 6 ) ? document.body.scrollTop : document.documentElement.scrollTop;
+			}
+			else{
+				$.scrollX = window.scrollX;
+				$.scrollY = window.scrollY;
+			}
+			
+			
+			/*if( $.trace.box.exist ){
+				$.trace.pos();
+			}
+			if( $.lock.exist ){
+				// positionnement du lock
+				$.lock.el.style.left = oText.toPx(oNav.scrollX);
+				$.lock.el.style.top = oText.toPx(oNav.scrollY);			
+			}*/
+			
+		};
+		
+		//Obtient l'abscisse et l'ordonnée de la position de la souris
+		$.mouse = new function(){
+			this.move = function(e){
+				e = e || window.event;
+				Jaria.nav.mouseX = parseInt(e.clientX);
+				Jaria.nav.mouseY = parseInt(e.clientY);
+			}
+		};
+		
+		//Appelle les fonctions sur évènements du clavier
+		$.keydown = function(e){
+			$.keyb.esc(e);
+			$.keyb.enter(e);
+		};
+		
+		//Fonctions sur évènement clavier
+		$.keyb = new function(e){
+			
+			var $ = this;
+			
+			// sur la touche échape [escape]
+			$.esc = function(e){						
+				e = e || window.event;
+				// cache l'éventuelle boîte de dialogue
+				if( e.keyCode == 27 ){
+					Jaria.nav.hideallbox(true);
+				}
+			};
+			
+			// sur la touche entrer [enter]
+			$.enter = function(v){		
+
+				var e = Jaria.el.getbyevent(v);
+				var f = e.getAttribute("data-enter");
+				// execute un traitement sur la touche Enter et sur l'élément ayant l'attribut data-enter
+				if(e != undefined && v.keyCode == 13 && f != null && typeof(eval(f)) == "function"){
+					eval(f + "(e)");
+				}
+
+			};
+					
+		};
+		
+		//Limite la propagation de l'évènement à l'élèment
+		$.stopevent = function(event){
+			if( event.stopPropagation ){
+				event.stopPropagation();
+			}
+			else{
+				event.cancelBubble = true;
+			}
+		};
+		
+		$.getparentevent = function(s, e){
+			if(!Jaria.el.test(e)){
+				e = (s.indexOf("scroll") != -1 || s.indexOf("load") != -1 || s.indexOf("resize") != -1) ? window : document;
+			}
+			return e;
+		};
+		
+		//Permet l'ajout de fonctions sur un évènement
+		$.addevent = function(s, f, e){
+			
+			/*
+				s : obligatoire:			nom de l'évènement
+				f : obligatoire:			la fonction à ajouter
+				e : facultatif:				l'élément
+			*/
+			
+			if(!Jaria.txt.test(s)) {
+				return false;
+			}
+			
+			$.delevent(s, f, e);
+			
+			if(typeof(f) != "function"){
+				return false;
+			}
+			
+			e = $.getparentevent(s, e);
+			
 			try{
-				(Jaria.nav.msie) ? o.xml : (new XMLSerializer()).serializeToString(o);
-				return true;
-			}
-			catch(e){
-				return false;
-			}
-		}
-				
-		$.test = function(s){
-			if( typeof(s) != "string" || s == "" ){
-				return false;
+				e.attachEvent(s, f);
+			}catch(e){
+				try{
+					s = s.replace("on", "");
+					e.addEventListener(s, f, false);
+				}catch(E){
+					return false;
+				}
 			}
 			return true;
 		};
 		
-		$.trim = function(s){					// supprime les espaces à gauche et à droite de la chaine de caractères
-			return ( $.test(s) ) ? s.toString().replace(/(^\s*)|(\s*$)/g,'') : "";
-		}
+		//Supprime une fonction d'un évènement		
+		$.delevent = function(s, f, e){
+			
+			/*
+				s : obligatoire		nom de l'évènement
+				f : obligatoire:	la fonction à ajouter
+				e : facultatif:		l'élément
+			*/
+
+			if(!Jaria.txt.test(s)) {
+				return false;
+			}
+			
+			if(typeof(f) != "function"){
+				return false;
+			}
+			
+			e = $.getparentevent(s, e);
+			
+			try{
+				e.detachEvent(s, f);
+			}catch(e){
+				try{
+					s = s.toString().replace("on", "");
+					e.removeEventListener(s , f, false);
+				}catch(e){
+					alert(e.message);
+					return false;
+				}
+			}
+			return true;
+		};
+	
+		$.cleartimer = function(t){
+			try{
+				window.clearInterval(t);
+			}catch(e){
+				try{
+					window.clearTimeout(t);
+				}catch(E){}
+			}
+		};
 		
+		//Active ou désactive le menu contextuel du clic droit de la souris
+		$.contextmenu = function(a, e){
+			if(a){
+				$.cleartimer($.timer);
+				$.timer = null;
+			}
+			if(Jaria.el.test(e)){
+				e.oncontextmenu = function(){
+					return a;
+				}
+			}
+			else{
+				document.oncontextmenu = function(){
+					return a;
+				}
+			}
+		};
+	
+		$.hideallbox = function(b){
+			if(Jaria.nav.lock.escape && b){
+				Jaria.nav.lock.hide();
+			}
+			alert("escape")
+			//Jaria.el.title.hide();
+		};
+		
+		$.lock = new function(){
+			
+			var $ = this;
+			$.exist = false;			
+			$.escape = true;
+			
+			$.hide = function(){
+				return false;
+			};
+		
+		};
 	},
 	
-	el : new function(){
+	//Fonctions des éléments du DOM
+	el: new function(){
 		
 		var $ = this;
 		
-		$.css = function(e, o){						//Ajoute un ou plusieurs style CSS à l'élèment par le biais d'un objet JSON
+		//Ajoute un ou plusieurs style CSS à l'élèment par le biais d'un objet JSON
+		$.css = function(e, o){
 			
 			for (var d in o){
 				
@@ -138,7 +535,7 @@ var Jaria = {
 				
 				//Pour les champs de formulaire
 				
-				el.val = function(t){							//affecte et retourne la valeur
+				e.val = function(t){							//affecte et retourne la valeur
 					if(typeof(t) == "string"){
 						this.value = t;
 					}
@@ -149,16 +546,16 @@ var Jaria = {
 				
 				//Pour les autres élèment du DOM
 				
-				el.html = function(t){
+				e.html = function(t){
 					this.innerHTML = t.toString();
 				};
-				el.txt = function(t){							//ajoute un node de texte
+				e.txt = function(t){							//ajoute un node de texte
 					Jaria.el.delallchilds(this);
 					Jaria.el.addtext(this, t.toString());
 				};
 				var b = new Array("br", "hr", "img");			//élément non conteneur
-				if(b.indexOf(el.tagName.toLowerCase()) == -1){
-					el.appendFirst = function(e){				//ajoute un élément en premier
+				if(b.indexOf(e.tagName.toLowerCase()) == -1){
+					e.appendFirst = function(e){				//ajoute un élément en premier
 						var f = this.firstChild;
 						if(f){
 							f.parentNode.insertBefore(e, f);
@@ -167,18 +564,18 @@ var Jaria = {
 							this.appendChild(e);
 						}						
 					};
-					el.AppendBefore = function(e){				//ajoute un élèment avant
+					e.AppendBefore = function(e){				//ajoute un élèment avant
 						this.parentNode.insertBefore(e, this);
 					};
-					el.AppendAfter = function(e){				//ajoute un élément après
+					e.AppendAfter = function(e){				//ajoute un élément après
 						 this.parentNode.insertBefore(e, this.nextSibling);
 					};					
 				}
-				el.remove = function(){
+				e.remove = function(){
 					this.parentNode.removeChild(this);
 				};
 			}
-			el.css = function(o){								//affecte un ou plusieurs styles CSS par des valeurs sous forme d'objet JSON
+			e.css = function(o){								//affecte un ou plusieurs styles CSS par des valeurs sous forme d'objet JSON
 				if($.isobject(o)){							
 					Jaria.el.addcss(el, o);
 				}
@@ -188,10 +585,12 @@ var Jaria = {
 			}
 		};
 		
+		//test l'objet
 		$.isobject = function(o){
 			return ( typeof(o) == "object" ) ? true : false;
 		};
 		
+		//Test un élément		
 		$.test = function(e){
 			if(typeof(e) == "object"){
 				if(e.tagName && e.className){
@@ -205,16 +604,30 @@ var Jaria = {
 			}
 		};
 		
+		//Retourne l'élement
 		$.get = function(e){
 			if(!$.test(e)){
-				jaria.box.show("L'élément HTML " + (typeof(e) == "string") ? e : typeof(e) + " n'existe pas !");
+				Jaria.box.show("L'élément HTML " + (typeof(e) == "string") ? e : typeof(e) + " n'existe pas !");
 				return undefined;
 			}
-			return (typeof(e) == "string") ? document.getElementById(e) : e;
+			e = (typeof(e) == "string") ? document.getElementById(e) : e;
+			$.fn(e);
+			return e;
 		};
 		
+		//Retourne le nom de l'élément
 		$.gettag = function(e){
-			return el.tagName.toString().toLowerCase();
+			return e.tagName.toString().toLowerCase();
+		};
+		
+		$.getbyevent = function(e){
+			if( $.test(e) ){
+				return e;
+			}
+			if( e.type != undefined){
+				return ( !oNav.msie ) ? e.target : window.event.srcElement;
+			}
+			return undefined;
 		};
 		
 	},
@@ -223,7 +636,8 @@ var Jaria = {
 	//fonction à instancier
 	//*********************
 	
-	box: function(){
+	//Boite de dialogue personnalisée
+	Box: function(){
 		
 		var $ = this;
 		$.txt = "";
@@ -236,216 +650,230 @@ var Jaria = {
 			
 		}
 		
-	}
+	},
 	
+	//Fonction Ajax
+	Ajax: function(){
+	
+		var $ = this;
+		var txt = Jaria.txt;
+		var box = new Jaria.Box();
+		var count = 0;
+		var func = null;
+		var timer = null;
+		var format = "";
+		var data = "";
+		$.el = undefined;		
+		$.ready = false;
+		$.timeout = 10000;							// timout, 10s par défaut
+		$.delai = 50;								// délai de répétition du timer
+		$.asynchrone = true;						// transfert asynchrone
 		
-};
-
-Jaria.Ajax = function(){
-	
-	var $ = this;
-	var txt = Jaria.txt;
-	var box = new Jaria.box();
-	var count = 0;
-	var func = null;
-	var timer = null;
-	$.el = undefined;
-	$.data = "";
-	$.ready = false;
-	$.timeout = 10000;							// timout, 10s par défaut
-	$.delai = 50;								// délai de répétition du timer
-	$.fc = null;								// fonction passée en paramètre
-	$.format = "";								// format de retour
-	$.asynchrone = true;						// transfert asynchrone
-	
-	$.del = function(){							// détruit l'objet Ajax
-		$.el = undefined;
-		$.data = "";
-		$.timer = null;
-		$.ready = false;		
-		$.format = "text";
-		func = null;
-		count = 0;
-	};
-	
-	$.isobject = function(o){
-		if( typeof(o) == "object" ){
-			return true;
-		}
-		try{
-			if( typeof(eval("(" + o + ")")) == "object" ){
+		// détruit l'objet Ajax
+		$.del = function(){
+			$.el = undefined;
+			data = "";
+			$.timer = null;
+			$.ready = false;		
+			format = "";
+			func = null;
+			count = 0;
+		};
+		
+		//Test l'objet ou la chaine représentant un objet
+		$.isobject = function(o){
+			if( typeof(o) == "object" ){
 				return true;
 			}
-		}
-		catch(e){
-		}
-		return false;
-	};
-	
-	$.init = function(){
-		if (!$.isobject($.el)){
 			try{
-				$.el = new ActiveXObject("Msxml2.XMLHTTP");
-			}catch(e){
+				if( typeof(eval("(" + o + ")")) == "object" ){
+					return true;
+				}
+			}catch(e){}
+			return false;
+		};
+		
+		//Initialise l'objet Ajax
+		$.init = function(){
+			if (!$.isobject($.el)){
 				try{
-					$.el = new ActiveXObject("Microsoft.XMLHTTP");
-				}catch(E){
-					$.el = new XMLHttpRequest();
+					$.el = new ActiveXObject("Msxml2.XMLHTTP");
+				}catch(e){
+					try{
+						$.el = new ActiveXObject("Microsoft.XMLHTTP");
+					}catch(E){
+						$.el = new XMLHttpRequest();
+					}
 				}
 			}
-		}
-		$.data = "";
-		$.ready = false;		
-	};
-	
-	$.todata = function(v){
-		var s = "";
-		if( $.isobject(v) ){
-			var o = v;
-			if(typeof(v) == "string"){
-				o = eval("(" + v + ")");
-			}
-			for (var d in o){
-				if( s != "" ){
-					s += "&";
+			data = "";
+			$.ready = false;		
+		};
+		
+		//Converti un objet JSON en url
+		$.todata = function(v){
+			var s = "";
+			if( $.isobject(v) ){
+				var o = v;
+				if(typeof(v) == "string"){
+					o = eval("(" + v + ")");
 				}
-				s += txt.trim(d) + "=" + txt.trim(o[d].toString());
-			}
-		}				
-		return s;
-	};
-	
-	//Ajoute les paramètres à envoyer par Ajax au serveur 
-	$.adddata = function(){
-		if (!$.isobject($.el)){
-			$.init();
-		}
-		var a = arguments;
-		if(a.length == 0){
-			return false;
-		}
-		//Objet à convertir en chaine avec JSON
-		if(a.length == 1){									
-			$.data = $.todata(a[0]);
-		}
-		else{
-			//Chaines à envoyées ( nom du champ, valeur du champ )
-			if(a.length == 2 && !txt.test(a[0]) && !txt.test(a[1])){
-				return false;
+				for (var d in o){
+					if( s != "" ){
+						s += "&";
+					}
+					s += txt.trim(d) + "=" + txt.trim(o[d].toString());
+				}
 			}				
-			if( Jaria.el.isobject($.el) && a.length == 2 ){				
-				if( $.data != "" ){
-					$.data += "&";
+			return s;
+		};
+		
+		//Ajoute les paramètres à envoyer par Ajax au serveur 
+		$.adddata = function(){
+			if (!$.isobject($.el)){
+				$.init();
+			}
+			var a = arguments;
+			if(a.length == 0){
+				return false;
+			}
+			//Objet JSON à convertir en chaine
+			if(a.length == 1){									
+				data = $.todata(a[0]);
+			}
+			else{
+				//Chaines à envoyées ( nom du champ, valeur du champ )
+				if(a.length == 2 && !txt.test(a[0]) && !txt.test(a[1])){
+					return false;
+				}				
+				if( Jaria.el.isobject($.el) && a.length == 2 ){				
+					if( data != "" ){
+						data += "&";
+					}
+					data += txt.trim(a[0].toString()) + "=" + txt.trim(a[1].toString());
 				}
-				$.data += txt.trim(a[0].toString()) + "=" + txt.trim(a[1].toString());
 			}
-		}
-	};
-
-	// envoi des données par Ajax ( nom du fichier de données, méthode: post [défaut] ou get )
-	$.send = function(s, m, f, t){			
-		if ( !$.el || $.data == null || !txt.test(s) || $.ready == true){
-			return false;
-		}
-		if(!txt.test(m)){
-			m = "POST";
-		}
-		if(!txt.test(t)){
-			m = "POST";
-		}
-		try{
-			$.el.open( m.toString().toUpperCase(), s.toString(), $.asynchrone);
-			$.el.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			$.el.send($.data);
-			if(typeof(f) == "function"){
-				$.onready(f, t);
-			}
-		}
-		catch(e){
-			$.onerror(err.message);
-		}
-	};
+		};
 	
-	$.onready = function(){			// execute une fonction passée en paramètre si le traitement des données par Ajax est terminée
-		
-		if ( !$.isobject($.el) ){
-			return false;
-		}
-		
-		// arguments
-		var a = arguments;
-		for( var i = 0; i < a.length; i++ ){
-			if( typeof(a[i]) == "function" ){
-				func = a[i];
+		//Envoi des données par Ajax ( nom du fichier de données, méthode: post [défaut] ou get )
+		$.send = function(s, m, t, f){			
+			if ( !$.el || data == null || !txt.test(s) || $.ready == true){
+				return false;
 			}
-			if( typeof(a[i]) == "string" && (a[i] == "text" || a[i] == "xml" || a[i] == "json") ){
-				 $.format = a[i];
+			if(!txt.test(m)){
+				m = "POST";
 			}
-		}			
-		
-		count += $.delai;
-		if( count >= $.timeout ){
-			// délai défini dépassé
-			$.ontimeout();
-			return false;
-		}
-		if( $.el.readyState == 4 && !$.ready ){
-			if( $.el.status == 200 ){
-				$.ready = true;
-				window.clearTimeout(timer);
-				timer = null;
-				var t = $.el.responseText.toString();
-				var d;
-				switch($.format.toLowerCase()){
-					case "json":
-						d = (!txt.isjson(t)) ? "" : JSON.parse(t);
-						break;
-					case "xml":
-						d = $.el.responseXML;
-						break;
-					default:
-						d = t;
+			if(!txt.test(t)){
+				t = "TEXT";
+			}
+			if(m == "GET"){
+				s = s + "?" + data;
+			}
+			try{
+				$.el.open( m.toString().toUpperCase(), s, $.asynchrone);
+				$.el.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+				$.el.send(data);
+				if(typeof(f) == "function"){
+					$.onready(f, t);
 				}
-				// appelle la fonction passé en paramètre avec le format de retour texte, xml ou json
-				( typeof(func) == "function" ) ? func(d) : $.onsuccess(d);
-				$.del();
 			}
-		}				
-		timer = window.setTimeout($.onready, $.delai);			
-	};
-	
-	// fonction de réception du traitement des données retournées par Ajax
-	$.onsuccess = function(o){				
-		return false;
-	};
-	
-	// fonction appelée lors d'une erreur Ajax
-	$.onerror = function(e){				
-		box.error(e);
-		return false;
-	};	
-	
-	// fonction appelée en cas de dépassement du délai définie
-	$.ontimeout = function(){				
-		box.hide();
-		box.alert("Le délai d'attente maximum de réponse du serveur évalué à " + ($.timeout / 1000).toString() + "s . est dépassé.<br><br>Veuillez réessayer.", "Délai dépassé!"); 
-		// ajoute une fonction de remise à zéro du compteur du timeout de l'objet Ajax sur le bouton de la boîte de dialogue
-		Jaria.nav.addevent("onclick", 
-			function(){
-				count = 0; 
-			}, 
-			box.el.BtOk
-		)
-		$.del();
-	};
+			catch(e){
+				$.onerror(e.message);
+			}
+		};
+		
+		//Execute une fonction passée en paramètre lorsque le traitement Ajax est terminée
+		$.onready = function(){
 			
-	//retourne le XML sou sforme de chaine
-	$.xmltostring = function(o){
-		var s = (Jaria.nav.msie) ? o.xml : (new XMLSerializer()).serializeToString(o);
-		return s;			
-	}
+			if ( !$.isobject($.el) ){
+				return false;
+			}
+			
+			// arguments
+			var a = arguments;
+			for( var i = 0; i < a.length; i++ ){
+				if( typeof(a[i]) == "function" ){
+					func = a[i];
+				}
+				if( typeof(a[i]) == "string"){
+				 	format = a[i].toUpperCase();
+				}
+			}			
+			
+			count += $.delai;
+			if( count >= $.timeout ){
+				// délai défini dépassé
+				$.ontimeout();
+				return false;
+			}
+			if( $.el.readyState == 4 && !$.ready ){
+				if( $.el.status == 200 ){
+					$.ready = true;
+					window.clearTimeout(timer);
+					timer = null;
+					var t = $.el.responseText.toString();
+					var d;
+					switch(format.toUpperCase()){
+						case "JSON":
+							d = (!txt.isjson(t)) ? "" : JSON.parse(t);
+							break;
+						case "XML":
+							d = $.el.responseXML;
+							break;
+						default:
+							d = t;
+					}
+					// appelle la fonction passé en paramètre avec le format de retour texte, xml ou json
+					( typeof(func) == "function" ) ? func(d) : $.onsuccess(d);
+					$.del();
+				}
+			}				
+			timer = window.setTimeout($.onready, $.delai);			
+		};
 		
+		//Fonction de réception du traitement des données retournées par Ajax
+		$.onsuccess = function(o){
+			return false;
+		};
+		
+		//Fonction appelée lors d'une erreur Ajax
+		$.onerror = function(e){
+			box.txt = e;		
+			box.show();
+			return false;
+		};	
+		
+		//Fonction appelée en cas de dépassement du délai d'attente définie
+		$.ontimeout = function(){
+			box.hide();
+			box.alert("Le délai d'attente maximum de réponse du serveur évalué à " + ($.timeout / 1000).toString() + "s . est dépassé.<br><br>Veuillez réessayer.", "Délai dépassé!"); 
+			// ajoute une fonction de remise à zéro du compteur du timeout de l'objet Ajax sur le bouton de la boîte de dialogue
+			Jaria.nav.addevent("onclick", 
+				function(){
+					count = 0; 
+				}, 
+				box.el.BtOk
+			)
+			$.del();
+		};
+				
+		//Retourne le XML sous forme de chaine
+		$.xmltostring = function(o){
+			var s = (Jaria.nav.msie) ? o.xml : (new XMLSerializer()).serializeToString(o);
+			return s;			
+		}
+			
+	}
+	
 };
 
+//Fonctions externe
+//Jaria.datepicker = function(){};
+
+Jaria.init(Jaria);
+
+
+//Ancien objets dépréciés
 var oNav = Jaria.nav;
-var oBox = new Jaria.box();
+var oBox = new Jaria.Box();
+var oAjax = new Jaria.Ajax();

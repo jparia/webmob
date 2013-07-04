@@ -618,7 +618,8 @@
 			}
 		};
 		
-		this.load = function(){							// actions à effectuer au chargement de la page [onload]
+		// actions à effectuer au chargement de la page [onload]
+		this.load = function(){							
 			oNav.body = window.document.body;
 			oNav.location = window.document.location;
 			// marge du document

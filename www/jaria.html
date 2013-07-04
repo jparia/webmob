@@ -6,12 +6,13 @@
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		function affBox(){
-			oBox.txt = oNav.version;
+			oBox.txt = "version : " + Jaria.nav.version;
+			oBox.txt += "\n Location : " + Jaria.nav.location
 			oBox.show();
 		}
 		
 		function affNewBox(){
-			var b = new Jaria.box();
+			var b = new Jaria.Box();
 			b.txt = "box instancié";
 			b.show();
 		}
@@ -19,9 +20,10 @@
 		function Ajax(){
 			var a = new Jaria.Ajax();
 			a.adddata({nom: "ARIA", prenom: "Jean-pierre", format: "XML"});
-			a.send("ajax.php", "POST", function(){	
+			a.send("ajax.php", "GET", "XML", function(){	
 				var r = arguments[0];
 				if( r == undefined ){
+					alert("format inconnu !");
 				 	return false;
 				}
 				if(Jaria.txt.isxml(r)){
@@ -35,12 +37,47 @@
 				}	
 			})
 		}
+		
+		function Enter(){
+			var s = arguments[0].value;
+			if(s != ""){
+				alert("Valeur de saisi : " + s );
+			}
+			else{
+				alert("Aucune saisie !");
+			}
+			
+		}
+		
+		function Mouse(){
+			Jaria.el.get("mouse").html("mouse - X: " + Jaria.nav.mouseX + " - Y: " + Jaria.nav.mouseY);
+		}
+		
+		function Size(){
+			Jaria.el.get("size").html("Size - X: " + Jaria.nav.screenX + " - Y: " + Jaria.nav.screenY);		
+		}
+		
+		Jaria.nav.addevent("onmousemove", Mouse);	
+		Jaria.nav.addevent("onload", function(){
+			Jaria.nav.keyb.valid = function(){
+				alert(arguments[0].value);
+			};
+			Size();
+		});	
+		//Jaria.nav.delevent("onmousemove", mouse)
+		Jaria.nav.addevent("onresize", Size);
+		
+		
 	</script>
 </head>
 <body>
-<div id="info">&nbsp;</div>
+<div id="size">&nbsp;</div>
+<div id="mouse">&nbsp;</div>
 <button onclick="affBox()">test oBox</button>
 <button onclick="affNewBox()">test nouvelle instance box</button>
 <button onclick="Ajax()">test Ajax</button>
+<input type="text" class="jaria_enter" value="" data-enter="Enter" /><br />
+<button onclick="Jaria.txt.select(false)">Désactive la sélection du texte du document</button>
+<button onclick="Jaria.txt.select(true)">Active la sélection du texte du document</button>
 </body>
 </html>
