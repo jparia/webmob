@@ -13,7 +13,7 @@ var Popup = new function(){
 		count--;
 		if (count <= 0){			
 			window.clearInterval(timer);
-			_this.finally();
+			_this.final();
 			return false;
 		}
 		_this.show();		
@@ -23,7 +23,7 @@ var Popup = new function(){
 		El.get("info").innerHTML =  "La popup se fermera dans : " + count + "s";
 	};
 	
-	this.finally = function(){
+	this.final = function(){
 		window.close();
 	};
 	
