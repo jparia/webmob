@@ -7,7 +7,8 @@
 	<script type="text/javascript">
 		function affBox(){
 			oBox.txt = "version : " + Jaria.nav.version;
-			oBox.txt += "\n Location : " + Jaria.nav.location
+			oBox.txt += "\n Location : " + Jaria.nav.location;
+			oBox.txt += "\n agent : " + Jaria.nav.agent;
 			oBox.show();
 		}
 		
@@ -50,34 +51,44 @@
 		}
 		
 		function Mouse(){
-			Jaria.el.get("mouse").html("mouse - X: " + Jaria.nav.mouseX + " - Y: " + Jaria.nav.mouseY);
+			var $ = Jaria.nav;
+			Jaria.el.get("mouse").html("mouse - X: " + $.mouseX + " - Y: " + $.mouseY);
 		}
 		
 		function Size(){
-			Jaria.el.get("size").html("Size - X: " + Jaria.nav.screenX + " - Y: " + Jaria.nav.screenY);		
+			var $ = Jaria.nav;
+			Jaria.el.get("size").html("Size - X: " + $.screenX + " - Y: " + $.screenY);		
+		}
+		
+		function Marge(){
+			var $ = Jaria.nav;
+			Jaria.el.get("marge").html("Marge - Left: " + $.marginLeft + " - Right: " + $.marginRight + " - Top: " + $.marginTop + " - Bottom: " + $.marginBottom);
 		}
 		
 		Jaria.nav.addevent("onmousemove", Mouse);	
 		Jaria.nav.addevent("onload", function(){
-			Jaria.nav.keyb.valid = function(){
-				alert(arguments[0].value);
-			};
-			Size();
+				Size();
+				Marge();
 		});	
-		//Jaria.nav.delevent("onmousemove", mouse)
+		//Jaria.nav.delevent("onmousemove", Mouse)
 		Jaria.nav.addevent("onresize", Size);
-		
 		
 	</script>
 </head>
-<body>
+<body style="margin-left:10px; margin-top: 20px">
+<div id="marge">&nbsp;</div>
 <div id="size">&nbsp;</div>
 <div id="mouse">&nbsp;</div>
-<button onclick="affBox()">test oBox</button>
-<button onclick="affNewBox()">test nouvelle instance box</button>
-<button onclick="Ajax()">test Ajax</button>
 <input type="text" class="jaria_enter" value="" data-enter="Enter" /><br />
-<button onclick="Jaria.txt.select(false)">Désactive la sélection du texte du document</button>
-<button onclick="Jaria.txt.select(true)">Active la sélection du texte du document</button>
+<button type="button" onclick="affBox()">test oBox</button>
+<button type="button" onclick="affNewBox()">test nouvelle instance box</button>
+<button type="button" onclick="Ajax()">test Ajax</button><br />
+<button type="button" onclick="Jaria.txt.select(false)">Désactive la sélection du texte du document</button>
+<button type="button" onclick="Jaria.txt.select(true)">Active la sélection du texte du document</button><br />
+<button type="button" onclick="Jaria.txt.select(false, 'marge')">Désactive la sélection du texte des marges</button>
+<button type="button" onclick="Jaria.txt.select(true, 'marge')">Active la sélection du texte des marges</button><br />
+<button type="button" onclick="Jaria.nav.contextmenu(false)">Désactive la menu contextuel</button>
+<button type="button" onclick="Jaria.nav.contextmenu(true)">Active  la menu contextuel</button><br />
+<button type="button" onclick="alert(Jaria.txt.digit(1, 2))">1 en "001"</button>
 </body>
 </html>

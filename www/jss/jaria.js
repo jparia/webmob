@@ -16,14 +16,26 @@ var Jaria = {
 			if(i > -1){
 				this.splice(i, 1);
 			}
+		};
+		
+		//Ajoute la méthode indexOf d'un tableau pour les anciens navigateurs
+		if (!Array.prototype.indexOf){ 
+		    Array.prototype.indexOf = function(o, n) {
+		         for (var i = (n || 0), j = this.length; i < j; i++) {
+		             if (this[i] === o) { return i; }
+		         }
+		         return -1;
+		    }
 		}
+		
+		$.nav.type();
 		
 		//Ajoute les fonctions du navigateur au évènements
 		$.nav.addevent("onscroll", $.nav.scroll);			//Au déplacement des ascenseurs de la fenêtre du navigateur
 		$.nav.addevent("onresize", $.nav.size);				//Au redimentonnement de la fenêtre du navigateur
 		$.nav.addevent("onmousemove", $.nav.mouse.move);	//Au déplacement de la souris
 		$.nav.addevent("onkeydown", $.nav.keydown);			//Sur touche du clavier
-		$.nav.addevent("onload", $.nav.load);				//Après le chargement du DOM
+		window.onload = $.nav.load;							//Après le chargement du DOM (compatible IE7)
 		
 		//Intances des fonctions pouvant être réinstanciées
 		Jaria.box = new Jaria.Box();
@@ -80,6 +92,22 @@ var Jaria = {
 			return ( $.test(s) ) ? s.toString().toLowerCase() : "";
 		};
 		
+		//Première lettre en majuscule et le reste en minuscule
+		$.firstUp = function(s){
+			return ( $.test(s) ) ? s.toString().substr(0, 1).toUpperCase() + s.toString().substr(1, s.length).toLowerCase() : "";
+		};
+		
+		//Complète n zéro à gauche
+		$.digit = function(s, n){
+			s = ( $.test(s) || !isNaN(s) ) ? s : "";
+			n = ( !isNaN(n) ) ? n : 0;
+			var z = "";
+			for( var i = 0; i < (parseInt(n) - s.length); i++ ){
+				z += "0";
+			}
+			return ( s.length < n ) ? z + s : s;
+		};
+		
 		//Retourne la partie gauche
 		$.left = function(s, n){
 			if (parseFloat(n) <= 0){
@@ -106,26 +134,150 @@ var Jaria = {
 		};
 	
 		//Active ou désactive la sélection du texte
-		$.select = function(b, e){
+		$.select = function(b, p){
 			
 			/*
-				argument 0: boolean				obligatoire
-				argument 1: élement parent		facultatif
+				b: boolean				obligatoire
+				p: élement parent		facultatif
 			*/
 
 			if( typeof(b) != "boolean"){
 				return false;
 			}
-			var el = ( !Jaria.el.test(e) ) ? Jaria.el.get(el) : document;
-			if( typeof(el.onselectstart) != "undefined" ){				
-				el.onselectstart = function(){
-					return state;
+			var e = ( Jaria.el.test(p) ) ? Jaria.el.get(p) : document;
+			if( typeof(e.onselectstart) != "undefined" ){				
+				e.onselectstart = function(){
+					return b;
 				}
 			}
 			else{
-				el.onmousedown = function(){
-					return state;
+				e.onmousedown = function(){
+					return b;
 				}
+			}
+		}
+		
+		// retourne la valeur en pixels
+		$.toPx = function(n){
+			var v = parseFloat(n);
+			if( isNaN(n) || n <= 0 ){
+				return "0px";
+			}
+			return (parseInt(v)).toString() + "px";
+		};
+		
+		//Répète n fois un texte 
+		$.repeat = function(t, n){
+			return new Array(n + 1).join(t);
+		};
+		
+		$.pluriel = function(t, n){
+			if (n <= 1){
+				return t;	
+			}
+			var c = "s";
+			t = $.trim(t);
+			if (t == ""){
+				return "";
+			}
+			l = $.lower(t);
+			if (l.slice(-2) == "ou" && (l == "genou" || l == "caillou" || l == "bijou" || l == "chou" || l == "pou" || l == "hibou" || l == "joujou")){
+				c = "x";
+			}
+			if (l.slice(-3) == "ail" && (l == "bail" || l == "corail" || l == "soupirail" || l == "travail" || l == "vantail" || l == "vitrail")){
+				t = t.substr(0, t.length - 3) + "aux";
+				c = "";
+			}
+			if (l.slice(-2) == "al"){
+				if (l != "bal" && l != "cal" && l != "carnaval" && l != "cérémonial" && l != "chacal" && l != "festival" && l != "récital" && l != "régal"){
+					t = t.substr(0, t.length - 2) + "aux";
+					c = "";
+				}
+			}
+			if (l.slice(-2) == "eu" && l != "bleu" && l != "pneu" && l != "émeu"){
+				c = "x";
+			}
+			if (l.slice(-2) == "au" && l != "landau" && l != "sarrau"){
+				c = "x";
+			}
+			return t + c;
+		};
+	
+		//Concatène une chaine à l'aide d'un tableau
+		$.build = new function(){
+			
+			var $ = this;
+			$.t = new Array("");
+			
+			$.append = function(s){
+				this.t.push(s);
+			};
+			
+			$.clear = function(){
+				 this.t.length = 1;
+			};
+			
+			$.tostring = function(){
+				return $.t.join("");				
+			};			
+		};
+		
+		//Contrôle le format email
+		$.isemail = function(t){
+			return ( $.test(t) && t.search(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+([\.][a-z]+)+$/) != -1 ) ? true : false;
+		};
+		
+		//Contrôle le format téléphone	
+		$.isphone = function(t, s){
+			var e = "";
+			switch(s){
+				case null :								// accepte tous les séparateurs ou aucun
+					e = /^0[1-68]([-. ]?[0-9]{2}){4}$/;
+					break;
+				case "." :								// oblige le séparateur [.]
+					e = /^0[1-68](\.[0-9]{2}){4}$/;
+					break;					
+				case "-" :								// oblige le séparateur [-]
+					e = /^0[1-68]([-][0-9]{2}){4}$/;
+					break;
+				case " " :								// oblige le séparateur  espace
+					e = /^0[1-68]([ ][0-9]{2}){4}$/;
+					break;
+				default :								// n'accepte aucun séparateur
+					e = /^0[1-68][0-9]{8}$/;
+			}
+			return ( t.search(e) != -1 ) ? true : false;
+		};
+		
+		$.isnumss = function(s){
+			return ( $.test(s) && s.search(/^[12][ \.\-]?[0-9]{2}[ \.\-]?(0[1-9]|[1][0-2])[ \.\-]?([0-9]{2}|2A|2B)[ \.\-]?[0-9]{3}[ \.\-]?[0-9]{3}[ \.\-]?[0-9]{2}$/) != -1 ) ? true : false;
+		};
+	
+		//Retourne les partie d'une chemin de fichier
+		$.file = new function(){
+			
+			var $ = this;
+
+			$.name = function(s){				// retourne le nom du fichier à partir de son chemin complet
+				s = $.fullname(s);
+				var n = s.lastIndexOf(".");
+				return ( n == -1 ) ? s : s.substr(0 , n)
+			};
+		
+			this.fullname = function(s){		// retourne le nom du fichier avec son extension à partir de son chemin complet
+				if(typeof(s) != "string") {
+					return "";
+				}	
+				var n = p.toString().lastIndexOf("/");
+				return ( n == -1 ) ? s : s.substr(n + 1, s.length)
+			};
+
+			$.path = function(s){				// retourne le nom du chemin à partir du chemin complet d'un fichier
+				if(typeof(s) != "string") {
+					return "";
+				}
+				var n = s.toString().lastIndexOf("/");
+				return ( n == -1 ) ? s : s.substr(0, n + 1);
 			}
 		}
 		
@@ -135,8 +287,8 @@ var Jaria = {
 	nav: new function(){		
 		
 		var $ = this;
-		var a = navigator.userAgent;
-		$.version = (a.match( /.+(?:firefox|version|pera|chrome|onqueror|msie)[\/: ]([\d.]+)/ ) || [])[1];
+		$.agent = navigator.userAgent.toLowerCase();
+		$.version = ($.agent.match( /.+(?:firefox|version|pera|chrome|onqueror|msie)[\/: ]([\d.]+)/ ) || [])[1];
 		$.msie = false;
 		$.firefox = false;
 		$.opera = false;
@@ -162,95 +314,56 @@ var Jaria = {
 		$.inload = false;					// lot d'images en cours de chargement
 		$.timer = null;
 		
-		if(a.indexOf("chrome") != -1){
-			$.chrome=true;
-			$.name = "chrome";
-		}
-		else if(a.indexOf("safari") != -1){
-			$.safari = true;
-			$.name = "safari";
-		}
-		else if(a.indexOf("firefox") != -1){
-			$.firefox = true;
-			$.name = "firefox";
-		}
-		else if(a.indexOf("opera") != -1){
-			$.opera = true;
-			$.name = "opera";
-		}
-		else if(a.indexOf("konqueror") != -1){
-			$.konqueror = true;
-			$.name = "konqueror";
-		}
-		else if(a.indexOf("msie") != -1){
-			$.msie = true;
-			$.name = "msie";
-		}
-		else if(a.indexOf("gecko") != -1){
-			$.gecko = true;
-			$.name = "gecko";
-		}
-		else if(a.indexOf("@") != -1 || a.indexOf("www") != -1 || a.indexOf("http:") != -1){
-			$.robot = true;
-			$.name = "robot";
-		}
-		else{
-			$.other = true;
-			$.name = "other";
-		}
+		//Type de navigateur
+		$.type = function(){
+			
+			var a = $.agent;
+			
+			if(a.indexOf("chrome") != -1){
+				$.chrome=true;
+				$.name = "chrome";
+			}
+			else if(a.indexOf("safari") != -1){
+				$.safari = true;
+				$.name = "safari";
+			}
+			else if(a.indexOf("firefox") != -1){
+				$.firefox = true;
+				$.name = "firefox";
+			}
+			else if(a.indexOf("opera") != -1){
+				$.opera = true;
+				$.name = "opera";
+			}
+			else if(a.indexOf("konqueror") != -1){
+				$.konqueror = true;
+				$.name = "konqueror";
+			}
+			else if(a.indexOf("msie") != -1){
+				$.msie = true;
+				$.name = "msie";
+			}
+			else if(a.indexOf("gecko") != -1){
+				$.gecko = true;
+				$.name = "gecko";
+			}
+			else if(a.indexOf("@") != -1 || a.indexOf("www") != -1 || a.indexOf("http:") != -1){
+				$.robot = true;
+				$.name = "robot";
+			}
+			else{
+				$.other = true;
+				$.name = "other";
+			}
+			
+		};
 				
 		//Propriétés à obtenir après le chargement du DOM
 		$.load = function(){
 			$.body = window.document.body;
-			$.location = window.document.location;
-			// marge du document
-			$.marginLeft = $.body.style.marginLeft;
-			$.marginRight = $.body.style.marginRight;
-			$.marginTop = $.body.style.marginTop;
-			$.marginBottom = $.body.style.marginBottom;
-			if($.marginLeft == ""){
-				if($.msie){
-					$.marginLeft = (isNaN($.body.leftMargin)) ? 0 : parseFloat($.body.leftMargin);
-				}
-				else{
-					$.marginLeft = 0;
-				}
-			}
-			else{
-				$.marginLeft = parseFloat($.marginLeft);
-			}
-			if($.marginRight == ""){
-				if( $.msie ){
-					$.marginRight = (isNaN($.body.rightMargin)) ? 0 : parseFloat($.body.rightMargin);
-				}
-				else{
-					$.marginLeft = 0;
-				}
-			}
-			else{
-				$.marginRight = parseFloat($.marginRight);
-			}
-			if($.marginTop == ""){
-				if($.msie){
-					$.marginTop = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.topMargin);
-				}else{
-					$.marginTop = 0;
-				}
-			}
-			else{
-				$.marginTop = parseFloat($.marginTop);
-			}
-			if($.marginBottom == ""){
-				if($.msie){
-					$.marginBottom = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.bottomMargin);
-				}else{
-					$.marginBottom = 0;
-				}
-			}
-			else{
-				$.marginBottom = parseFloat($.marginBottom);
-			}
+			$.location = window.document.location;			
 			$.size();
+			$.marge();
 			$.ready = true;
 		};
 				
@@ -303,7 +416,21 @@ var Jaria = {
 				$.lock.setText();	
 			}*/
 		};
-			
+		
+		//Obtient les marges du document	
+		$.marge = function(){						
+			$.marginLeft = ($.body.style.marginLeft == "") ? 0 : parseFloat($.body.style.marginLeft);
+			$.marginRight = ($.body.style.marginRight == "") ? 0 : parseFloat($.body.style.marginRight);
+			$.marginTop = ($.body.style.marginTop == "") ? 0 : parseFloat($.body.style.marginTop);
+			$.marginBottom = ($.body.style.marginBottom == "") ? 0 : parseFloat($.body.style.marginBottom);
+			if($.msie){
+				$.marginLeft = (parseFloat($.marginLeft) == 0) ? (isNaN($.body.leftMargin)) ? 0 : parseFloat($.body.leftMargin) : $.marginLeft;
+				$.marginRight = (parseFloat($.marginRight) == 0) ? (isNaN($.body.rightMargin)) ? 0 : parseFloat($.body.rightMargin) : $.marginRight;
+				$.marginTop = (parseFloat($.marginTop) == 0) ? (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.topMargin) : $.marginTop;
+				$.marginBottom = (parseFloat($.marginBottom) == 0) ? (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.bottomMargin) : $.marginBottom;
+			}
+		};
+		
 		//Obtient la position des ascenseurs du navigateur
 		$.scroll = function(){
 			
@@ -360,11 +487,11 @@ var Jaria = {
 			
 			// sur la touche entrer [enter]
 			$.enter = function(v){		
-
+				
 				var e = Jaria.el.getbyevent(v);
-				var f = e.getAttribute("data-enter");
+				var f = e.getAttribute("data-enter");	
 				// execute un traitement sur la touche Enter et sur l'élément ayant l'attribut data-enter
-				if(e != undefined && v.keyCode == 13 && f != null && typeof(eval(f)) == "function"){
+				if(e != undefined && v.keyCode == 13 && f != null && typeof(eval(f)) == "function"){					
 					eval(f + "(e)");
 				}
 
@@ -384,7 +511,7 @@ var Jaria = {
 		
 		$.getparentevent = function(s, e){
 			if(!Jaria.el.test(e)){
-				e = (s.indexOf("scroll") != -1 || s.indexOf("load") != -1 || s.indexOf("resize") != -1) ? window : document;
+				e = (["onscroll", "onload", "onresize"].indexOf(s) != -1) ? window : document;
 			}
 			return e;
 		};
@@ -411,12 +538,12 @@ var Jaria = {
 			e = $.getparentevent(s, e);
 			
 			try{
-				e.attachEvent(s, f);
+				e.attachEvent(s, f);		
 			}catch(e){
 				try{
 					s = s.replace("on", "");
 					e.addEventListener(s, f, false);
-				}catch(E){
+				}catch(E){					
 					return false;
 				}
 			}
@@ -492,6 +619,23 @@ var Jaria = {
 			//Jaria.el.title.hide();
 		};
 		
+		$.loadimg = function(){
+			var a = arguments
+			if( a.length == 0 ){
+				return false;
+			}			
+			var s = "";
+			for( var i = 0; i < a.length; i++ ){
+				s += (i == a.length -1) ? a[i] : a[i] + ",";
+			}
+			if( !$.readyfull || $.inload){
+				window.setTimeout("Jaria.nav.loadimg('" + s + "')", 100);				
+				return false;
+			}
+			$.inload = true;
+			$.loadimage.start(s);
+		};	
+		
 		$.lock = new function(){
 			
 			var $ = this;
@@ -503,6 +647,83 @@ var Jaria = {
 			};
 		
 		};
+		
+		$.loadimage = new function(){
+			
+			var $ = this;
+			var nav = nav;
+			
+			$.el = undefined;						// fenêtre de chargement
+			$.images = [];								// images à charger
+			$.lastimage = 0;							// dernière image chargée	
+			$.timer = null;
+			$.showloading = false;				// afficher le préchargement des images
+			
+			$.start = function(){
+				if(arguments.length > 0){
+					$.images = (arguments.length == 1 && arguments[0].toString().split(",").length > 1) ? arguments[0].toString().split(",") : arguments;		
+				}
+				var i = $.lastimage;
+				var img = "";
+				if( nav.ready && $.images.length > 0 ){
+					if( !oEl.isobject($.images[i]) ){
+						img = $.images[i];
+						$.images[i] = new Image();
+						$.images[i].src = oText.trim(img);
+						$.show("Préchargement des images : " + (i+1).toString() + " / " +	$.images.length);
+						$.images[i].onerror = function(){
+							$.show("Impossible de charger l'image " + oText.trim(img) + "!");
+							i++;
+							$.lastimage = i;	
+						};
+					}
+					if( $.images[i].complete ){
+						i++;				
+						if( i >= $.images.length ){			// dernière image chargée												
+							$.clear();
+							return false;
+						}					
+						$.lastimage = i;			
+					}			
+				}			
+				$.timer = window.setTimeout(nav.loadimage.start, 5);				
+			};	
+					
+			$.clear = function(){
+				$.lastimage = 0;
+				$.images = [];
+				nav.init_timer($.timer);
+				nav.timer = null;
+				nav.readyfull = true;	
+				nav.inload = false;
+				$.hide();
+			};
+						
+			$.show = function(txt){
+				if(!$.showloading){
+					return false;
+				}
+				$.hide();
+				nav.lock.anim = false;
+				$.el = oEl.create("div");
+				$.el.className = "jaria_loadimage";
+				$.el.appendChild(oEl.text(txt));
+				Jaria.el.opacity($.el, 60);
+				nav.body.appendChild($.el);
+				$.el.style.left = oText.toPx(5  + nav.scrollX);
+				$.el.style.top = oText.toPx(5 + nav.scrollY);				
+			};
+			
+			this.hide  = function(){
+				try{
+					nav.body.removeChild($.el);
+					$.el = undefined;
+				}
+				catch(e){}		
+			};
+						
+		};
+		
 	},
 	
 	//Fonctions des éléments du DOM
@@ -553,8 +774,8 @@ var Jaria = {
 					Jaria.el.delallchilds(this);
 					Jaria.el.addtext(this, t.toString());
 				};
-				var b = new Array("br", "hr", "img");			//élément non conteneur
-				if(b.indexOf(e.tagName.toLowerCase()) == -1){
+				//Hors élément non conteneur
+				if(["br", "hr", "img"].indexOf(e.tagName.toLowerCase()) == -1){
 					e.appendFirst = function(e){				//ajoute un élément en premier
 						var f = this.firstChild;
 						if(f){
@@ -871,7 +1092,6 @@ var Jaria = {
 //Jaria.datepicker = function(){};
 
 Jaria.init(Jaria);
-
 
 //Ancien objets dépréciés
 var oNav = Jaria.nav;
