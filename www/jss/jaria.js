@@ -1,6 +1,6 @@
 var Jaria = {
 		
-	version: "20130701",
+	version: "20130704",
 	images: "jaria/images",
 	
 	//*********************
@@ -18,12 +18,16 @@ var Jaria = {
 			}
 		}
 		
+		//Ajoute les fonctions du navigateur au évènements
 		$.nav.addevent("onscroll", $.nav.scroll);			//Au déplacement des ascenseurs de la fenêtre du navigateur
 		$.nav.addevent("onresize", $.nav.size);				//Au redimentonnement de la fenêtre du navigateur
 		$.nav.addevent("onmousemove", $.nav.mouse.move);	//Au déplacement de la souris
-		$.nav.addevent("onkeydown", $.nav.keydown);	
-		//window.onload = oNav.load;						// après chargement du document
-
+		$.nav.addevent("onkeydown", $.nav.keydown);			//Sur touche du clavier
+		$.nav.addevent("onload", $.nav.load);				//Après le chargement du DOM
+		
+		//Intances des fonctions pouvant être réinstanciées
+		Jaria.box = new Jaria.Box();
+		
 	},
 	
 	//Fonctions des chaines de caractères
@@ -67,19 +71,68 @@ var Jaria = {
 		};
 		
 		//Tout en majuscule
-		this.upper = function(s){				
-			return ( this.test(s) ) ? s.toString().toUpperCase() : "";
+		$.upper = function(s){
+			return ( $.test(s) ) ? s.toString().toUpperCase() : "";
 		};
 		
 		//Tout en minuscule
-		this.lower = function(s){				
-			return ( this.test(s) ) ? s.toString().toLowerCase() : "";
+		$.lower = function(s){
+			return ( $.test(s) ) ? s.toString().toLowerCase() : "";
 		};
+		
+		//Retourne la partie gauche
+		$.left = function(s, n){
+			if (parseFloat(n) <= 0){
+			    return "";
+			}
+			var t = (s).toString();
+			if (n > t.length){
+			    return t;
+			}
+			return t.substring(0, n);
+		};
+		
+		//Retourne la partie droite
+		$.right = function(s, n){
+		    if (parseFloat(n) <= 0){
+		       return "";
+		    }
+		    var t = (s).toString();
+		    if (n > t.length){
+		       return t;
+		    }
+		    var l = (t).length;
+		    return (t).substring(l, l - n);
+		};
+	
+		//Active ou désactive la sélection du texte
+		$.select = function(b, e){
+			
+			/*
+				argument 0: boolean				obligatoire
+				argument 1: élement parent		facultatif
+			*/
+
+			if( typeof(b) != "boolean"){
+				return false;
+			}
+			var el = ( !Jaria.el.test(e) ) ? Jaria.el.get(el) : document;
+			if( typeof(el.onselectstart) != "undefined" ){				
+				el.onselectstart = function(){
+					return state;
+				}
+			}
+			else{
+				el.onmousedown = function(){
+					return state;
+				}
+			}
+		}
 		
 	},
 	
 	//Fonctions du navigateur
-	nav: new function(){
+	nav: new function(){		
 		
 		var $ = this;
 		var a = navigator.userAgent;
@@ -99,6 +152,15 @@ var Jaria = {
 		$.scrollY = 0;
 		$.mouseX = 0;
 		$.mouseY = 0;
+		$.marginLeft = 0;
+		$.marginRight = 0;
+		$.marginTop = 0;
+		$.marginBottom = 0;
+		$.location = null;
+		$.ready = false;					// chargement document terminée
+		$.readyfull = false;				// chargement document terminée y compris le préchargement des images
+		$.inload = false;					// lot d'images en cours de chargement
+		$.timer = null;
 		
 		if(a.indexOf("chrome") != -1){
 			$.chrome=true;
@@ -136,7 +198,62 @@ var Jaria = {
 			$.other = true;
 			$.name = "other";
 		}
-		
+				
+		//Propriétés à obtenir après le chargement du DOM
+		$.load = function(){
+			$.body = window.document.body;
+			$.location = window.document.location;
+			// marge du document
+			$.marginLeft = $.body.style.marginLeft;
+			$.marginRight = $.body.style.marginRight;
+			$.marginTop = $.body.style.marginTop;
+			$.marginBottom = $.body.style.marginBottom;
+			if($.marginLeft == ""){
+				if($.msie){
+					$.marginLeft = (isNaN($.body.leftMargin)) ? 0 : parseFloat($.body.leftMargin);
+				}
+				else{
+					$.marginLeft = 0;
+				}
+			}
+			else{
+				$.marginLeft = parseFloat($.marginLeft);
+			}
+			if($.marginRight == ""){
+				if( $.msie ){
+					$.marginRight = (isNaN($.body.rightMargin)) ? 0 : parseFloat($.body.rightMargin);
+				}
+				else{
+					$.marginLeft = 0;
+				}
+			}
+			else{
+				$.marginRight = parseFloat($.marginRight);
+			}
+			if($.marginTop == ""){
+				if($.msie){
+					$.marginTop = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.topMargin);
+				}else{
+					$.marginTop = 0;
+				}
+			}
+			else{
+				$.marginTop = parseFloat($.marginTop);
+			}
+			if($.marginBottom == ""){
+				if($.msie){
+					$.marginBottom = (isNaN($.body.bottomMargin)) ? 0 : parseFloat($.body.bottomMargin);
+				}else{
+					$.marginBottom = 0;
+				}
+			}
+			else{
+				$.marginBottom = parseFloat($.marginBottom);
+			}
+			$.size();
+			$.ready = true;
+		};
+				
 		//Retourne le paramètre passé dans l'url par sa position à partir de 0
 		$.param = function(n){
 			if( isNaN(n) ){
@@ -165,7 +282,7 @@ var Jaria = {
 				$.screenY = window.innerHeight;
 			}
 			else if( document.documentElement && document.documentElement.clientHeight ){
-				$.screenY=document.documentElement.clientHeight;
+				$.screenY = document.documentElement.clientHeight;
 			}
 			else if( oNav.body && oNav.body.clientHeight ){
 				$.screenY = oNav.body.clientHeight;
@@ -189,11 +306,13 @@ var Jaria = {
 			
 		//Obtient la position des ascenseurs du navigateur
 		$.scroll = function(){
+			
 			if( $.msie || $.opera ){
 				// ! la balise doctype doit être présente dans le document html 
 				$.scrollX = (parseFloat(oNav.version) < 6 ) ? document.body.scrollLeft : document.documentElement.scrollLeft;
 				$.scrollY = (parseFloat(oNav.version) < 6 ) ? document.body.scrollTop : document.documentElement.scrollTop;
-			}else{
+			}
+			else{
 				$.scrollX = window.scrollX;
 				$.scrollY = window.scrollY;
 			}
@@ -220,9 +339,9 @@ var Jaria = {
 		};
 		
 		//Appelle les fonctions sur évènements du clavier
-		this.keydown = function(event){					
-			$.keyb.esc(event);
-			$.keyb.enter(event);
+		$.keydown = function(e){
+			$.keyb.esc(e);
+			$.keyb.enter(e);
 		};
 		
 		//Fonctions sur évènement clavier
@@ -235,39 +354,26 @@ var Jaria = {
 				e = e || window.event;
 				// cache l'éventuelle boîte de dialogue
 				if( e.keyCode == 27 ){
-					oNav.hideallbox(true);
+					Jaria.nav.hideallbox(true);
 				}
 			};
 			
 			// sur la touche entrer [enter]
-			$.enter = function(e){					
-				var el = Jaria.el.getevent(e);
-				if(!Jaria.el.test(el)){
-					return false;
+			$.enter = function(v){		
+
+				var e = Jaria.el.getbyevent(v);
+				var f = e.getAttribute("data-enter");
+				// execute un traitement sur la touche Enter et sur l'élément ayant l'attribut data-enter
+				if(e != undefined && v.keyCode == 13 && f != null && typeof(eval(f)) == "function"){
+					eval(f + "(e)");
 				}
-				// execute un traitement sur la touche Enter et sur l'élément ayant la classe jaria_enter
-				if(e.keyCode == 13 && el.className.indexOf("jaria_enter") != -1){
-					if(el.value &&  Jaria.txt.trim(el.value) == ""){						
-						Jaria.nav.keyb.annul(el);
-						return false;
-					}														
-					Jaria.nav.keyb.valid(el);
-				}
+
 			};
-			
-			//Action de validation sur un évènement du clavier
-			$.valid = function(){			
-				return false;
-			};
-			
-			//Action d'annulation sur un évènement du clavier
-			$.annul = function(){		
-				return false;
-			};
+					
 		};
 		
 		//Limite la propagation de l'évènement à l'élèment
-		$.stopevent = function(event){		
+		$.stopevent = function(event){
 			if( event.stopPropagation ){
 				event.stopPropagation();
 			}
@@ -276,7 +382,7 @@ var Jaria = {
 			}
 		};
 		
-		$.getevent = function(s, e){
+		$.getparentevent = function(s, e){
 			if(!Jaria.el.test(e)){
 				e = (s.indexOf("scroll") != -1 || s.indexOf("load") != -1 || s.indexOf("resize") != -1) ? window : document;
 			}
@@ -302,7 +408,7 @@ var Jaria = {
 				return false;
 			}
 			
-			e = $.getevent(s, e);
+			e = $.getparentevent(s, e);
 			
 			try{
 				e.attachEvent(s, f);
@@ -334,7 +440,7 @@ var Jaria = {
 				return false;
 			}
 			
-			e = $.getevent(s, e);
+			e = $.getparentevent(s, e);
 			
 			try{
 				e.detachEvent(s, f);
@@ -350,6 +456,53 @@ var Jaria = {
 			return true;
 		};
 	
+		$.cleartimer = function(t){
+			try{
+				window.clearInterval(t);
+			}catch(e){
+				try{
+					window.clearTimeout(t);
+				}catch(E){}
+			}
+		};
+		
+		//Active ou désactive le menu contextuel du clic droit de la souris
+		$.contextmenu = function(a, e){
+			if(a){
+				$.cleartimer($.timer);
+				$.timer = null;
+			}
+			if(Jaria.el.test(e)){
+				e.oncontextmenu = function(){
+					return a;
+				}
+			}
+			else{
+				document.oncontextmenu = function(){
+					return a;
+				}
+			}
+		};
+	
+		$.hideallbox = function(b){
+			if(Jaria.nav.lock.escape && b){
+				Jaria.nav.lock.hide();
+			}
+			alert("escape")
+			//Jaria.el.title.hide();
+		};
+		
+		$.lock = new function(){
+			
+			var $ = this;
+			$.exist = false;			
+			$.escape = true;
+			
+			$.hide = function(){
+				return false;
+			};
+		
+		};
 	},
 	
 	//Fonctions des éléments du DOM
@@ -454,7 +607,7 @@ var Jaria = {
 		//Retourne l'élement
 		$.get = function(e){
 			if(!$.test(e)){
-				jaria.box.show("L'élément HTML " + (typeof(e) == "string") ? e : typeof(e) + " n'existe pas !");
+				Jaria.box.show("L'élément HTML " + (typeof(e) == "string") ? e : typeof(e) + " n'existe pas !");
 				return undefined;
 			}
 			e = (typeof(e) == "string") ? document.getElementById(e) : e;
@@ -467,12 +620,12 @@ var Jaria = {
 			return e.tagName.toString().toLowerCase();
 		};
 		
-		$.getevent = function(e){
+		$.getbyevent = function(e){
 			if( $.test(e) ){
 				return e;
 			}
-			if( $.isobject(e) && e.type != undefined ){
-				return e || window.event;
+			if( e.type != undefined){
+				return ( !oNav.msie ) ? e.target : window.event.srcElement;
 			}
 			return undefined;
 		};
@@ -484,7 +637,7 @@ var Jaria = {
 	//*********************
 	
 	//Boite de dialogue personnalisée
-	box: function(){
+	Box: function(){
 		
 		var $ = this;
 		$.txt = "";
@@ -500,11 +653,11 @@ var Jaria = {
 	},
 	
 	//Fonction Ajax
-	ajax: function(){
+	Ajax: function(){
 	
 		var $ = this;
 		var txt = Jaria.txt;
-		var box = new Jaria.box();
+		var box = new Jaria.Box();
 		var count = 0;
 		var func = null;
 		var timer = null;
@@ -722,5 +875,5 @@ Jaria.init(Jaria);
 
 //Ancien objets dépréciés
 var oNav = Jaria.nav;
-var oBox = new Jaria.box();
-var oAjax = new Jaria.ajax();
+var oBox = new Jaria.Box();
+var oAjax = new Jaria.Ajax();
