@@ -1016,6 +1016,7 @@ var Jaria = {
 			return e.tagName.toString().toLowerCase();
 		};
 		
+		//Retourne l'élèment par un évèment
 		$.getbyevent = function(e){
 			if( $.test(e) ){
 				return e;
