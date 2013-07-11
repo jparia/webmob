@@ -3,17 +3,23 @@
 		sources développeur */
 		
 	var jaria = new function(){					// paramètres globaux à la bilbiothèque
+		
+		//OK
 		this.version = "20130629";				// Date au format AAAAMMJJ de la version de la bibliothèque
+		
+		//OK remplacé par path
 		this.images = "jaria/images/";			// Chemin des images
 	};
 	
 	var oText = new function(){								// Gestion des textes (string)
 	
+		//OK
 		this.test = function(s){
 			// argument 0: string		facultatif
 			return ( typeof(s) == "string" && s != "" ) ? true : false;
 		};
 		
+		//OK
 		this.select = function(b, o){
 			/*
 				argument 0: boolean		obligatoire
@@ -35,6 +41,7 @@
 			}			
 		};
 		
+		//OK
 		this.left = function(s, n){			
 			if (parseFloat(n) <= 0){
 			    return "";
@@ -43,6 +50,7 @@
 			return (n > t.length) ? t : t.substring(0, n);
 		};
 		
+		//OK
 		this.right = function(s, n){			
 		    if (parseFloat(n) <= 0){
 		       return "";
@@ -52,22 +60,27 @@
 		    return (n > t.length) ? t : (t).substring(l, l - n);
 		};
 		
+		//OK
 		this.upper = function(s){				// tout en majuscule
 			return ( this.test(s) ) ? s.toString().toUpperCase() : "";
 		};
 		
+		//OK
 		this.lower = function(s){				// tout en minuscule
 			return ( this.test(s) ) ? s.toString().toLowerCase() : "";
 		};
 		
+		//OK
 		this.firstUp = function(s){				// première lettre en majuscule et le reste en minuscule
 			return ( this.test(s) ) ? s.toString().substr(0, 1).toUpperCase() + s.toString().substr(1, s.length).toLowerCase() : "";
 		};
 		
+		//OK
 		this.trim = function(s){					// supprime ldes espaces à gauche et à droite de la chaine de caractères
 			return ( this.test(s) ) ? s.toString().replace(/(^\s*)|(\s*$)/g,'') : "";
 		};
 		
+		//OK
 		this.digit = function(){			// complète le nombre de x zéro à gauche
 			/*
 				argument 0: obligatoire		texte ou number
@@ -100,12 +113,15 @@
 			return ( n.toString().length == 1 ) ? "0" + n.toString() : n.toString();
 		};
 		
+		//OK
 		this.isemail = function(t){					// contrÃ´le le format email
 			var e = /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+([\.][a-z]+)+$/;
 			return ( this.test(t) && t.search(e) != -1 ) ? true : false;
 		};
-		var e = "";
+		
+		//OK
 		this.isphone = function(t, s){				// contrÃ´le le format téléphone
+			var e = "";
 			switch(s){
 				case null :								// accepte tous les séparateurs ou aucun
 					e = /^0[1-68]([-. ]?[0-9]{2}){4}$/;				//var e = /^([+][0-9]{1,3}|0)[1-68][-. ]?(?:[0-9]{2,3}[-. ]?){3,4}$/;
@@ -125,11 +141,13 @@
 			return ( t.search(e) != -1 ) ? true : false;
 		};
 		
+		//OK
 		this.isnumss = function(s){
 			var e = /^[12][ \.\-]?[0-9]{2}[ \.\-]?(0[1-9]|[1][0-2])[ \.\-]?([0-9]{2}|2A|2B)[ \.\-]?[0-9]{3}[ \.\-]?[0-9]{3}[ \.\-]?[0-9]{2}$/;
 			return ( this.test(s) && s.search(e) != -1 ) ? true : false;
 		};
 		
+		//OK
 		this.isjson = function(s){					//Test le parsing JSON sur une chaine
 			try{
 				JSON.parse(s);					
@@ -140,6 +158,7 @@
 			}			
 		};
 		
+		//OK
 		this.nocarspec = function(s){				// return vrai si le texte ne contient pas de caractères spéciaux
 			if( !this.test(s) ) {
 				return "";
@@ -154,6 +173,7 @@
 			}
 		};
 		
+		//OK
 		this.toPx = function(){							// retourne la valeur en pixels
 			var value = parseFloat(arguments[0]);
 			if( isNaN(value) || value <= 0 ){
@@ -162,10 +182,12 @@
 			return (parseInt(value)).toString() + "px";
 		};
 		
+		//OK
 		this.repeat = function(t, n){					// répète un texte x fois
 			return new Array( n + 1 ).join( t );
 		};
 		
+		//OK
 		this.pluriel = function(t, n){
 			if (n <= 1){
 				return t;	
@@ -278,6 +300,7 @@
 			return s;
 		};
 		
+		//OK
 		this.filename = function(p){				// retourne le nom du fichier à partir de son chemin complet
 			if( !this.test(p) ) {
 				return "";
@@ -290,6 +313,7 @@
 			return n.substr(0 , pos);
 		};
 		
+		//OK
 		this.filefullname = function(p){			// retourne le nom du fichier avec son extension à partir de son chemin complet
 			if( !this.test(p) ) {
 				return "";
@@ -301,6 +325,7 @@
 			return p.substr(n + 1, p.length);
 		};
 
+		//OK
 		this.filepath = function(p){				// retourne le nom du chemin à partir du chemin complet d'un fichier
 			if( !this.test(p) ) {
 				return "";
@@ -312,6 +337,7 @@
 			return p.substr(0, n + 1);
 		};
 		
+		//OK
 		this.build = new function(){				//construction d'une chaine à l'aide d'un tableau
 			
 			this.strings = new Array("");
@@ -331,6 +357,7 @@
 		
 	};
 	
+	//OK
 	if(!Array.indexOf){									//Redéfinie la methode indexOf pour les anciens IE
 		Array.prototype.indexOf = function(o){
 			for(var i = 0; i < this.length; i++){
@@ -370,6 +397,7 @@
 		this.readyfull = false;				// chargement document terminée y compris le préchargement des images
 		this.inload = false;					// lot d'images en cours de chargement
 		
+		//OK
 		this.type = function(){
 			var n = oNav;
 			var s = oText.lower(navigator.userAgent);
@@ -412,6 +440,7 @@
 			}
 		};
 		
+		//OK
 		this.param = function(n){						// retourne le paramètre passé dans l'url par sa position à partir de 0
 			if( isNaN(n) ){
 				return "";
@@ -432,6 +461,7 @@
 			return unescape((p[1]).toString());			
 		};
 		
+		//OK
 		this.loadimage = new function(){
 			
 			var _this = this;
@@ -507,6 +537,7 @@
 						
 		};
 		
+		//OK
 		this.loadimg = function(){
 			if( arguments.length == 0 ){
 				return false;
@@ -523,6 +554,7 @@
 			oNav.loadimage.start(a);
 		};	
 			
+		//OK
 		this.size = function(){							// dimensions de la fenêtre du navigateur [browser]
 			if( typeof(window.innerHeight) == "number" ){
 				oNav.screenY = window.innerHeight;
@@ -549,6 +581,7 @@
 			}
 		};
 			
+		//OK
 		this.scroll = function(){							// infos sur les ascenceurs [scroll] de la fenêtre du navigateur [browser]	
 			if( oNav.msie || oNav.opera ){
 				// ! la balise doctype doit être présente dans le document html 
@@ -568,6 +601,7 @@
 			}			
 		};
 		
+		//OK
 		this.hideallbox = function(esc){
 			if( oNav.lock.escape && esc ){
 				oNav.lock.hide();
@@ -575,6 +609,7 @@
 			oEl.title.hide();
 		};
 		
+		//OK cleartimer
 		this.init_timer = function(t){
 			if(t != undefined && t != null){
 				try{
@@ -586,7 +621,8 @@
 				}
 			}			
 		};
-			
+		
+		//OK
 		this.contextmenu = function(a, el){					// activer ou désactiver le menu contextuel du clic droit de la souris
 			if( a ){
 				oNav.init_timer(oNav.timer);
@@ -603,6 +639,7 @@
 			}
 		};
 		
+		//OK
 		this.load = function(){							// actions à effectuer au chargement de la page [onload]
 			oNav.body = window.document.body;
 			oNav.location = window.document.location;
@@ -627,19 +664,23 @@
 			oNav.ready = true;
 		};
 		
+		//OK
 		this.keydown = function(event){					// appelle les fonctions sur évènements du clavier
 			oNav.keyb.esc(event);
 			oNav.keyb.enter(event);
 		};
 		
+		//Déprécié
 		this.annul = function(){
 			// à effectuer lors de l'action d'annulation
 		};
 		
+		//Déprécié
 		this.valid = function(){						
 			// à effectuer lors de l'action de validation
 		};
 		
+		//OK
 		this.stopevent = function(event){		// limite la propagation de l'évènement à l'élèment
 			if( event.stopPropagation ){
 				event.stopPropagation();
@@ -649,6 +690,7 @@
 			}
 		};
 		
+		//OK
 		this.addevent = function(){				// Permet l'ajout de fonctions au chargement de la page [onload]
 			/*
 				argument 0 : obligatoire:			évènement
@@ -690,6 +732,7 @@
 			return true;
 		};
 		
+		//OK
 		this.delevent = function(v, f){
 			/*
 				argument 0 : obligatoire		évènement
@@ -899,6 +942,7 @@
 			};
 		};
 		
+		//OK
 		this.mouse = new function(){								// abscisse et ordonnée de la position de la souris
 			this.X = 0;
 			this.Y = 0;
@@ -910,6 +954,7 @@
 			};
 		};
 		
+		//OK		
 		this.keyb = new function(e){
 			
 			this.esc = function(e){						// sur la touche échape [escape]
@@ -944,6 +989,7 @@
 			};
 		};
 		
+		//OK
 		this.lock = new function(){								// grise la fenêtre du navigateur pour empêcher toute action 
 			this.el = undefined;
 			this.exist = false;
@@ -1232,6 +1278,7 @@
 	
 		this.timer = null;											// timer pour le déplacement de l'élément
 		
+		//OK
 		this.fn = function(e){									//Ajoute des fonctions à un élément
 			if(!oEl.test(e)){
 				return false;
@@ -1318,6 +1365,7 @@
 			return document.getElementById(id);				
 		};
 		
+		//OK
 		this.isobject = function(o){								// test un objet (élément DOM ou XML)
 			/*
 				argument 0: object obligatoire		élément
@@ -1328,6 +1376,7 @@
 			return ( typeof(o) == "object" ) ? true : false;
 		};
 		
+		//OK
 		this.test = function(e){					// test l'élément par l'objet ou par l'id passé en paramètre
 			if(oEl.isobject(e) && e.tagName && e.style){
 				return true;
@@ -1342,6 +1391,7 @@
 			return (document.getElementById(e)) ? true : false;			
 		};
 	
+		//OK
 		this.get = function(e){					//retourne l'élément DOM par l'objet ou l'id
 			if( oText.test(e) && oEl.test(e) ){
 				e = document.getElementById(e);
@@ -1352,7 +1402,8 @@
 			this.fn(e);
 			return e;	
 		};
-		
+	
+		//OK	
 		this.gettags = function(s, e){			//récupère une collection d'élements du DOM ou XML par leur nom du tag
 			var s = s.toString();
 			var t = ( oEl.isobject(e) ) ? e.getElementsByTagName(s) : document.getElementsByTagName(s);
@@ -1369,12 +1420,14 @@
 			return (t[n-1]) ? t[n-1] : t[0];
 		};
 		
+		//OK
 		this.create = function(t){				// créé l'élément
 			var e = document.createElement(t);
 			this.fn(e);
 			return e;
 		};
 		
+		//OK
 		this.del = function(e){					// suppression d'un élément
 			if( !oEl.isobject(e) ){
 				if( !oEl.test(e) ){
@@ -1389,6 +1442,7 @@
 			catch(e){}
 		};
 		
+		//OK remplacé par getbyevent
 		this.getevent = function(e){
 			if( oEl.test(e) ){
 				return e;
@@ -1447,14 +1501,17 @@
 			return ( parent.opener ) ? parent.opener.document.getElementById(e.id) : e.parent();			
 		};
 		
+		//OK
 		this.text = function(t){					// créé le node texte
 			return document.createTextNode(t);
 		};
 		
+		//OK
 		this.addtext = function(e, t){				//Ajoute un node texte à un élément
 			e.appendChild(this.text(t));
 		};
 		
+		//OK
 		this.opacity = function(e, v){			// transparence de l'élément de 0 à 100 [opacity]
 			if( arguments.length < 2){
 				return false;
@@ -1479,6 +1536,7 @@
 			}
 		};
 		
+		//OK
 		this.getopacity = function(e){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
 			if(!oEl.test(e)){
 				return 0;
@@ -1504,6 +1562,7 @@
 			return v;
 		};
 		
+		//OK
 		this.css = function(e, o){								//Ajoute un ou plusieurs style CSS à l'élèment à partir d'un objet JSON
 			for (var d in o){
 				n = d.toString();					//nom
@@ -1577,6 +1636,7 @@
 			}
 		};
 		
+		//OK
 		this.getoffset = function(e, s){		// retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
 			/*
 				argument 0 : obligatoire		élément
@@ -1615,6 +1675,7 @@
 			}
 		};
 		
+		//OK
 		this.setinscreen = function(){		// repositionne progressivement l'élément dans la fenêtre du navigateur			
 			// argument 0 : element à repositionner		obligatoire
 			var e = arguments[0];
@@ -1681,6 +1742,7 @@
 			oEl.timer = window.setTimeout("oEl.setinscreen('" + e.id + "')", 20);		
 		};
 		
+		//OK
 		// fonction à redéfinir  executée lorsque le repositionnement de l'élément déplacée par la fonction oEl.setinscreen est terminée 
 		this.isinscreen = function(){
 			return false;
@@ -1749,6 +1811,7 @@
 				e.style.display = "none";
 			}
 		};
+		
 		this.title = new function(){						// remplace l'infobulle de l'attribut title par une infobulle html	
 			
 			this.el = [];								// collection d'élément(s) recevant l'infobulle
@@ -2695,6 +2758,7 @@
 		};
 	};
 
+	//OK
 	function Box(){										// boîtes de dialogues personalisées [box]		
 	
 		var _this = this;
@@ -3352,6 +3416,7 @@
 		
 	}
 	
+	//OK
 	function Color(){								// Gestion et affichage du panel de couleurs
 	
 		_this = this;
@@ -3430,6 +3495,7 @@
 		};
 	}
 
+	//OK
 	function Ajax(){									// fonctions relatives à Ajax
 	
 		var _this = this;
@@ -3607,13 +3673,14 @@
 
 	}
 	
+	//OK
 	// fonctions pouvant être réinstenciées
-
 	var oBox = new Box();								// Boîtes de dialogues personnalisées
 	var oCal = new Cal();								// Gestion des dates
 	var oColor = new Color();						// Objet sélecteur de couleurs et fonctions couleurs
 	var oAjax = new Ajax();							// Objet d'accès au host par Ajax
 	
+	//OK
 	// actions sur évènement
 	window.onscroll = oNav.scroll;						// au déplacement des ascenseurs de la fenêtre du navigateur	
 	window.onload = oNav.load;								// après chargement du document	
@@ -3621,6 +3688,7 @@
 	document.onmousemove = oNav.mouse.move;		// au déplacement de la souris	
 	document.onkeydown = oNav.keydown;				// lors d'une action sur les touches du clavier
 	
+	//OK
 	// précharge toutes les images de la librairie jaria
 	oNav.addevent("onload", function(){
 		oNav.loadimage.start(

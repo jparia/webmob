@@ -3,18 +3,28 @@
 <head>
   	<meta charset="UTF-8" />
 	<title>Formation JavaScript</title>
+	<link href="jss/jaria.css" rel="stylesheet" type="text/css" />
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
+	
 		function affBox(){
-			oBox.txt = "version : " + Jaria.nav.version;
-			oBox.txt += "\n Location : " + Jaria.nav.location;
-			oBox.txt += "\n agent : " + Jaria.nav.agent;
-			oBox.show();
+			
+			var s = "Navigateur: " + Jaria.nav.name;
+			s += "<br> Version : " + Jaria.nav.version;
+			s += "<br> Location : " + Jaria.nav.location;
+			s += "<br> Agent : " + Jaria.nav.agent;
+			
+			Jaria.box.show({
+				html: s,
+				shadow: true,
+				title: "Infos navigateur",
+				borderColor: "#cfc"
+			});
 		}
 		
 		function affNewBox(){
 			var b = new Jaria.Box();
-			b.txt = "box instancié";
+			b.html = "box instancié";
 			b.show();
 		}
 		
@@ -39,6 +49,19 @@
 			})
 		}
 		
+		function Pluriel(){
+			var s = " bateau: " + Jaria.txt.pluriel("bateau", 2);
+			s += "\n bal: " + Jaria.txt.pluriel("bal", 2);
+			s += "\n chacal: " + Jaria.txt.pluriel("chacal", 2);
+			s += "\n Chateau: " + Jaria.txt.pluriel("Chateau", 2);
+			s += "\n Chenal: " + Jaria.txt.pluriel("Chenal", 2);
+			s += "\n landau: " + Jaria.txt.pluriel("landau", 2);
+			s += "\n bijou: " + Jaria.txt.pluriel("bijou", 2);
+			s += "\n tabou: " + Jaria.txt.pluriel("tabou", 2);
+			s += "\n travail: " + Jaria.txt.pluriel("travail", 2);
+			Jaria.box.txt = s;
+			Jaria.box.show();
+		}
 		function Enter(){
 			var s = arguments[0].value;
 			if(s != ""){
@@ -65,13 +88,32 @@
 			Jaria.el.get("marge").html("Marge - Left: " + $.marginLeft + " - Right: " + $.marginRight + " - Top: " + $.marginTop + " - Bottom: " + $.marginBottom);
 		}
 		
+		function Lock(){
+			Jaria.nav.lock.show({
+				color: "#ffc",
+				textColor: "#f00",
+				text: "Chargement en cours..."
+			})
+		}
+		
+		function SupportCSS(){
+			var s = "textShadow : " + Jaria.nav.support("textShadow")
+			Jaria.box.show({html: s});
+		}
+				
 		Jaria.nav.addevent("onmousemove", Mouse);	
 		Jaria.nav.addevent("onload", function(){
 				Size();
 				Marge();
+				Jaria.nav.loadimage({
+					show: true,
+					url: ["img/img1.png", "img/img2.png", "img/img3.png", "img/img3.png"]
+				});
 		});	
 		//Jaria.nav.delevent("onmousemove", Mouse)
 		Jaria.nav.addevent("onresize", Size);
+		
+
 		
 	</script>
 </head>
@@ -89,6 +131,8 @@
 <button type="button" onclick="Jaria.txt.select(true, 'marge')">Active la sélection du texte des marges</button><br />
 <button type="button" onclick="Jaria.nav.contextmenu(false)">Désactive la menu contextuel</button>
 <button type="button" onclick="Jaria.nav.contextmenu(true)">Active  la menu contextuel</button><br />
-<button type="button" onclick="alert(Jaria.txt.digit(1, 2))">1 en "001"</button>
+<button type="button" onclick="alert(Jaria.txt.digit('1', 2))">1 en "001"</button> <button type="button" onclick="Pluriel()">Pluriel</button><br />
+<button type="button" onclick="Lock()">Griser la page</button><br />
+<button type="button" onclick="SupportCSS()">Support CSS</button><br />
 </body>
 </html>

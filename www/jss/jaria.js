@@ -1,32 +1,54 @@
 var Jaria = {
 		
-	version: "20130704",
-	images: "jaria/images",
-	
-	//*********************
-	//fonctions instanciées
-	//*********************
+	version: "20130711",
+	path: "jaria/images/",
+		
+	//Retourne un tableau des images de la bibliothèque Jaria
+	images: function(){
+		var $ = this;
+		return [
+			$.path + "box/btresize.png",
+			$.path + "box/btclose.png",
+			$.path + "box/btclose_hover.png",	
+			$.path + "bubble/bas.gif",
+			$.path + "bubble/haut.gif",
+			$.path + "button/button_blue.png",
+			$.path + "button/button_gray.png",
+			$.path + "button/button_yellow.png",
+			$.path + "button/button_less_hover.png",
+			$.path + "button/button_more_hover.png",
+			$.path + "button/button_play.png",
+			$.path + "button/button_stop.png",
+			$.path + "cal/date.gif",
+			$.path + "cal/time.gif",
+			$.path + "lock/1.gif",
+			$.path + "lock/2.gif",
+			$.path + "lock/3.gif",
+			$.path + "lock/4.gif",
+			$.path + "lock/5.gif",
+			$.path + "lock/6.gif",
+			$.path + "lock/7.gif",
+			$.path + "lock/8.gif",
+			$.path + "lock/9.gif",
+			$.path + "lock/10.gif",
+			$.path + "previsu/cadre.gif",
+			$.path + "previsu/cadre_ombre.gif",
+			$.path + "previsu/cadre_texte_c.gif",
+			$.path + "previsu/cadre_texte_d.gif",
+			$.path + "previsu/cadre_texte_g.gif",
+			$.path + "trace/clear.png",
+			$.path + "trace/pause.png",
+			$.path + "trace/play.png",
+			$.path + "enter.gif",
+			$.path + "loadimg.gif",
+			$.path + "loading.gif",
+			$.path + "move.gif",
+			$.path + "vide.gif"
+		]
+	},
 	
 	//Fonctions diverses appelées avant le chargement du DOM
 	init: function($){
-		
-		//Supprime un élèment d'un tableau par sa valeur
-		Array.prototype.unset = function(v){
-			var i = this.indexOf(v);			
-			if(i > -1){
-				this.splice(i, 1);
-			}
-		};
-		
-		//Ajoute la méthode indexOf d'un tableau pour les anciens navigateurs
-		if (!Array.prototype.indexOf){ 
-		    Array.prototype.indexOf = function(o, n) {
-		         for (var i = (n || 0), j = this.length; i < j; i++) {
-		             if (this[i] === o) { return i; }
-		         }
-		         return -1;
-		    }
-		}
 		
 		$.nav.type();
 		
@@ -37,11 +59,60 @@ var Jaria = {
 		$.nav.addevent("onkeydown", $.nav.keydown);			//Sur touche du clavier
 		window.onload = $.nav.load;							//Après le chargement du DOM (compatible IE7)
 		
-		//Intances des fonctions pouvant être réinstanciées
+		//Intances des fonctions Jaria
 		Jaria.box = new Jaria.Box();
-		
+		Jaria.color = new Jaria.Color();
+		Jaria.loadimage = new Jaria.Loadimage();		
 	},
 	
+	//*********************
+	//fonctions instanciées
+	//*********************
+	
+	//Gestion des fonctions
+	fn: new function(){
+		
+		//Ajoute une fonction dans une fonction
+		this.append = function(f, nf){
+			var fc = f;
+			return function(){
+				fc();
+				nf();
+			}
+		}
+		
+	},	
+	
+	//Fonctions des tableaux
+	tab : new function(){
+		//Supprime un élèment d'un tableau par sa valeur
+		Array.prototype.unset = function(v){
+			var i = this.indexOf(v);			
+			if(i > -1){
+				this.splice(i, 1);
+			}
+		};
+		
+		//Ajoute la méthode indexOf d'un tableau pour les anciens navigateurs
+		if (!Array.indexOf){ 
+			Array.prototype.indexOf = function(o, n){
+				for (var i = (n || 0), j = this.length; i < j; i++) {
+					if (this[i] === o) {
+						return i;
+					}
+				}
+				return -1;
+			}
+		}
+		
+		//Ajoute la méthode isArray d'un tableau		
+		if(!Array.isArray) {			
+			Array.isArray = function(a) {
+			  	return Object.prototype.toString.call(a) === "[object Array]";
+			}
+		}
+	},	
+
 	//Fonctions des chaines de caractères
 	txt: new function(){
 		
@@ -99,13 +170,15 @@ var Jaria = {
 		
 		//Complète n zéro à gauche
 		$.digit = function(s, n){
-			s = ( $.test(s) || !isNaN(s) ) ? s : "";
-			n = ( !isNaN(n) ) ? n : 0;
-			var z = "";
-			for( var i = 0; i < (parseInt(n) - s.length); i++ ){
+			if (!$.test(s) || isNaN(n)){ 
+				n = 0;
+				s = "";
+			}
+			var z = "0";
+			for(var i = 0; i < (parseInt(n) - s.length); i++){
 				z += "0";
 			}
-			return ( s.length < n ) ? z + s : s;
+			return ( s.length <= n ) ? z + s : s;
 		};
 		
 		//Retourne la partie gauche
@@ -157,8 +230,8 @@ var Jaria = {
 			}
 		}
 		
-		// retourne la valeur en pixels
-		$.toPx = function(n){
+		//Retourne la valeur en pixels
+		$.px = function(n){
 			var v = parseFloat(n);
 			if( isNaN(n) || n <= 0 ){
 				return "0px";
@@ -171,34 +244,25 @@ var Jaria = {
 			return new Array(n + 1).join(t);
 		};
 		
+		//Singulier ou pluirel selon n. Prend en compte les exceptions.
 		$.pluriel = function(t, n){
 			if (n <= 1){
 				return t;	
 			}
-			var c = "s";
-			t = $.trim(t);
-			if (t == ""){
+			if (!$.test(t)){
 				return "";
 			}
 			l = $.lower(t);
-			if (l.slice(-2) == "ou" && (l == "genou" || l == "caillou" || l == "bijou" || l == "chou" || l == "pou" || l == "hibou" || l == "joujou")){
-				c = "x";
-			}
-			if (l.slice(-3) == "ail" && (l == "bail" || l == "corail" || l == "soupirail" || l == "travail" || l == "vantail" || l == "vitrail")){
+			var c = (l.slice(-2) == "ou" && ["genou", "caillou", "bijou", "chou", "pou", "hibou", "joujou"].indexOf(l) != -1) ? "x" : "s";
+			c = (l.slice(-2) == "eu" && ["bleu", "pneu", "émeu"].indexOf(l) == -1) ? "x" : c;
+			c = (l.slice(-2) == "au" && ["landau" ,"sarrau"].indexOf(l) == -1) ? "x" : c;
+			if (l.slice(-3) == "ail" && ["bail", "corail", "soupirail", "travail", "vantail", "vitrail"].indexOf(1) == -1){
 				t = t.substr(0, t.length - 3) + "aux";
 				c = "";
 			}
-			if (l.slice(-2) == "al"){
-				if (l != "bal" && l != "cal" && l != "carnaval" && l != "cérémonial" && l != "chacal" && l != "festival" && l != "récital" && l != "régal"){
-					t = t.substr(0, t.length - 2) + "aux";
-					c = "";
-				}
-			}
-			if (l.slice(-2) == "eu" && l != "bleu" && l != "pneu" && l != "émeu"){
-				c = "x";
-			}
-			if (l.slice(-2) == "au" && l != "landau" && l != "sarrau"){
-				c = "x";
+			if (l.slice(-2) == "al"  && ["bal", "cal", "carnaval", "cérémonial", "chacal", "festival", "récital", "régal"].indexOf(l) == -1){
+				t = t.substr(0, t.length - 2) + "aux";
+				c = "";
 			}
 			return t + c;
 		};
@@ -284,18 +348,20 @@ var Jaria = {
 	},
 	
 	//Fonctions du navigateur
-	nav: new function(){		
+	nav: new function(){
 		
 		var $ = this;
 		$.agent = navigator.userAgent.toLowerCase();
 		$.version = ($.agent.match( /.+(?:firefox|version|pera|chrome|onqueror|msie)[\/: ]([\d.]+)/ ) || [])[1];
 		$.msie = false;
+		$.oldmsie = false;
 		$.firefox = false;
 		$.opera = false;
 		$.safari = false;
 		$.chrome = false;
 		$.konqueror = false;	
 		$.gecko = false;
+		$.dolfin = false;
 		$.robot = false;
 		$.other = false;
 		$.screenX = 0;
@@ -342,12 +408,19 @@ var Jaria = {
 			else if(a.indexOf("msie") != -1){
 				$.msie = true;
 				$.name = "msie";
+				if($.version < 9){
+					$.oldmsie = true;
+				}
 			}
 			else if(a.indexOf("gecko") != -1){
 				$.gecko = true;
 				$.name = "gecko";
 			}
-			else if(a.indexOf("@") != -1 || a.indexOf("www") != -1 || a.indexOf("http:") != -1){
+			else if(a.indexOf("dolfin") != -1){
+				$.dolfin = true;
+				$.name = "dolfin";
+			}
+			else if(a.indexOf("@") != -1 || a.indexOf("www") != -1 || a.indexOf("http:") != -1 || a.indexOf("ask") != -1){
 				$.robot = true;
 				$.name = "robot";
 			}
@@ -357,16 +430,44 @@ var Jaria = {
 			}
 			
 		};
+		
+		//Vérifie le support du CSS
+		$.support = function(p){
+						
+   			var d = Jaria.el.create("div"); 
+      		var v = 'Khtml Ms O Moz Webkit'.split(" "); 
+      		var l = v.length;
+      		
+    		if (p in d.style){
+    			return true;
+    		}  
+  			p = p.replace(/^[a-z]/, function(v){  
+         		return v.toUpperCase();  
+     		});  
+  
+		    while(l--){  
+		       if (v[l] + p in d.style ) {  
+		          return true;  
+		       }   
+		    }  
+		    return false;		     
+ 		 };  
 				
 		//Propriétés à obtenir après le chargement du DOM
 		$.load = function(){
+			
 			$.body = window.document.body;
 			$.location = window.document.location;			
 			$.size();
 			$.marge();
 			$.ready = true;
+			
+			Jaria.loadimage.start({
+				show: true,
+				url: Jaria.images()
+			});			
 		};
-				
+		
 		//Retourne le paramètre passé dans l'url par sa position à partir de 0
 		$.param = function(n){
 			if( isNaN(n) ){
@@ -408,17 +509,18 @@ var Jaria = {
 			}
 			else if( oNav.body && oNav.body.clientWidth ){
 				$.screenX = oNav.body.clientWidth;
-			}
-			
-			/*if($.lock.exist){
-				$.lock.el.style.width = Jaria.txt.toPx(oNav.screenX);
-				$.lock.el.style.height = Jaria.txt.toPx(oNav.screenY );		
+			}			
+			if($.lock.exist){
+				$.lock.el.css({
+					width: Jaria.txt.px($.screenX),
+					height: Jaria.txt.px($.screenY)
+				});
 				$.lock.setText();	
-			}*/
+			}
 		};
 		
 		//Obtient les marges du document	
-		$.marge = function(){						
+		$.marge = function(){
 			$.marginLeft = ($.body.style.marginLeft == "") ? 0 : parseFloat($.body.style.marginLeft);
 			$.marginRight = ($.body.style.marginRight == "") ? 0 : parseFloat($.body.style.marginRight);
 			$.marginTop = ($.body.style.marginTop == "") ? 0 : parseFloat($.body.style.marginTop);
@@ -444,16 +546,19 @@ var Jaria = {
 				$.scrollY = window.scrollY;
 			}
 			
-			
-			/*if( $.trace.box.exist ){
+			//TODO
+			/*
+			 if( $.trace.box.exist ){
 				$.trace.pos();
 			}
-			if( $.lock.exist ){
+			*/
+			if($.lock.exist){
 				// positionnement du lock
-				$.lock.el.style.left = oText.toPx(oNav.scrollX);
-				$.lock.el.style.top = oText.toPx(oNav.scrollY);			
-			}*/
-			
+				$.lock.el.css({
+					left: Jaria.txt.px($.scrollX),
+					top: Jaria.txt.px($.scrollY)
+				})			
+			}			
 		};
 		
 		//Obtient l'abscisse et l'ordonnée de la position de la souris
@@ -576,13 +681,23 @@ var Jaria = {
 					s = s.toString().replace("on", "");
 					e.removeEventListener(s , f, false);
 				}catch(e){
-					alert(e.message);
 					return false;
 				}
 			}
 			return true;
 		};
 	
+		//Limite la propagation de l'évènement à l'élèment
+		$.stopevent = function(e){
+			e = e || window.event;
+			if(e.stopPropagation){
+				e.stopPropagation();
+			}
+			else{
+				e.cancelBubble = true;
+			}
+		};
+		
 		$.cleartimer = function(t){
 			try{
 				window.clearInterval(t);
@@ -615,115 +730,133 @@ var Jaria = {
 			if(Jaria.nav.lock.escape && b){
 				Jaria.nav.lock.hide();
 			}
-			alert("escape")
+			//TODO
 			//Jaria.el.title.hide();
 		};
-		
-		$.loadimg = function(){
-			var a = arguments
-			if( a.length == 0 ){
-				return false;
-			}			
-			var s = "";
-			for( var i = 0; i < a.length; i++ ){
-				s += (i == a.length -1) ? a[i] : a[i] + ",";
-			}
+				
+		//Préhargment des images externes
+		$.loadimage = function(o){
+			var s = (typeof(o) != "string") ? JSON.stringify(o) : o;
+			console.log($.readyfull);
 			if( !$.readyfull || $.inload){
-				window.setTimeout("Jaria.nav.loadimg('" + s + "')", 100);				
+				window.setTimeout("Jaria.nav.loadimage(" + s + ")", 100);				
 				return false;
 			}
 			$.inload = true;
-			$.loadimage.start(s);
-		};	
-		
-		$.lock = new function(){
-			
-			var $ = this;
-			$.exist = false;			
-			$.escape = true;
-			
-			$.hide = function(){
-				return false;
-			};
-		
+			Jaria.loadimage.start(s);
 		};
 		
-		$.loadimage = new function(){
-			
+		//Grise la fenêtre du navigateur pour empêcher toute action avec un message et une image animée
+		$.lock = new function(){
 			var $ = this;
-			var nav = nav;
+			$.el = undefined;
+			$.exist = false;
+			$.opacity = 60;						// opacité
+			$.anim = true;						// animation au centre
+			$.color = "#fff";					// couleur
+			$.image = 1;						// image de chargement
+			$.text = "";						// texte à afficher
+			$.textColor = "#000";				// couleur du texte
+			$.escape = true;					// unlock sur la touche escape
 			
-			$.el = undefined;						// fenêtre de chargement
-			$.images = [];								// images à charger
-			$.lastimage = 0;							// dernière image chargée	
-			$.timer = null;
-			$.showloading = false;				// afficher le préchargement des images
-			
-			$.start = function(){
-				if(arguments.length > 0){
-					$.images = (arguments.length == 1 && arguments[0].toString().split(",").length > 1) ? arguments[0].toString().split(",") : arguments;		
-				}
-				var i = $.lastimage;
-				var img = "";
-				if( nav.ready && $.images.length > 0 ){
-					if( !oEl.isobject($.images[i]) ){
-						img = $.images[i];
-						$.images[i] = new Image();
-						$.images[i].src = oText.trim(img);
-						$.show("Préchargement des images : " + (i+1).toString() + " / " +	$.images.length);
-						$.images[i].onerror = function(){
-							$.show("Impossible de charger l'image " + oText.trim(img) + "!");
-							i++;
-							$.lastimage = i;	
-						};
-					}
-					if( $.images[i].complete ){
-						i++;				
-						if( i >= $.images.length ){			// dernière image chargée												
-							$.clear();
-							return false;
-						}					
-						$.lastimage = i;			
-					}			
-				}			
-				$.timer = window.setTimeout(nav.loadimage.start, 5);				
-			};	
-					
-			$.clear = function(){
-				$.lastimage = 0;
-				$.images = [];
-				nav.init_timer($.timer);
-				nav.timer = null;
-				nav.readyfull = true;	
-				nav.inload = false;
-				$.hide();
-			};
-						
-			$.show = function(txt){
-				if(!$.showloading){
+			//Grise la page
+			$.show = function(o){
+				var txt = Jaria.txt;
+				var el = Jaria.el;
+				var nav = Jaria.nav;
+				var color = Jaria.color;
+				if(!Jaria.nav.ready){
 					return false;
 				}
-				$.hide();
-				nav.lock.anim = false;
-				$.el = oEl.create("div");
-				$.el.className = "jaria_loadimage";
-				$.el.appendChild(oEl.text(txt));
-				Jaria.el.opacity($.el, 60);
-				nav.body.appendChild($.el);
-				$.el.style.left = oText.toPx(5  + nav.scrollX);
-				$.el.style.top = oText.toPx(5 + nav.scrollY);				
+				if(!$.exist){
+					if(txt.test(o) && txt.isjson(o)){
+						o = JSON.parse(o);
+					}
+					if(el.isobject(o)){
+						for(d in o){
+							if(d == "opacity" && !isNaN(o[d])){
+								$.opacity = parseInt(o[d]);
+							}
+							if(d == "anim" && typeof(o[d]) == "boolean"){
+								$.anim = o[d];
+							}
+							if(d == "color" && color.iscolor(o[d])){
+								$.color = o[d];
+							}
+							if(d == "image" && !isNaN(o[d])){
+								$.image = parseInt(o[d]);
+							}
+							if(d == "text" && txt.test(o[d])){
+								$.text = o[d];
+							}
+							if(d == "textColor" && color.iscolor(o[d])){
+								$.textColor = o[d];
+							}
+							if(d == "escape" && typeof(o[d]) == "boolean"){
+								$.escape = o[d];
+							}
+						}
+					}
+					if( isNaN($.opacity) || parseInt($.opacity) < 10 || parseInt($.opacity) > 100 ){
+						$.opacity = 60;
+					}
+					//TODO 
+					//oEl.title.hide();					// cache les éventuelles info-bulles
+					$.el = el.create("div");
+					$.el.className = ($.anim) ? "jaria_lock jaria_lock_" + $.image : "jaria_lock";
+					if(!color.iscolor($.color)){
+						$.color = "#fff";
+					}
+					$.el.html("&nbsp;");
+					$.el.css({
+						top: txt.px(nav.scrollY),
+						left: txt.px(nav.scrollX),
+						width: txt.px(nav.screenX),
+						height: txt.px(nav.screenY),
+						backgroundColor: $.color 
+					});			
+					nav.body.appendChild($.el);
+					$.setText();		
+					$.exist = true;
+					el.opacity($.el, $.opacity);
+					//TODO oCal.datepicker.hide();	
+					//TODO oCal.timepicker.hide();	
+				}
 			};
 			
-			this.hide  = function(){
-				try{
-					nav.body.removeChild($.el);
-					$.el = undefined;
-				}
-				catch(e){}		
+			//Applique un texte
+			$.setText = function(){
+				if( $.text != ""){	
+					$.el.innerHTML = "";
+					var d = Jaria.el.create("div");
+					d.className = "jaria_lock_texte";
+					if( Jaria.color.iscolor($.textColor) ){
+						d.style.color = $.textColor;
+					}
+					d.html($.text);						
+					$.el.appendChild(d);
+					d.css({
+						top: (Jaria.txt.px(($.el.sizeY() / 2) + 40)),
+						color : $.textColor
+					})
+				}			
 			};
-						
-		};
-		
+			
+			//Dégrise la page
+			$.hide = function(){						// dégrise  [unlock]
+				$.exist = false;
+				$.anim = true;
+				$.opacity = 60;
+				$.color = "#fff";
+				$.textColor = "#000";
+				$.text = "";
+				$.image = 1;
+				$.el.del($.el);
+				$.el = undefined;
+				$.escape = true;
+			}
+		}
+			
 	},
 	
 	//Fonctions des éléments du DOM
@@ -750,6 +883,7 @@ var Jaria = {
 			}
 		};
 		
+		//Ajoute des fonctions au éléments
 		$.fn = function(e){
 			
 			if($.gettag(e) == "input"){
@@ -768,7 +902,10 @@ var Jaria = {
 				//Pour les autres élèment du DOM
 				
 				e.html = function(t){
-					this.innerHTML = t.toString();
+					if(Jaria.txt.test(t)){
+						this.innerHTML = t.toString();
+					}
+					return this.innerHTML;
 				};
 				e.txt = function(t){							//ajoute un node de texte
 					Jaria.el.delallchilds(this);
@@ -795,18 +932,56 @@ var Jaria = {
 				e.remove = function(){
 					this.parentNode.removeChild(this);
 				};
-			}
+			};
 			e.css = function(o){								//affecte un ou plusieurs styles CSS par des valeurs sous forme d'objet JSON
 				if($.isobject(o)){							
-					Jaria.el.addcss(el, o);
+					Jaria.el.css(this, o);
 				}
 				else if(typeof(o) == "string" && Jaria.txt.isjson(o)){
-					Jaria.el.addcss(el, JSON.parse(o));
+					Jaria.el.css(el, JSON.parse(o));
 				}
-			}
+			};
+			e.parent = function(){									//parent de l'élèment ou lui-même si pas de parent
+					if(!this.parentNode.tagName){
+						return this;
+					}
+					oEl.fn(this.parentNode);
+					return this.parentNode;
+			};
+			e.tag = function(){											//retourne le nom du tag de l'élèment ou "" si pas du DOM
+					if(!this.tagName){
+						return "";
+					}
+					return this.tagName.toLowerCase();
+			};
+			e.before = function(e){					//ajoute un élèment avant
+				this.parentNode.insertBefore(e, this);
+			};
+			e.after = function(e){						//ajoute un élément après
+				 this.parentNode.insertBefore(e, this.nextSibling);
+			};					
+			e.del = function(){									//supprime l'élément
+				this.parentNode.removeChild(this);
+			};
+			e.top = function(){
+				return this.offsetTop;
+				//Jaria.el.getoffset(this, "top");
+			};
+			e.left = function(){
+				return this.offsetLeft;
+				//Jaria.el.getoffset(this, "left");
+			};
+			e.sizeX = function(){
+				return this.offsetWidth;
+				//Jaria.el.getoffset(this, "width");
+			};	
+			e.sizeY = function(){
+				return this.offsetHeight;
+				//Jaria.el.getoffset(this, "height");
+			};	
 		};
 		
-		//test l'objet
+		//Test l'objet
 		$.isobject = function(o){
 			return ( typeof(o) == "object" ) ? true : false;
 		};
@@ -851,26 +1026,887 @@ var Jaria = {
 			return undefined;
 		};
 		
+		//Retourne la dimention ou la position réelle en pixels d'un élément par rapport au document
+		$.getoffset = function(e, s){
+			/*
+				argument 0 : obligatoire		élément
+				argument 1 : obligatoire		propriété (left, top, height, width)
+				argument 1 : optionnel			parent
+			*/
+			var txt = Jaria.txt;
+			if( !txt.test(e) || !txt.test(s) ){
+				return 0;
+			}
+			e = Jaria.el.get(e);
+			s = s.replace("offset", "");
+			s = "offset" + txt.firstUp(s);
+			if( s.indexOf("Height") != -1 || s.indexOf("Width") != -1 ){
+				return eval("e." + s + ";");
+			}
+			var a = 0;
+			var t = ( oBox.exist && e.className == "jaria_listlock"  ) ? "div" : "body";
+			while (e && txt.lower(e.tagName) != t){
+				eval("a += e." + s + ";");
+				e = e.offsetParent;
+			}
+			return a;		
+		};
+		
+		//Créé un node texte
+		$.text = function(t){
+			return document.createTextNode(t);
+		};
+		
+		//Ajoute un node texte à un élément
+		$.addtext = function(e, t){
+			e.appendChild($.text(t));
+		};
+		
+		//Créé un élément
+		$.create = function(t){	
+			var e = document.createElement(t);
+			$.fn(e);
+			return e;
+		};
+
+		//Supprime un élément
+		$.del = function(e){
+			if( !$.isobject(e) ){
+				if( !$.test(e) ){
+					return false;
+				}
+				e = $.get(e);
+			}
+			try{
+				e.parentNode.removeChild(e);
+				e = undefined;
+			}
+			catch(e){}
+		};
+		
+		//Applique une opacité à un élément de 0 à 100
+		$.opacity = function(e, v){
+			if(!$.test(e) || isNaN(v)){
+					return false;
+			}
+			e = $.get(e);
+			if(parseInt(v) < 0){
+				v = 0;
+			}
+			if(parseInt(v) > 100){
+				v = 100;
+			}				
+			if(Jaria.nav.oldmsie){
+				e.style.filter = "alpha(opacity=" + parseInt(v) + ")";
+			}
+			else{
+				e.style.opacity = Math.round((parseFloat(v)/100)*10)/10;
+			}
+		};
+		
+		//OK
+		this.getopacity = function(e){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
+			if(!$.test(e)){
+				return 0;
+			}
+			var v = 100;
+			if(Jaria.nav.oldmsie){
+				v = e.style.filter.toString();				
+				v = v.split("=");
+				if( v.length > 0 ){
+					v = parseFloat(v[v.length - 1]);
+				}
+				if( isNaN(v) ){
+					e.style.filter = "alpha(opacity=100)";
+					v = 100;
+				}
+			}else{
+				v = parseFloat(e.style.opacity) * 100;
+				if( isNaN(v) ){
+					e.style.opacity = 1;
+					v = 100;
+				}
+			}
+			return v;
+		};
+		
+		//Repositionne progressivement l'élément dans la fenêtre du navigateur		
+		$.setinscreen = function(e){
+			
+			var el = Jaria.el;
+			var txt = Jaria.txt;
+			function Stop(){
+				if( e.id == "JARIA_SETINESCREEN"){
+					e.id = "";
+				}
+				window.clearTimeout($.timer);
+				$.timer = null;
+				$.isinscreen();
+			}
+			
+			if(!el.test(e)){
+				return false;
+			}
+			e = el.get(e);
+			if( e.id == ""){		// attribut un id obligatoire
+				e.id = "JARIA_SETINESCREEN";
+			}	
+			
+			var left = parseFloat(e.offsetLeft);
+			var top = parseFloat(e.offsetTop);
+			var width = parseFloat(e.offsetWidth);
+			var height = parseFloat(e.offsetHeight);
+			var paddingW = 0; 
+			var paddingH = 0;
+			var marge = 60;			
+			// point droit et point bas de l'élément
+			var right = left - oNav.scrollX + paddingW + width;
+			var bottom = top - oNav.scrollY  + paddingH + height;		
+
+			if(left < oNav.scrollX){
+				// repositionne la box à gauche
+				e.style.left = txt.px(left + paddingW);
+			}			
+			if(top < oNav.scrollY){
+				// repositionne la box en haut
+				e.style.top = txt.px(top + paddingH);
+			}
+			// fenêtre plus petite que l'élément
+			if((left <= 0 && right >= oNav.screenX) || (top <= 0 && bottom >= oNav.screenY)){
+				Stop();
+				return false;
+			}
+			// élément dans la fenêtre
+			if((left >= 0 && right <= oNav.screenX) && (top >= 0 && bottom <= oNav.screenY)){
+				Stop();
+				return false;
+			}
+			// coin haut - gauche de l'élément dans le coin de la fenêtre
+			if((left == 0 && right >= oNav.screenX && top >= 0 && bottom <= oNav.screenY) || (top == 0 && bottom >= oNav.screenX && left >= 0 && right <= oNav.screenY)){
+				Stop();
+				return false;				
+			}
+			if(right > oNav.screenX){
+				e.style.left = txt.px(left - (paddingW + marge));
+			}
+			if(bottom > oNav.screenY){
+				e.style.top = txt.px(top - (paddingH + marge));
+			}
+			//TODO à placer dans box !
+			//if(Jaria.box.exist){
+			//	oBox.setshadow();
+			//}
+			$.timer = window.setTimeout("Jaria.el.setinscreen('" + e.id + "')", 20);		
+		};
+		
+		// fonction à redéfinir  executée lorsque le repositionnement de l'élément déplacée par la fonction oEl.setinscreen est terminée 
+		$.isinscreen = function(){
+			return false;
+		};
+		
 	},
 	
 	//*********************
 	//fonction à instancier
 	//*********************
+		
+	//Préchargement des images
+	Loadimage: function(){
+		
+		var $ = this;
+		var nav = Jaria.nav;
+		var txt = Jaria.txt;
+		var a = arguments;
+		var t = null;
+		var last = 0
+		var url = [];						// tableau des URL d'images à charger
+		var e = undefined;					// fenêtre de chargement			
+		$.view = false;						// afficher le préchargement des images
+		
+		//Démarre le préchargement
+		$.start = function(o){
+			if(typeof(o) == "string"){
+				o = JSON.parse(o);
+			}
+			if(Jaria.el.isobject(o)){
+				for (var d in o){				
+					if(d == "show" && typeof(o[d]) == "boolean"){
+						$.view = o[d];						
+					}
+					if(d == "url" && Array.isArray(o[d]) ){						
+						url = o[d];
+					}
+				}
+			}
+			var i = last;
+			if(nav.ready && url.length > 0){
+				if( !Jaria.el.isobject(url[i]) ){
+					var u = txt.trim(url[i]);					
+					url[i] = new Image();
+					url[i].src = u;
+					$.show("Préchargement des images : " + (i + 1).toString() + " / " +	url.length);
+					url[i].onerror = function(){
+						$.show("Impossible de charger l'image <b>" + u + "</b> !");
+						i ++;
+						last = i;	
+					}
+				}					
+				if(url[i].complete){
+					i ++;				
+					if( i >= url.length ){			// dernière image chargée												
+						$.clear();
+						return false;
+					}					
+					last = i;			
+				}	
+			}			
+			t = window.setTimeout(Jaria.loadimage.start, 10);				
+		};	
+		
+		//Termine le préchargement
+		$.clear = function(){
+			last = 0;
+			url = [];
+			nav.cleartimer(t);
+			nav.t = null;
+			nav.readyfull = true;	
+			nav.inload = false;
+			$.hide();
+		};
+		
+		//Affiche la progression du préchargement
+		$.show = function(s){
+			if(!$.view){
+				return false;
+			}
+			$.hide();
+			nav.lock.anim = false;
+			e = Jaria.el.create("div");
+			e.className = "jaria_loadimage";
+			e.html(s);
+			e.onclick = function(){
+				$.hide();
+				$.view = false;
+			}
+			nav.body.appendChild(e);
+			e.style.left = txt.px(5  + nav.scrollX);
+			e.style.top = txt.px(5 + nav.scrollY);				
+		};
+		
+		//Cache la progression du préchargement
+		$.hide  = function(){
+			try{
+				nav.body.removeChild(e);
+				e = undefined;
+			}
+			catch(e){}		
+		};
+					
+	},
 	
 	//Boite de dialogue personnalisée
 	Box: function(){
 		
-		var $ = this;
-		$.txt = "";
+		var $ = this;	
+		$.type = 1;								// 1: information | 2: confirmation | 3: alerte | 4: erreur
+		$.ico = 1;								// plus utilisé depuis le 05/11/2011
+		$.bts = 1;								// affiche le(s) bouton(s)
+		$.quit = 1;								// affiche le bouton quitter dans la barre de titre de la box
+		$.title = "";							// tire dans la barre de titre de la box
+		$.html = "";							// html du message de la box
+		$.focus = 1;							// focus sur le bouton de la box
+		$.el = undefined;						// élement Box
+		$.posX = 0;								// décalage horizontal par rapport au centre
+		$.posY = 0;							// décalage vertical par rapport au centre
+		$.width = null;							// redéfini la largeur de la box (400px par défaut)
+		$.exist = 0;							// box affichée
+		$.lineheight = null;					// hauteur des interlignes du texte HTML
+		$.status = false;						// affichage de la barre de status
+		$.borderColor = null;					// couleur du contour de la box
+		$.color = null;							// couleur du texte de la box
+		$.backColor = null;						// couleur de fond de la box
+		$.backImage = null;						// image de fond de la box
+		$.fader = true;							// affichage progressif de la box
+		$.shadow = true;						// ombre de la boîte de dialogue
+		$.radius = true;						// bords arrondis
+		$.timer = null;
+		$.modal = true;							//boîte de dialogue rendu modal par le locking
 		
-		$.show = function(){
+		//Affiche la box d'information
+		$.info = function(s, t, w){
+			$.show({
+				type: 1,
+				html: s,
+				title: ((Jaria.txt.test(t)) ? t : "Information"),
+				width: w,
+				borderColor: "#06b68f"
+			});
+		};
+
+		//Affiche la box de confirmation
+		$.confirm = function(s, t, w){
+			$.show({
+				type: 2,
+				html: s,
+				title: ((Jaria.txt.test(t)) ? t : "Confirmation"),
+				width: w,
+				borderColor: "#0661b6"
+			});
+			//Les boutons de confirmation
+			$.el.BtNo = el.create("button");
+			$.el.Spa = el.create("span");
+			$.el.BtOk.html("Oui");
+			$.el.BtNo.className = "jaria_button";
+			$.el.BtNo.style.width = "50px";
+			$.el.BtNo.html("Non");
+			$.el.BtNo.onclick = function(){
+				$.el.Bts.innerHTML = "<img src='" + Jaria.path + "loadimg.gif' />";
+				$.annul();
+			};
+			$.el.BtOk.onclick = function(){
+				$.el.Bts.innerHTML = "<img src='" + Jaria.path + "loadimg.gif' />";
+				$.valid();
+			};
+			$.el.Spa.html(txt.repeat("&nbsp;", 4));
+			$.el.Bts.appendChild($.el.Spa);
+			$.el.Bts.appendChild($.el.BtNo);			
+		};
+		
+		//Affiche la box d'alerte
+		$.alert = function(s, t, w){
+			$.show({
+				type: 3,
+				html: s,
+				title: ((aria.txt.test(t)) ? t : "Alerte"),
+				width: w,
+				borderColor: "#c6b01e"
+			});
+		};
+		
+		//Affiche la box d'erreur
+		$.error = function(s, t, w){
+			$.show({
+				type: 3,
+				html: s,
+				title: ((Jaria.txt.test(t)) ? t : "Erreur interne!"),
+				width: w,
+				borderColor: "#ea5247"
+			});
+		};
+		
+		//Affiche la box d'attente
+		$.wait = function(){
+			$.show({
+				html: "<div style='text-align:center'><img src='" + Jaria.path + "loadimg.gif' /></div>"
+			});
+		};
+		
+		//Fonction appelée à l'annulation de la confirmation de la box
+		$.annul = function(){
+			$.hide();			
+		};
+		
+		//Fonction appelée à la validation de la confirmation de la box
+		$.valid = function(){
+			$.hide();			
+		};
+		
+		//Ajoute un bouton spécifique à la box
+		$.addbutton = function(t, f){
+			if( !$.exist || typeof(t) != "string" || t == "" || typeof(t) != "function" ){
+				return false;
+			}
+			var b = Jaria.el.create("button");
+			var s = Jaria.el.create("span");
+			bt.onclick = f;
+			b.html(t);
+			b.className = "jaria_button";
+			b.style.width = Jaria.txt.px(10 * t.length);
+			s.html(Jaria.txt.repeat("&nbsp;", 4));
+			$.el.Bts.appendChild(s);
+			$.el.Bts.appendChild(b);
+		};
+
+		//Affiche la box
+		$.show = function(o){
+									
+			var nav = Jaria.nav;
+			var txt = Jaria.txt;
+			var el = Jaria.el;
+			var color = Jaria.color;
 			
-			if(Jaria.txt.test($.txt)){
-				alert($.txt);
+			if( !nav.ready ){
+				return false;
+			}			
+			if(txt.test(o) && txt.isjson(o)){
+				o = JSON.parse(o);
+			}
+			if(el.isobject(o)){
+				for(d in o){
+					if(d == "html" && txt.test(o[d])){
+						$.html = o[d];
+						
+					}
+					if(d == "title" && txt.test(o[d])){
+						$.title = o[d];
+					}
+					if(d == "width" &&!isNaN(o[d])){
+						$.width = o[d];
+					}
+					if(d == "borderColor" && color.iscolor(o[d])){
+						$.borderColor = o[d];
+					}
+					if(d == "backColor" && color.iscolor(o[d])){
+						$.backColor = o[d];
+					}
+					if(d == "backImage" && color.iscolor(o[d])){
+						$.backImage = o[d];
+					}
+					if(d == "color" && color.iscolor(o[d])){
+						$.color = o[d];
+					}
+					if(d == "fader" && typeof(o[d]) == "boolean"){
+						$.fader = o[d];
+					}
+					if(d == "shadow" && typeof(o[d]) == "boolean"){
+						$.shadow = o[d];
+					}
+					if(d == "radius" && typeof(o[d]) == "boolean"){
+						$.radius = o[d];
+					}
+					if(d == "modal" && typeof(o[d]) == "boolean"){
+						$.modal = o[d];
+					}
+					if(d == "status" && typeof(o[d]) == "boolean"){
+						$.status = o[d];
+					}
+				}
+			}			
+			
+			if( !txt.test($.html) ){
+				$.error("le texte html de boite de dialogue est obligatoire!");
+			}
+			if( $.type < $.exist ){						//Priorités des boîtes de dialogue				
+				return false;
+			}
+			el.del($.el);
+			if($.modal){
+				nav.lock.show();
+			}
+			txt.select(false);
+			$.el = el.create("div");
+			$.el.Head = el.create("div");
+			$.el.Title = el.create("div");
+			$.el.Quit = el.create("div");
+			$.el.Body = el.create("div");
+			$.el.Html = el.create("div");
+			$.el.Bts = el.create("div");			
+			$.el.className = "jaria_box";			
+			if($.borderColor != null){
+				$.el.style.backgroundColor = $.borderColor;
+			}
+			$.el.Title.style.color = color.colortext($.el.style.backgroundColor, "#fff", "#333");
+			$.width = ( $.width != null && !isNaN($.width) && $.width > 400 && $.width <= (nav.screenX - 20) ) ? $.width : 400;
+			// décalages paramétrés x et y
+			$.posX = ( !isNaN($.posX) ) ? parseInt($.posX) : 0;
+			$.posY = ( !isNaN($.posY) ) ? parseInt($.posY) : 0;
+			$.lineheight = ( !isNaN($.lineheight) && parseFloat($.lineheight) >= 15 && parseFloat($.lineheight) <= 100 ) ? parseInt($.lineheight) : 15;
+			$.el.style.width = txt.px($.width);										
+			$.el.Head.onmousedown = function(e){
+				$.drag(e);
+			};
+			$.el.Head.className = "jaria_boxhead";
+			$.el.Title.title = "Déplacer";
+			$.el.Title.className = "jaria_boxtitre";
+			$.el.Title.innerHTML = ( $.title != "" ) ? txt.firstUp($.title) : "&nbsp;";
+			$.el.Html.className = "jaria_boxhtml";
+			$.el.Body.className = "jaria_boxbody";
+			if( $.radius ){
+				$.el.style.borderRadius = "7px";
+				if( !$.status ){
+					$.el.Body.style.borderRadius = "0px 0px 7px 7px";				
+				}
+			}
+			if(color.iscolor($.color)){
+				$.el.Html.style.color = $.color;
+			}
+			if(color.iscolor($.backColor)){
+				$.el.Body.style.backgroundColor = $.backColor;
+			}			
+			if( $.backImage != null ){
+				$.el.Body.style.backgroundImage = "url(" + $.backImage + ")";
+			}
+			if( $.lineheight != null ){
+				$.el.Html.style.lineHeight = txt.px($.lineheight);
+			}
+			$.el.Quit.className = "jaria_boxclose";
+			$.el.Html.html($.html);
+			$.el.Head.appendChild($.el.Title);
+			if($.quit){
+				var img = el.create("img");
+				img.src = Jaria.path + "box/btclose.png";
+				img.alt = "";
+				img.title = "Fermer [escape]";
+				img.css({
+					cursor: "pointer",
+					marginTop:"3px"
+				})
+				img.onmouseover = function(){
+					$.src = Jaria.path + "box/btclose_hover.png";
+				};
+				img.onmouseout = function(){
+					$.src = Jaria.path + "box/btclose.png";
+				};
+				img.onclick = $.annul;
+				$.el.Quit.appendChild(img);
+				$.el.Head.appendChild($.el.Quit);
+			}			
+			$.el.appendChild($.el.Head);			
+			$.el.Body.appendChild($.el.Html);			
+			if($.bts){
+				$.el.Bts.className = "jaria_boxboutons";				
+				$.el.BtOk = el.create("button");
+				$.el.BtOk.className = "jaria_button";
+				$.el.BtOk.style.width = "50px";
+				$.el.BtOk.innerHTML = "Ok";
+				$.el.BtOk.onclick = $.hide;
+				$.el.Bts.appendChild($.el.BtOk);
+				$.el.Body.appendChild($.el.Bts);
+			}
+			$.el.appendChild($.el.Body);
+			nav.body.appendChild($.el);
+			$.exist = $.type;	
+			if($.fader){
+				//TODO
+				//el.opacity($.el, 0);				
+				//el.fader.plus($.el);
+			}		
+			
+			$.setTitleWidth();
+			
+			//Barre de status en bas
+			if($.status){
+				$.el.status = el.create("div");
+				$.el.status.className = "jaria_boxstatus";
+				$.el.status.innerHTML = "&nbsp;";
+				$.el.status.title = "Redimensionner";
+				el.addclass($.el.Html, "jaria_boxscroll");
+				$.el.status.onmousedown = $.ResizeStart;
+				$.el.status.onmouseup = $.ResizeStop;
+				nav.addevent("onmouseup", $.ResizeStop);
+				nav.lock.el.onmouseup = $.ResizeStop;
+				$.el.Html.onmouseup =  $.ResizeStop;
+				$.el.Bts.onmouseup =  $.ResizeStop;
+				$.el.posStartX = null;
+				$.el.posStartY = null;
+				$.el.Html.startX = $.el.Body.offsetWidth;
+				$.el.Html.startY = $.el.Body.offsetHeight;
+				$.el.appendChild($.el.status);
+				$.el.Body.style.marginBottom = "0px";
+				if( $.radius ){
+					$.el.status.style.borderRadius = "0px 0px 7px 7px";
+				}
+			}	
+							
+			$.center();						//centre la box
+
+			if( $.bts && $.focus ){
+				$.el.BtOk.focus();	// focus sur le bouton Ok ou Oui
 			}
 			
-		}
+			//Ajoute la fonction hide() à la fonction Jaria.nav.hideallbox pour prendre en compte la fermeture de la box dans l'événement de la touche ESCAPE
+			Jaria.nav.hideallbox = Jaria.fn.append(Jaria.nav.hideallbox, $.hide);
+			
+			nav.addevent("onresize", $.center);
+			nav.addevent("onscroll", $.center);
+			
+		};
 		
+		$.setTitleWidth = function(){
+			$.el.Title.style.width = Jaria.txt.px($.el.sizeX() - $.el.Quit.sizeX() - 6);			
+		};
+		
+		$.setradius = function(){
+			if( $.radius && Jaria.nav.support("borderRadius") ){
+				$.el.style.borderRadius = "7px";
+				if( !$.status ){
+					$.el.Body.style.borderRadius = "0px 0px 7px 7px";				
+				}
+			}
+		};
+			
+		$.setshadow = function(){
+			var el = Jaria.el;
+			var txt = Jaria.txt;
+			if( $.el && $.shadow && $.exist){
+				if(Jaria.nav.support("boxShadow")){
+					$.el.style.boxShadow = "4px 4px 8px #999";
+				}
+				else{
+					el.del($.el.shadow);
+					$.el.shadow = el.create("div");
+					$.el.shadow.className = "jaria_boxshadow";				
+					$.el.shadow.style.width = txt.px($.el.sizeX());
+					$.el.shadow.style.height = txt.px($.el.sizeY());
+					$.el.shadow.style.top = txt.px($.el.top() +  6);
+					$.el.shadow.style.left = txt.px($.el.left() + 6);
+					Jaria.nav.body.appendChild($.el.shadow);
+					el.opacity($.el.shadow, 20);
+				}
+				$.setradius();
+			}			
+		};
+		
+		$.hide = function(){							// détruit la box
+			var nav = Jaria.nav;
+			var el = Jaria.el;
+			if($.el){
+				if($.modal){
+					nav.lock.hide();
+				}
+				nav.delevent("onresize", $.center);
+				nav.delevent("onscroll", $.center);	
+				$.type = 1;
+				$.exist = 0;
+				$.html = "";
+				$.title = "";
+				$.posX = 0;
+				$.posY = 0;
+				$.width = null;
+				$.bts = 1;
+				$.quit = 1;
+				$.status = false;
+				$.focus = 1;
+				$.lineheight = 15;
+				$.color = null;
+				$.borderColor = null;
+				$.backColor = null;
+				$.backImage = null;
+				Jaria.txt.select(true);
+				//TODO
+				//el.title.hide();							// détruit l'éventuelle infobulle
+				el.del($.el);
+				el.del($.el.shadow);
+				$.el = undefined;
+				$.fader = true;
+				$.shadow = true;
+			}
+		};
+		
+		// démarrage du déplacement de la box
+		$.drag = function(e){					
+			//TODO
+			//Jaria.el.drag.opacity = 65;						// transparence de l'élément pendant le déplacement
+			//Jaria.el.drag.start($.el, e);
+		};
+		
+		//Centre la box et son ombre dans la fenêtre du navigateur
+		$.center = function(){						
+			if($.el == undefined){
+				return false;
+			}
+			var nav = Jaria.nav;
+			var txt = Jaria.txt;
+			nav.scroll();			
+			var x = parseInt( (nav.screenX / 2) - ($.el.sizeX() / 2) + nav.scrollX + $.posX );
+			var y = parseInt( (nav.screenY / 2) - ($.el.sizeY() / 2) + nav.scrollY + $.posY );
+			$.el.css({
+				left: txt.px(x),
+				top: txt.px(y)
+			})		
+			Jaria.el.setinscreen($.el);
+			$.setshadow();		
+		};
+		
+		$.resizeY = function(h){      			// redimentionne la hauteur de la box 
+			if($.el){
+				$.el.Html.style.height = txt.px(h);
+				$.el.style.height = txt.px($.el.Head.sizeY() + $.el.Html.sizeY() + $.el.Bts.sizeY() + $.el.status.sizeY() + 3);
+				$.setshadow();
+			}
+		};
+	
+		//Redimentionne la largeur de la box
+		$.resizeX = function(w){      			
+			if($.el){
+				$.el.Html.style.width = txt.px(w);
+				$.el.style.width = txt.px($.el.Html.sizeX());
+				$.setshadow();
+			}
+		};
+		
+		//Fonction pouvant être redéfinie appelée lors du redimentionnement de la box
+		$.onResize = function(){
+			
+		};
+
+		//Démarrage du redimensionnmeent de la box par la barre de status
+		$.ResizeStart = function(){					
+			function move(){
+				try{
+					var height = parseInt($.el.Html.startY) + parseInt(nav.mouse.Y) - nav.scrollY - $.el.posStartY;
+					if(!isNaN(height) && height >= 40){
+						$.el.Html.style.height = txt.px(height);
+						$.el.style.height = txt.px($.el.Head.offsetHeight + $.el.Html.offsetHeight + $.el.Bts.offsetHeight + $.el.status.offsetHeight + 3);
+					}
+					var width = parseInt($.el.Html.startX) + parseInt(nav.mouse.X) - nav.scrollX - $.el.posStartX;
+					if(!isNaN(width) && width >= $.width) {
+						$.el.Html.style.width = txt.px(width);
+						$.el.style.width = txt.px($.el.Html.offsetWidth);
+					}
+					if($.el.shadow){
+						$.el.shadow.style.height = txt.px(el.getoffset($.el, "height"));
+						$.el.shadow.style.width = txt.px(el.getoffset($.el, "width"));
+					}
+					$.setTitleWidth();
+					$.onResize();
+				}
+				catch(e){
+					$.ResizeStop();
+				}				
+			}
+			if( !$.exist ){
+				return false;
+			}
+			el.opacity($.el, 75);
+			el.opacity($.el.shadow, 10);
+			txt.select(false);
+			if( $.el.posStartY == null ){
+				$.el.posStartY = parseInt(nav.mouse.Y) - nav.scrollY;
+				$.el.posStartX = parseInt(nav.mouse.X) - nav.scrollX;
+			}
+			if( el.getstyleclass($.el.status, "cursor") != undefined ){
+				nav.lock.el.style.cursor = el.getstyleclass($.el.status, "cursor");
+				$.el.style.cursor = el.getstyleclass($.el.status, "cursor");
+			}
+			$.el.status.onmousemove = move;
+			nav.lock.el.onmousemove = move;
+			$.el.Html.onmousemove = move;
+		};
+		
+		//Arrêt du redimensionnmeent de la box
+		$.ResizeStop = function(){
+			if($.el){
+				el.opacity($.el, 100);
+				el.opacity($.el.shadow, 20);
+				$.el.posStartX = null;
+				$.el.posStartY = null;
+				document.onmouseup = null;
+				nav.lock.el.style.cursor = "default";
+				$.el.style.cursor = "default";
+				txt.select(true);
+				$.el.Html.startY = $.el.Body.offsetHeight;
+				$.el.Html.startX = $.el.Body.offsetWidth;
+				$.el.status.onmousemove = function(){return false;};
+				nav.lock.el.onmousemove = function(){};
+				$.el.Html.onmousemove = function(){};
+			}
+		};	
+		
+	},
+	
+	//Gestion des couleurs
+	Color: function(){
+	
+		var $ = this;	
+		
+		//TODO à intégrer dans le picker	
+		/*this.picker = new function(){	// fonction externalisée redéfinie dans le fichier jaria_colorpicker.js
+			this.hide = function(){};
+		};*/
+		
+		//Converti un hexa court en long
+		$.shortvershexa = function(c){
+			if( !Jaria.txt.test(c) ){
+				return false;
+			}
+			c = c.toUpperCase();
+			if(c.toString().length == 4){				
+				var h, r;
+				var t = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F");
+				for( var i = 0; i < t.length; i++){					
+					h = t[i].toUpperCase();
+					if(c.lastIndexOf(h) != -1){
+						r = new RegExp(h, "g");
+						c = c.replace(r, h + h);
+					}
+				}
+			}
+			return c;
+		};
+		
+		//Test une couleur hexa
+		$.iscolor = function(c){
+			if( !Jaria.txt.test(c) ){
+				return false;
+			}
+			c = $.shortvershexa(c);
+			if(c.toString().length != 7){
+				return false;
+			}
+			if(c.toString().substr(0, 1) != "#"){
+				return false;
+			}
+			c = c.toString().substr(1, 7).toUpperCase();
+			for( var i = 0; i < c.length; i++ ){
+				if( isNaN(c.substr(i, 1)) ){
+					if( c.substr(i, 1) != "A" && c.substr(i, 1) != "B" && c.substr(i, 1) != "C" && c.substr(i,1) != "D" && c.substr(i,1) != "E" && c.substr(i,1) != "F" ){
+						return false;
+					}
+				}
+			}
+			return true;
+		};
+		
+		//Converti la couleur selon le navigateur
+		$.navcolor = function(c){
+			c = $.shortvershexa(c);
+			return (Jaria.nav.oldmsie) ? c : $.rgb_hexa(c);
+		};	
+			
+		//Converti la couleur rgb en hexa
+		$.rgb_hexa = function(s){
+			var c = "0123456789ABCDEF";
+			var h = "";
+			var t = s.split(",");
+			var R = new String(t[0]);
+			R = R.split("(");
+			t[0] = R[1];
+			var B = new String(t[2]);
+			t[2] = B.replace(")", "");
+			for(var i = 0; i < t.length; i++){
+				var N = parseInt(tab[i]);
+				h += c.charAt(N >> 4) + c.charAt(N & 15);
+			}
+			h = Jaria.txt.upper("#" + h);
+			return h;			
+		};	
+			
+		//Converti la couleur hexa en rgb
+		$.hexa_rgb = function(c){
+			c = $.shortvershexa(c);
+			var s = (c.charAt(0)=="#") ? c.substring(1,7) : c;
+			var r = parseInt(s.substring(0,2),16);
+			var g = parseInt(s.substring(2,4),16);
+			var b = parseInt(s.substring(4,6),16);
+			return r + "," + g + "," + b		
+		};
+		
+		//Couleur du texte selon la couleur de fond
+		$.colortext = function(c, cc, cf){
+			try{
+				var rgb = (Jaria.color.iscolor(c)) ? Jaria.color.hexa_rgb(c) : c;
+				var t = rgb.toString().split(/,/g);
+				var r = parseFloat(t[0].replace("rgb(", ""));
+				var g = parseFloat(t[1]);
+				var b = parseFloat(t[2].replace(")", ""));
+				c = ( (0.3 * (r)) + (0.59 * (g)) + (0.11 * (b)) <= 128)  ? cc : cf;
+				return c;
+			}
+			catch(e){
+				return "#000";
+			}
+		}
 	},
 	
 	//Fonction Ajax
@@ -1058,9 +2094,8 @@ var Jaria = {
 		};
 		
 		//Fonction appelée lors d'une erreur Ajax
-		$.onerror = function(e){
-			box.txt = e;		
-			box.show();
+		$.onerror = function(s){
+			box.error(s, "Erreur Ajax");
 			return false;
 		};	
 		
@@ -1093,7 +2128,8 @@ var Jaria = {
 
 Jaria.init(Jaria);
 
-//Ancien objets dépréciés
+//Anciens objets dépréciés
 var oNav = Jaria.nav;
 var oBox = new Jaria.Box();
 var oAjax = new Jaria.Ajax();
+var oColor = new Jaria.Color();

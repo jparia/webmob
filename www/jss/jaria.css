@@ -1,0 +1,233 @@
+	/*	Styles CSS de la librairie JARIA
+		Copyright (c) 2008 Jean-Pierre ARIA (jaria.free.fr) */
+	
+	/* style du grisage de la fen�tre */
+	.jaria_lock			  { position:absolute; z-index:98; background-color:#fff; background-repeat:no-repeat; background-position:center; text-align:center;}
+	.jaria_lock_texte     { position:relative; font-family:Arial, Helvetica, sans-serif; font-size:18px; color:#000; text-align:center; } 
+	.jaria_lock_1		  { background-image:url(images/lock/1.gif); }
+	.jaria_lock_2		  { background-image:url(images/lock/2.gif); }
+	.jaria_lock_3		  { background-image:url(images/lock/3.gif); }
+	.jaria_lock_4		  { background-image:url(images/lock/4.gif); }
+	.jaria_lock_5		  { background-image:url(images/lock/5.gif); }
+	.jaria_lock_6		  { background-image:url(images/lock/6.gif); }
+	.jaria_lock_7		  { background-image:url(images/lock/7.gif); }
+	.jaria_lock_8		  { background-image:url(images/lock/8.gif); }
+	.jaria_lock_9		  { background-image:url(images/lock/9.gif); }
+	.jaria_lock_10		  { background-image:url(images/lock/10.gif); }
+	.jaria_loadimage      { position:absolute; z-index:100; background-color:#fff; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#333; font-style:italic; padding:10px; border:1px solid #000; border-radius:5px; box-shadow: 4px 4px 8px #999; cursor:pointer; }
+	
+	/* style des objets input */
+	.jaria_input		  { border:1px solid #69c; background-color:#fff; color:#036; height:20px; border-radius:5px; padding-left:3px; background-image:url(images/fond_input.png); background-position:top; background-repeat:repeat-x;}
+	.jaria_textarea		  { border:1px solid #69c; background-color:#fff; color:#036; border-radius:5px; padding:3px; background-image:url(images/fond_input.png); background-position:top; background-repeat:repeat-x; }	
+	.jaria_enter		  { background-image:url(images/enter.gif); background-repeat:no-repeat; background-position:center right; background-color:#fff; }		/* pour activer la validation sur la touche entrer [enter] */
+	.jaria_date			  { width:70px; text-align:center; }
+	.jaria_time			  { width:40px; text-align:center; }
+	.jaria_num			  { text-align:right; width:40px; }
+	.jaria_color		  { text-transform:uppercase; text-align:center; width:60px; float:left; border-radius:5px 0px 0px 5px; border-right:none; }	
+	.jaria_upper		  { text-transform:uppercase; }
+	.jaria_lower		  { text-transform:lowercase; }
+	.jaria_inc			  { text-align:right; width:40px; border-top-right-radius:0px; border-bottom-right-radius:0px; }
+
+	/* styles pour les boutons */
+	.jaria_bttime			{ background-color:transparent; background-image:url(images/cal/time.gif); background-repeat:no-repeat; width:22px; height:22px; border:none; cursor:pointer; }
+	.jaria_btdate			{ background-color:transparent; background-image:url(images/cal/date.gif); background-repeat:no-repeat; width:22px; height:22px; border:none; cursor:pointer; }
+	.jaria_btcolor			{ background-image:url(images/button/button_blue.png); border:transparent; background-color:#69c; cursor:pointer; padding:2px; border:1px solid #187393; float:left;  width:35px;  height:18px; line-height:normal; border-radius:0px 5px 5px 0px; }
+	.jaria_btcolor:hover	{ border:1px solid #3ff; }
+	.jaria_btscolor			{ width:15px; height:15px; border:1px solid #fff; font-size:10px; float:left; }
+	.jaria_btsscolor		{ float:right;  width:14px; height:18px; background-image:url(images/color/color.gif); background-repeat:no-repeat; }
+	.jaria_button			{ background-image:url(images/button/button_blue.png); border:transparent; font-family:Verdana; font-size:12px; color:#009; cursor:pointer; padding:2px; border:1px solid #187393; font-weight:normal; line-height:normal; border-radius:5px 5px 5px 5px; }
+	.jaria_button:hover		{ border:1px solid #3ff; color:#3ff; }
+	
+	/* styles pour les bo�tes de dialogues personnalis�es */
+	.jaria_box		  { position:absolute; z-index:100; display:block; border-width:1px; background-color:#7f98b1; }
+	.jaria_boxhead	  { height:40px; cursor:move; }
+	.jaria_boxclose	  { width:40px; height:40px; float:right; }	
+	.jaria_boxtitre	  { font-family:Verdana; color:#fff; font-size:12px; line-height:40px; font-weight:bold; height:40px; float:left; cursor:move; padding-left:5px; text-align:left; overflow:hidden; }
+	.jaria_boxbody	  { background-color:#f1eded; margin: 0px 3px 3px 3px;}
+	.jaria_boxhtml 	  { font-family:Verdana; font-size:12px; padding:10px; line-height:15px;  color:#000; line-height:15; }
+	.jaria_boxscroll  { overflow:auto; }
+	.jaria_boxboutons { padding:10px; padding-top:15px; vertical-align:middle; text-align:center; }
+	.jaria_boxstatus  { font-size:9px; height:25px; background-color:#f1eded; background-image:url(images/box/btresize.png); background-position:right bottom; background-repeat:no-repeat; cursor:se-resize; margin: 0px 3px 3px 3px; }
+	.jaria_boxshadow  { position:absolute; z-index:99; background-color:#000; display:block; }
+		
+	/* styles de la bo�te des traces debug */
+	.jaria_tracedebug		{ height:160px; overflow:auto; }
+	.jaria_tracebutton		{ border:transparent; font-size:8px; cursor:pointer; width:16px; height:16px; margin:3px; margin-bottom:5px;}
+	.jaria_tracebuttonclear { background-image:url(images/trace/clear.png); margin-right:10px;}
+	.jaria_tracebuttonpause	{ background-image:url(images/trace/pause.png); }
+	.jaria_tracebuttonplay	{ background-image:url(images/trace/play.png); }
+	.jaria_tracetext		{ font-size:12px; color:#333; }
+	.jaria_tracehour		{ font-size:10px; background-color:#66c; color:#fff; padding:2px; border:1px solid #fff; }
+	
+	/* style pour l'infobulle */
+	.jaria_bubble			{ position:absolute; z-index:110; width:150px; }
+	.jaria_bubblearrowhaut	{ position:relative; z-index:110; padding-left:5px; height:15px; background-image:url(images/bubble/haut.gif); background-position:left; background-repeat:no-repeat; top:+1px !important; top:+3px;}
+	.jaria_bubblearrowbas	{ position:relative; z-index:110; padding-left:5px; height:15px; background-image:url(images/bubble/bas.gif); background-position:left; background-repeat:no-repeat; top:-1px !important; top:-3px;}
+	.jaria_bubblecont		{ position:relative; z-index:109; padding:5px; border:1px solid #000; background-color:#ffffe0; font-size:12px; border-radius: 0px 5px 5px 5px; box-shadow: 4px 4px 8px #999; }
+	
+	/* styles pour la pr�visualisation des liens */
+ 	.jaria_previsu			{ position:absolute; z-index:10; width:184px; height:139px; top:0px; left:0px; }
+  	.jaria_previsu_cadre	{ position:absolute; z-index:9; width:174px; height:129px; top:0px; left:0px; background-image:url(images/previsu/cadre.gif); }
+	.jaria_previsu_ombre	{ position:absolute; z-index:8; width:184px; height:139px; top:0px; left:0px; background-image:url(images/previsu/cadre_ombre.gif); }
+	.jaria_previsu_img		{ margin-left:6px; margin-top:6px; width:160px; height:115px; }	
+	.jaria_previsu_text		{ position:absolute; z-index:9; top:0px; left:0px; font-weight:bold; font-size:12px; color:#666; font-family:"Times New Roman", Times, serif; text-align:center; clear:both; }
+	.jaria_previsu_text_g	{ float:left; width:5px; height:20px; background-image:url(images/previsu/cadre_texte_g.gif); }
+	.jaria_previsu_text_d	{ float:left; width:5px; height:20px; background-image:url(images/previsu/cadre_texte_d.gif); }
+	.jaria_previsu_text_c	{ float:left; width:174px; height:20px; background-image:url(images/previsu/cadre_texte_c.gif); }
+	
+	/* styles pour le s�lecteur de couleurs */
+	.jaria_colorbox		{ position:absolute; background-color:#fff; z-index:100;border:1px solid #069; padding:3px; width:305px; width:310px !important; overflow:hidden; border-radius:5px; box-shadow: 4px 4px 8px #999;}
+	.jaria_colorhead	{ background-image:url(images/move.gif); background-repeat:no-repeat; background-position:center; background-color:#DBD8D1; font-size:6px; cursor:move; height:12px; }
+	.jaria_colorplus	{ cursor:pointer; background-image:url(images/color/plus.gif); float:right; width:12px; height:12px; } 
+	.jaria_colorcase	{ font-size:6px; width:8px; height:8px; cursor:pointer; border:1px solid #808080; }
+	.jaria_colortext	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; padding-left:3px; }
+	
+	/* styles pour le s�l�cteur avanc� de couleurs */
+	.jaria_pickerbox	{ position:absolute; z-index:100; font-family:Arial, Helvetica, sans-serif; font-size:11px; width:350px; height:204px; background-color:#fff; border:1px solid black; }
+	.jaria_pickercont	{ position:relative; height:192px; width:192px; top:0px; left:0px; }
+	.jaria_picker		{ position:relative; height:192px; width:192px; background-color:#f00; background-image:url(images/picker.png); background-repeat:no-repeat; background-position:center; top:0px; left:0px; }
+	.jaria_pickersel	{ position:absolute; width:11px; height:11px; background-image:url(images/button/button_select.png); background-repeat:no-repeat; }
+	.jaria_pickerhue	{ position:absolute; top:3px; left:200px; width:18px; height:186px; background-image:url(images/hue.png); }
+	.jaria_pickerhuesel	{ position:absolute; background-image:url(images/color_indic.gif); background-repeat:no-repeat; width:18px; height:7px; }
+	.jaria_pickercolorcont	{ width:60px; height:60px; border:2px solid #999; position:absolute; left:240px; top:8px; }
+	.jaria_pickercolor	{ position:absolute; background-color:#fff; top:50%; height:50%; width:100%; }
+	.jaria_pickervalues	{ position:absolute; left:240px; top:80px; }
+			
+	/* styles pour le calendrier */
+	.jaria_cal_box		{ position:absolute; background-color:#eee; border:1px solid #ccc; width:150px; display:block; z-index:96; border-radius:5px;  box-shadow: 4px 4px 8px #999;}
+	.jaria_cal_head		{ background-image:url(images/move.gif); background-repeat:no-repeat; background-position:center; background-color:#DBD8D1; font-size:6px; cursor:move; height:12px; }
+	.jaria_cal_tb		{ background-color:#eee; width:145px; }
+	.jaria_cal_tdnoday	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; text-align:center; background-color:#fff; color:#000; padding:0px; }
+	.jaria_cal_tdday	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; font-weight:bold; text-align:center; cursor:pointer; padding:0px; }
+	.jaria_cal_tddayov	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; font-weight:bold; text-align:center; cursor:pointer; text-decoration:underline; background-color:#66f; padding:0px; }
+	.jaria_cal_tdoday	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; background-color:#fff; color:#000; text-align:center; cursor:pointer; padding:0px; }
+	.jaria_cal_tdodayov	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; background-color:#ccc; color:#33f; text-align:center; cursor:pointer; text-decoration:underline; padding:0px; }		
+	
+	/* styles pour la box diaporama */
+	.jaria_diapo_conteneur	{ text-align:center; color:#fff; }
+	.jaria_diap_buttons		{ padding-top:10px; text-align:center; }
+	.jaria_diap_button		{ width:22px; height:22px; cursor:pointer; padding:3px; margin-right:5px; background-repeat:no-repeat; display:inline-block; }
+	.jaria_diap_button_play	{ background-image:url(images/diapo/play.png); }
+	.jaria_diap_button_stop	{ background-image:url(images/diapo/stop.png); }
+	.jaria_diap_lien		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#424343; border:1px solid #ccc; color:#fff; cursor:pointer; padding:3px; padding-top:1px; margin-left:2px; margin-right:2px; border-radius:3px; }
+	.jaria_diap_lienov		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#c6b01e; border:1px solid #ccc; color:#00f; padding:3px; padding-top:1px;; margin-left:2px; margin-right:2px; border-radius:3px; }
+	.jaria_diap_lien:hover	{ background-color:#ccc; color:#424343; }
+	
+	/* style pour le carrousel d'images */
+	.jaria_carrousel      { height:150px; }
+	.jaria_carrousel_img	{ position:absolute; z-index:0; height:150px; width:150px; left:0px; top:0px; cursor:e-resize; border:1px solid #666;  border-radius:5px; }
+	.jaria_carrousel_imgm	{ position:absolute; z-index:0; height:150px; width:150px; left:0px; top:0px; cursor:pointer; border:3px solid #666; border-radius:5px; }
+	.jaria_carrousel_eti	{ position:absolute; z-index:0; height:30px; width:150px; left:0px; top:0px; text-align:center; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; color:#666; }
+	
+	/* style pour le trombinoscope */
+	.jaria_trombi				{ width:600px; background-color:#666; font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#fff; float:none; padding:10px; border-radius:10px; box-shadow: 4px 4px 8px #333; }
+	.jaria_trombi_top			{ font-size:12px; font-weight:bold; text-align:left; padding:10px; }
+	.jaria_trombi_left			{ float:left;}
+	.jaria_trombi_right			{ float:right; }
+	.jaria_trombi_barre			{ width:400px; text-align:left; margin-top:15px; width:400px; float:left; }
+	.jaria_trombi_barre_count	{ text-align:center; padding-top:10px; color:#fff; clear:both; }
+	.jaria_trombi_info			{ width:426px !important; width:400px; background-color:#ccc; color:#333; overflow: hidden; }
+	.jaria_trombi_info:hover	{ background-color:#999; }
+	.jaria_trombi_infoleft		{ float:left; width:200px; text-align:left; padding:3px; padding-left:10px; font-weight:bold; border-bottom:1px solid #fff;}
+	.jaria_trombi_inforight		{ float:right; width:200px; text-align:left; padding:3px; padding-left:10px; border-bottom:1px solid #fff; }
+	.jaria_trombi_photo			{ box-shadow: 4px 4px 8px #333; }
+	.jaria_trombi_button		{ background-image:url(images/button/button_gray.png); border:transparent; font-family:Verdana; font-weight:bold; font-size:12px; color:#333; background-color:#69c; cursor:pointer; border:1px solid #ccc; margin-right:5px; height:24px; border-radius:5px; }
+	.jaria_trombi_button:hover	{ border:1px solid #6f6; color:#6f6; }
+	
+	/* style pour le tabuleur */
+	.jaria_tab				{ clear:both; }
+	.jaria_tabonglet		{ height:26px; float:left; cursor:pointer; color:#36f; font-weight:normal; }
+	.jaria_tabongletover	{ height:26px; float:left; cursor:pointer; color:#33f; text-decoration:underline; }
+	.jaria_tabongletsel		{ height:26px; float:left; color:#33f; font-weight:bold; }
+	.jaria_tableft			{ height:26px; width:3px; float:left; background-image:url(images/tab/tableft.gif); }
+	.jaria_tabcenter		{ height:26px; float:left; padding-left:5px; padding-right:5px; background-image:url(images/tab/tabcenter.gif); font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; line-height:25px; }
+	.jaria_tabright			{ height:26px; width:3px; float:left; background-image:url(images/tab/tabright.gif); }
+	.jaria_tabcont			{ position:relative; top:-1px; border:1px solid #36f; clear:both; padding:5px; border-radius: 0px 10px 10px 10px; }
+	.jaria_tabframe			{ width:100%; border:0px; background-color:transparent; }
+	
+	/* styles pour le zoom */
+	.jaria_zoom_zoom	{ position:absolute; z-index:96; top:0px; left:0px; width:100px; height:100px; background-color:#999; border:1px solid #000; display:none; }
+	.jaria_zoom_view	{ position:absolute; z-index:95; top:0px; left:0px; background-color:#fff; border:1px solid #000; overflow:hidden; box-shadow: 4px 4px 8px #999; }
+	.jaria_zoom_img		{ position:absolute; z-index:94; top:0px; left:0px; }
+	
+	/* styles pour la barre de pagination */
+	.jaria_barr_lien		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#069; border:1px solid #ccc; color:#fff; padding:3px; padding-top:1px; margin-left:2px; margin-right:2px; cursor:pointer;  border-radius:5px; }
+	.jaria_barr_lienov	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#6cf; border:1px solid #ccc; color:#069; padding:3px; padding-top:1px; margin-left:2px; margin-right:2px; cursor:pointer;  border-radius:5px; }
+	.jaria_barr_nolien	{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#ccc; border:1px solid #ccc; color:#666; padding:3px; padding-top:1px;; margin-left:2px; margin-right:2px; cursor:default;  border-radius:5px; }
+	
+	/* styles pour les listes */
+	.jaria_listlock			{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; font-weight:normal; height:18px; background-color:#fff; color:#036; border:1px solid #09c; background-image:url(images/list/select.png); background-repeat:no-repeat; background-position:right; text-align:left; cursor:pointer; padding:3px; padding-right:18px; border-radius:5px; }
+	.jaria_listlock:hover	{ background-image:url(images/list/selecthover.png); }
+	.jaria_liste			{ position:absolute; z-index:200; left:auto; top:auto; overflow:auto; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; font-weight:normal; text-align:left; background-color:#fff; border:1px solid #69c; line-height:normal; display:none; }
+	.jaria_sliste			{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#036; cursor:pointer; padding:1px; padding-left:3px;}
+	.jaria_slisteover		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; background-color:#69c; color:#fff; padding:1px; padding-left:3px; cursor:pointer }
+	.jaria_listesearch		{ background-image:url(images/loading.gif); background-repeat:no-repeat; background-position:right; background-color:#eee; color:#999; }
+	.jaria_ombre			{ position:absolute; z-index:97; left:auto; top:auto; margin-top:5px;  margin-left:5px; border-right:5px solid #666; border-bottom:5px solid #666; }
+	.jaria_mliste			{ overflow:auto; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; text-align:left; background-color:#fff; border:1px solid #09c; font-weight:normal; line-height:normal; width:150px; height:80px; border-radius:5px; }
+	.jaria_smliste			{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#036; padding:1px; padding-left:18px; background-image:url(images/list/nocheck.png); background-repeat:no-repeat; background-position:2px 2px; cursor:pointer;}
+	.jaria_smlistecheck		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#036; padding:1px; padding-left:18px; background-image:url(images/list/check.png); background-repeat:no-repeat; background-position:2px 2px; cursor:pointer; }
+	.jaria_smlistelock		{ cursor:default; }
+	
+	/* style pour le drag and drop */
+	.jaria_highlight		{ position:absolute; z-index:10; border:6px solid #f66; }
+	
+	/* style pour la visionneuse d'image */
+	.jaria_viewer			{ position:absolute; z-index:100; top:0px; left:0px; background-color:#fff; padding:20px; border:1px solid #000; background-image:url(images/loadimg.gif); background-repeat:no-repeat; background-position:center; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#333; font-style:italic; border-radius:10px; box-shadow: 4px 4px 8px #333; }
+	.jaria_viewer_img		{ cursor:pointer; }
+	.jaria_viewer_close		{ position:absolute; z-index:101; top:0px; left:0px; width:32px; height:32px; background-color:#fff; }
+	
+	/* style pour l'editeur de texte */
+	.jaria_editor			{ }
+	.jaria_editor_b			{ width:18px; height:18px; background-image:url(images/editor/btbold.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_b:hover	{ border:1px solid #f60; }
+	.jaria_editor_u			{ width:18px; height:18px; background-image:url(images/editor/btunderline.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_u:hover 	{ border:1px solid #f60; }
+	.jaria_editor_i			{ width:18px; height:18px; background-image:url(images/editor/btitalic.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }	
+	.jaria_editor_i:hover	{ border:1px solid #f60; }
+	.jaria_editor_s		  	{ width:18px; height:18px; background-image:url(images/editor/btstrike.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }	
+	.jaria_editor_s:hover	{ border:1px solid #f60; }
+	.jaria_editor_li		{ width:18px; height:18px; background-image:url(images/editor/puce.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }	
+	.jaria_editor_li:hover	{ border:1px solid #f60; }	
+	.jaria_editor_c			{ width:18px; height:18px; background-image:url(images/editor/btcolor.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_c:hover	{ border:1px solid #f60; }
+	.jaria_editor_e			{ width:18px; height:18px; background-image:url(images/editor/btemoticon.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_e:hover 	{ border:1px solid #f60; }
+	.jaria_editor_h			{ width:42px; height:18px; background-image:url(images/editor/bthtml.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_h:hover	{ border:1px solid #f60; }
+	.jaria_editor_t			{ width:42px; height:18px; background-image:url(images/editor/btcode.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_t:hover	{ border:1px solid #f60; }
+	.jaria_editor_h1		{ width:18px; height:18px; background-image:url(images/editor/btH1.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_h1:hover	{ border:1px solid #f60; }
+	.jaria_editor_h2		{ width:18px; height:18px; background-image:url(images/editor/btH2.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_h2:hover	{ border:1px solid #f60; }
+	.jaria_editor_h3		{ width:18px; height:18px; background-image:url(images/editor/btH3.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_h3:hover	{ border:1px solid #f60; }
+	.jaria_editor_h4		{ width:18px; height:18px; background-image:url(images/editor/btH4.png); background-repeat:no-repeat; border:1px solid #ccc; margin:2px; cursor:pointer; }
+	.jaria_editor_h4:hover	{ border:1px solid #f60; }
+	.jaria_editor_frame		{ border:1px solid #69c; display:none; border-radius:5px; }
+	.jaria_editor_html		{ font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; padding-left:2px; color:#333; background-color:#ccc; margin:2px; border-radius:5px; }
+	
+	.jaria_emoticon_smile	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/smile.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_biggrin	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/biggrin.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_love	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/love.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_wink	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/wink.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_sol		{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/sol.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_pfff	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/pfff.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_frown	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/frown.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_mdr		{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/mdr.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_non		{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/non.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_sweat	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/sweat.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_cry		{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/cry.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_ouch	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/ouch.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_redface	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/redface.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_pt1c	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/pt1c.gif); background-repeat:no-repeat; cursor:pointer; }
+	.jaria_emoticon_heink	{ width:21px; height:21px; font-size:8px; background-image:url(images/editor/emoticons/heink.gif); background-repeat:no-repeat; cursor:pointer; }
+	
+	.jaria_treeview_dir			{ background-image:url(images/treeview/dir.png); background-repeat:no-repeat; padding-left:30px; cursor:pointer; margin-top:3px; }
+	.jaria_treeview_dir_hover	{ background-image:url(images/treeview/dir.png); background-repeat:no-repeat; padding-left:30px; cursor:pointer; margin-top:3px; background-color:#fec; }
+	.jaria_treeview_doc			{ background-image:url(images/treeview/doc.png); background-repeat:no-repeat; padding-left:30px; cursor:pointer; margin-left:30px; margin-top:3px; }
+	.jaria_treeview_doc:hover	{ background-image:url(images/treeview/doc.png); background-repeat:no-repeat; padding-left:30px; cursor:pointer; margin-left:30px; margin-top:3px; background-color:#cef; }
+	
+	
+	/* style pour l'animation du fond d'�cran */
+	.jaria_anim_wait  { position:absolute; z-index:100; width:300px; height:100px; background-color:#fff; background-image:url(images/loadimg.gif); background-repeat:no-repeat; background-position:center; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; color:#333; font-style:italic; padding:10px; border:1px solid #000; }
