@@ -1,6 +1,6 @@
 var Jaria = {
 		
-	version: "20130711",
+	version: "20130712",
 	path: "jaria/images/",
 		
 	//Retourne un tableau des images de la bibliothèque Jaria
@@ -1106,7 +1106,7 @@ var Jaria = {
 		};
 		
 		//OK
-		this.getopacity = function(e){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
+		$.getopacity = function(e){				// retourne l'opacité d'un l'élément de 0 à 100 ou de 0 à 1 selon le navigateur  [opacity]
 			if(!$.test(e)){
 				return 0;
 			}
@@ -1200,9 +1200,406 @@ var Jaria = {
 			$.timer = window.setTimeout("Jaria.el.setinscreen('" + e.id + "')", 20);		
 		};
 		
-		// fonction à redéfinir  executée lorsque le repositionnement de l'élément déplacée par la fonction oEl.setinscreen est terminée 
+		//Fonction à redéfinir executée lorsque le repositionnement de l'élément déplacée par la fonction oEl.setinscreen est terminée 
 		$.isinscreen = function(){
 			return false;
+		};
+		
+		//Déplacement d'élément par la souris (drag and drop)
+		$.drag = new function(sens){
+		
+			var $ = this;
+			var el = Jaria.el;
+			var txt = Jaria.txt;
+			var nav = Jaria.nav;
+			$.el = undefined;							// élement déplaçable
+			$.left = 0;									// position left en déplacement
+			$.top = 0;									// position top en déplacement
+			$.X = 0;										// position X de la souris en déplacement
+			$.Y = 0;										// position Y de la souris en déplacement
+			$.startX = 0;								// position X de départ de la souris en déplacement
+			$.startY = 0;								// position Y de départ de la souris en déplacement
+			$.startLeft = null;							// position left de départ de l'élément
+			$.StartTop = null;							// position top de départ de l'élément
+			$.sens = null;								// sens X, Y du déplacement, par défaut tous les sens
+			$.receptor = undefined;						// élément récepteur
+			$.elp = [];									// tableau d'élément(s) pour le déplacement progressif
+			$.onreceptor = false;						// éléments en collision
+			$.opacity = 100;							// opacité de l'élément déplaçable
+			
+			//Effet sur l'élément recepteur d'élément déplaçable
+			$.light = new function(){
+				
+				var $ = this;
+				var el = Jaria.el;
+				var drag = el.drag;
+				$.el = undefined;
+				
+				$.show = function(){					
+					if(el.test(drag.receptor)){
+						$.hide();
+						$.el = oEl.create("div");
+						$.el.className = "jaria_highlight";					
+						$.el.css({
+							left: txt.px(drag.receptor.offsetLeft - 6),
+							top: txt.px(drag.receptor.offsetTop - 6),
+							width: txt.px(drag.receptor.offsetWidth),
+							height: txt.px(drag.receptor.offsetHeight)
+						})
+						document.body.appendChild(oEl.drag.hlight.el);
+					}
+				};
+				
+				$.hide = function(){
+					el.del($.el);
+					$.el = undefined;
+				};
+			};
+			
+			//Arrêt du déplacement
+			$.stop = function(f){
+				
+				nav.delevent("onmousemove", drag.go);
+				nav.delevent("onmouseup", drag.stop);
+				
+				if( el.test(drag.receptor) ){
+					
+					// repositionne l'éventuel élément déjà présent dans le récepteur à sa position d'origine
+					/*
+					if( el.test(drag.elex) ){
+						drag.progress(oEl.drag.elex, parseFloat(oEl.drag.elex.startLeft), parseFloat( oEl.drag.elex.startTop));
+						drag.elex = undefined;
+					}
+					*/
+					
+					// positionne l'élément dans le récepteur
+					var l = 0;
+					var t = 0;
+					if( el.getstyleclass(drag.el, "position") != "absolute" ){
+						l = el.getoffset(drag.el.parentNode, "left");
+						t = el.getoffset(drag.el.parentNode, "top");
+					}
+					drag.el.style.left = txt.px(el.getoffset(drag.receptor, "left") - l);
+					drag.el.style.top  = txt.px(el.getoffset(drag.receptor, "top") - t);
+					
+					// supprime l'avertisseur de collision
+					drag.light.hide();
+					
+					//Fonction passée en paramètre
+					if(typeof(f) == "function"){
+						f();
+					}
+					
+				}
+				else{
+					// repositionne l'élément à l'origine
+					oEl.drag.progress(oEl.drag.el, parseFloat(oEl.drag.startLeft), parseFloat(oEl.drag.startTop));
+				}
+				
+				drag.receptor = undefined;
+				drag.sens = null;			
+				drag.opacity = 100;
+				el.opacity(drag.el, 100);
+				if( drag.el.shadow != undefined){
+					el.opacity(drag.el.shadow, 20);
+				}
+				txt.select(true);
+			};
+			
+			//Déplacement en cours...
+			$.go = function(e){
+				e = e || window.event;
+				var Px = 0, Py = 0;
+				var X = e.clientX + nav.scrollX;
+				var Y = e.clientY + nav.scrollY;
+				if( (X > 0) && (Y > 0) ){
+					if ( drag.sens != null && (drag.sens == "x" || drag.sens == "y" ) ){
+						Py = eval("P" +  drag.sens);
+						Py = (drag.left +  eval( drag.sens.toUpperCase()) ) - eval( "oEl.drag.start" + drag.sens.toUpperCase() );
+					}else{
+						Px = (drag.left + X - drag.startX);
+						Py = (drag.top + Y - drag.startY);
+	
+					}
+					if( Px > 0 ){
+						drag.el.style.left = txt.px(Px);
+					}
+					if( Py > 0 ){
+						drag.el.style.top = txt.px(Py);
+					}
+					if( drag.receptor != undefined ){
+						
+						function collision(x, y){						
+							if(			
+								x >= parseFloat(el.getstyleclass(drag.receptor, "left")) &&
+								x <= parseFloat(el.getstyleclass(drag.receptor, "left")) + parseFloat(el.getstyleclass(drag.receptor, "width")) &&
+								y >= parseFloat(el.getstyleclass(drag.receptor, "top")) &&
+								y <= parseFloat(el.getstyleclass(drag.receptor, "top")) + parseFloat(el.getstyleclass(drag.receptor, "height"))
+							){
+								return true;
+							}
+							return false;
+						}
+						
+						drag.light.hide();
+						drag.onreceptor = false;
+							
+						if(
+							collision( parseFloat(el.getstyleclass(drag.el, "left")), parseFloat(el.getstyleclass(drag.el, "top")) ) ||
+							collision( parseFloat(el.getstyleclass(drag.el, "left")) + parseFloat(el.getstyleclass(drag.el, "width")), parseFloat(el.getstyleclass(drag.el, "top")) ) ||
+							collision( parseFloat(el.getstyleclass(drag.el, "left")), parseFloat(el.getstyleclass(drag.el, "top")) + parseFloat(el.getstyleclass(drag.el, "height")) ) ||
+							collision( parseFloat(el.getstyleclass(drag.el, "left")) + parseFloat(el.getstyleclass(drag.el, "width")), parseFloat(el.getstyleclass(drag.el, "top")) + parseFloat(el.getstyleclass(drag.el, "height")) )
+						){
+							// collision						
+							oEl.drag.onreceptor = true;
+							oEl.drag.light.show();
+						}					
+					}
+				} 
+				if( !oNav.msie && !oNav.opera ){
+					e.preventDefault();
+				}
+				else{
+					e.cancelBubble = true;
+					e.returnValue = false;
+				}
+				if( drag.el.shadow != undefined){
+					el.opacity(oBox.el.shadow, 10);
+					drag.el.shadow.style.left = txt.px(oEl.getoffset(drag.el, "left") + 8);
+					drag.el.shadow.style.top = txt.px(oEl.getoffset(drag.el, "top") + 8);
+				}
+			};		
+			
+			$.start = function(el, e, elr){				// démarrage du déplacement
+				oEl.drag.startX = 0;
+				oEl.drag.startY = 0;
+				oEl.drag.elex = undefined;
+				e = e || window.event;
+				if( e != null ){				
+					oEl.drag.X = e.clientX + oNav.scrollX;
+					oEl.drag.Y = e.clientY + oNav.scrollY;
+					oEl.drag.startX = oEl.drag.X;
+					oEl.drag.startY = oEl.drag.Y;
+					if( elr != null ){
+						if( oEl.isobject(elr) ){						
+							oEl.drag.receptor = elr;
+						}else if( oEl.test(elr) ){						
+							oEl.drag.receptor = oEl.get(elr);						
+						}else{
+							oEl.drag.receptor = undefined;
+						}
+					}
+				}
+				if( oEl.drag.el != el){
+					
+					// position initial d'un éventuel élément déjà présent dans le récepteur
+					if( oEl.isobject(oEl.drag.el) && oEl.drag.onreceptor ){					
+						oEl.drag.elex = oEl.drag.el;
+						oEl.drag.elex.startLeft = oEl.drag.startLeft;
+						oEl.drag.elex.startTop = oEl.drag.startTop;
+					}
+					
+					if( oEl.isobject(el) ){
+						oEl.drag.el = el;
+					}else if( oEl.test(el) ){
+						oEl.drag.el = oEl.get(el);
+					}else{
+						return false;
+					}
+					if( oEl.drag.el.nodeType == 3 ){
+						// parent d'un noeud intermédiaire
+						oEl.drag.el = oEl.drag.el.parentNode;
+					}
+					
+					// position relative initiale de l'élément
+					oEl.drag.el.style.left =  oEl.getstyleclass(oEl.drag.el, "left");
+					oEl.drag.el.style.top =  oEl.getstyleclass(oEl.drag.el, "top");
+					
+					// mémorise la position de départ
+					oEl.drag.startLeft = oEl.drag.el.style.left;
+					oEl.drag.startTop = oEl.drag.el.style.top;				
+					
+					// dimension de l'élément
+					oEl.drag.el.style.width = oEl.getstyleclass(oEl.drag.el, "width");
+					oEl.drag.el.style.height = oEl.getstyleclass(oEl.drag.el, "height");
+				}
+				
+				// opacité au déplacement de l'élément
+				oEl.drag.opacity = ( isNaN(oEl.drag.opacity) ) ? 100 : oEl.drag.opacity;
+				oEl.opacity(oEl.drag.el, oEl.drag.opacity);
+				
+				// position réelle de l'élément
+				oEl.drag.left = ( e != null ) ? parseFloat(oEl.drag.el.style.left) : parseFloat(oEl.drag.startLeft);
+				oEl.drag.top = ( e != null ) ? parseFloat(oEl.drag.el.style.top) : parseFloat(oEl.drag.startTop);
+				oEl.drag.left = ( oEl.drag.left == null ) ? 0 : oEl.drag.left;
+				oEl.drag.top = ( oEl.drag.top == null ) ? 0 : oEl.drag.top;
+				
+				// dimension et position de l'élément récepteur
+				if( oEl.isobject(oEl.drag.receptor) ){				
+					oEl.drag.receptor.style.left = oEl.getstyleclass(oEl.drag.receptor, "left");
+					oEl.drag.receptor.style.top = oEl.getstyleclass(oEl.drag.receptor, "top");
+					oEl.drag.receptor.style.width =  oEl.getstyleclass(oEl.drag.receptor, "width");
+					oEl.drag.receptor.style.height =  oEl.getstyleclass(oEl.drag.receptor, "height");
+				}
+				
+				// empêche la sélection du texte du document pendant le déplacement
+				oText.select(false);
+				
+				if( e != null ){
+					// déplacement suivant la souris
+					document.onmousemove = oEl.drag.go;
+					document.onmouseup = oEl.drag.stop;				
+				}else{
+					// déplacement paramétré de l'élément 
+					oEl.drag.el.style.left = oText.toPx( oEl.drag.startX + oEl.drag.X );
+					oEl.drag.el.style.top = oText.toPx( oEl.drag.startY + oEl.drag.Y );
+				}			
+			};
+			
+			this.progress = function(el, x, y){				// Déplacement progressif de l'élément [this]	
+				// nouvel élément
+				if( el != undefined && el != null && typeof(el) != "number" ){
+					// initialisation de l'élément progressif
+					el = ( oEl.test(el) ) ?  oEl.get(el) : el;					
+					if( !oEl.isobject(el) ){
+						oBox.error("Aucun objet passé à la fonction <kbd>oEl.drag.progress</kbd>");
+						return Stop();						
+					}
+					
+					// vérifie l'existence de l'élément
+					var inc = 0;
+					for( var i = 0; i < oEl.drag.elp.length; i++){
+						if( oEl.drag.elp[i].id == el.id){
+							inc++;
+							break;
+						}
+					}											
+					if( inc == 0 ){
+						// Ajoute l'élement
+						inc = oEl.drag.elp.length;
+						oEl.drag.elp[inc] = el;
+						oEl.drag.elp[inc].id = el.id;
+						oEl.drag.elp[inc].stopX = x;
+						oEl.drag.elp[inc].stopY = y;
+						oEl.drag.elp[inc].incX = 0;
+						oEl.drag.elp[inc].incY = 0;
+						oEl.drag.elp[inc].dX = 0;
+						oEl.drag.elp[inc].dY = 0;
+						oEl.drag.elp[inc].coef = 1;
+						oEl.drag.elp[inc].start = false;
+					}
+
+					//Vérifie si un autre élément est en cours de déplacement
+					for( var i = 0; i <  oEl.drag.elp.length; i++){
+						if( oEl.drag.elp[i].start == true ){
+							return false;
+						}
+					}
+					
+					// destination non renseigné à l'origine
+					if( isNaN(el.stopX) || isNaN(el.stopY) ){						
+						oBox.error("Aucune destination  passé à la fonction <kbd>oEl.drag.progress</kbd>");
+						return Stop();
+					}
+				}
+				
+				// réassigne le premier élément
+				el = oEl.drag.elp[0];
+				
+				if( !oEl.isobject(el) ){
+					oBox.error("Aucun objet passé à la fonction <kbd>oEl.drag.progress</kbd>");
+					return Stop();						
+				}
+				
+				// arrêt du déplacement progressif de l'élément en cours
+				function Stop(){					
+					oEl.drag.elp.shift();	// supprime le premier élément du tableau					
+					if(oEl.drag.elp.length > 0){
+						oEl.drag.elp[0].start = false;					
+						Start();
+					}
+					return false;
+				}
+				
+				// démarrage du déplacement progressif du premier premier élément
+				function Start(){
+					window.setTimeout(oEl.drag.progress, 1);					
+				}				
+				
+				// récupère la position actuelle de l'élément
+				var left = ( el.style.left ) ? parseFloat(el.style.left) : parseFloat(oEl.getstyleclass(el, "left"));
+				var top = ( el.style.top ) ? parseFloat(el.style.top) : parseFloat(oEl.getstyleclass(el, "top"));
+				
+				// position de l'élément inconnue
+				if ( isNaN(left) || isNaN(top) ){
+					oBox.error("Impossible de récupérer la position de l'élément <kbd>" + el.id + "</kbd> passé dans la fonction <kbd>oEl.drag.progress</kbd>");
+					return Stop();
+				}	
+				
+				// déplacement linéaire de l'élément
+				if( el.start == false ){
+					// applique la position à l'élément au cas ou
+					el.style.left = oText.toPx(left);
+					el.style.top = oText.toPx(top);
+					// distances à parcourir
+					el.dX = parseInt(el.stopX - left);
+					el.dY = parseInt(el.stopY - top);
+					el.dX = ( el.dX < 0 ) ? -el.dX : el.dX;
+					el.dY = ( el.dY < 0 ) ? -el.dY : el.dY;
+					// le pas positif ou négatif
+					el.incX = ( left < el.stopX ) ? 10 : -10;
+					el.incY = ( top < el.stopY ) ? 10 : -10;
+					// coéficient et compteur pour le déplacement linéaire
+					el.coef = 1;
+					el.count = 0;
+					if( el.dX < el.dY && el.dX != 0 ){
+						el.coef = Math.round( el.dY / el.dX );
+					}
+					if( el.dX > el.dY && el.dY != 0 ){
+						el.coef = Math.round( x / el.dY );
+					}					
+					if( el.coef < 0 ) el.coef = -el.coef;
+					if( el.coef == 0 ) el.coef = 1;					
+					el.start = true;					
+				}
+				el.count++;				
+				
+				// déplacement X de l'élément si pas à destination
+				if( ( el.incX > 0 && left < el.stopX ) || ( el.incX < 0 && left > el.stopX ) ){
+					if( el.dX < el.dY ){
+						if ( el.count == el.coef ){
+							el.style.left = oText.toPx( parseFloat(el.style.left) + el.incX  );
+							el.count = 0;
+						}
+					}else{
+						el.style.left = oText.toPx( parseFloat(el.style.left) + el.incX  );
+					}
+				}else{
+					// position de destination
+					el.style.left = oText.toPx(el.stopX);
+				}				
+				// déplacement Y de l'élément si pas à destination
+				if( ( el.incY > 0 && top < el.stopY ) || ( el.incY < 0 && top > el.stopY ) ){
+					if( el.dY < el.dX ){
+						if( el.count == el.coef ){
+							el.style.top = oText.toPx( parseFloat(el.style.top) + el.incY );	
+							el.count = 0;
+						}
+					}else{
+						el.style.top = oText.toPx( parseFloat(el.style.top) + el.incY );
+					}
+				}else{
+					// position de destination
+					el.style.top = oText.toPx(el.stopY);
+				}								
+				// arrêt du déplacement si X et Y ont atteind la destination
+				if( parseFloat(el.style.left) == el.stopX && parseFloat(el.style.top) == el.stopY ){
+					return Stop();
+				}				
+				
+				// relance la fonction jusqu'a la position
+				Start();
+			};		
 		};
 		
 	},
