@@ -100,6 +100,67 @@
 			var s = "textShadow : " + Jaria.nav.support("textShadow")
 			Jaria.box.show({html: s});
 		}
+		
+		function Anime(){
+			
+			var d = Jaria.el.create("div");
+			d.css({
+				position: "absolute",
+				width: "100px",
+				height: "100px",
+				top: "100px",
+				left: "100px",
+				backgroundColor: "#ffc",
+				border: "1px solid #f00",
+				zIndex: 100,
+				textAlign: "center"
+			})
+			
+			d.html("Elément animé");
+			Jaria.nav.body.appendChild(d);
+			
+			/*
+			d.anime({
+				top: 200,
+				left: 200,
+				height: 100,
+				width: 100,
+				onstart: function(){
+					d.innerHTML = "start";
+				},
+				onanime: function(){
+					d.innerHTML = "start";
+					d.innerHTML += "<br>dimentions: " + d.offsetWidth + " * " + d.offsetHeight;
+					d.innerHTML += "<br>position: " + d.offsetLeft + " * " + d.offsetTop;
+				},
+				onstop: function(){
+					d.innerHTML = "start";
+					d.innerHTML += "<br>dimentions: " + d.offsetWidth + " * " + d.offsetHeight;
+					d.innerHTML += "<br>position: " + d.offsetLeft + " * " + d.offsetTop;
+					d.innerHTML += "<br>stop";
+					
+				},
+			});*/
+			
+			d.drag({
+				cursor: "move",
+				onstart: function(){
+					//e = event.target || window.event.srcElement;
+					//e.style.opacity = 0.6;
+					//Jaria.el.opacity(e, 50);
+					//e.innerHTML = e.style.opacity;
+				},
+				onstop: function(){
+					//e = event.target || window.event.srcElement;
+					//Jaria.el.opacity(d, 100);
+					//e.style.opacity = 1;
+					//e.innerHTML = e.style.opacity;
+				}
+			});
+			
+			
+			
+		}
 				
 		Jaria.nav.addevent("onmousemove", Mouse);	
 		Jaria.nav.addevent("onload", function(){
@@ -134,5 +195,6 @@
 <button type="button" onclick="alert(Jaria.txt.digit('1', 2))">1 en "001"</button> <button type="button" onclick="Pluriel()">Pluriel</button><br />
 <button type="button" onclick="Lock()">Griser la page</button><br />
 <button type="button" onclick="SupportCSS()">Support CSS</button><br />
+<button type="button" onclick="Anime()">Animation</button><br />
 </body>
 </html>
