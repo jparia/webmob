@@ -18,7 +18,8 @@
 				html: s,
 				shadow: true,
 				title: "Infos navigateur",
-				borderColor: "#cfc"
+				borderColor: "#cfc",
+				status: true
 			});
 		}
 		
@@ -113,7 +114,8 @@
 				backgroundColor: "#ffc",
 				border: "1px solid #f00",
 				zIndex: 100,
-				textAlign: "center"
+				textAlign: "center",
+				opacity: 0.8
 			})
 			
 			d.html("Elément animé");
@@ -125,38 +127,49 @@
 				left: 200,
 				height: 100,
 				width: 100,
-				onstart: function(){
-					d.innerHTML = "start";
+				onstart: function(e){
+					e.innerHTML = "start";
 				},
-				onanime: function(){
-					d.innerHTML = "start";
-					d.innerHTML += "<br>dimentions: " + d.offsetWidth + " * " + d.offsetHeight;
-					d.innerHTML += "<br>position: " + d.offsetLeft + " * " + d.offsetTop;
+				onanime: function(e){
+					e.innerHTML = "start";
+					e.innerHTML += "<br>dimentions: " + e.offsetWidth + " * " + e.offsetHeight;
+					e.innerHTML += "<br>position: " + e.offsetLeft + " * " + e.offsetTop;
 				},
-				onstop: function(){
-					d.innerHTML = "start";
-					d.innerHTML += "<br>dimentions: " + d.offsetWidth + " * " + d.offsetHeight;
-					d.innerHTML += "<br>position: " + d.offsetLeft + " * " + d.offsetTop;
-					d.innerHTML += "<br>stop";
+				onstop: function(e){
+					e.innerHTML = "start";
+					e.innerHTML += "<br>dimentions: " + e.offsetWidth + " * " + e.offsetHeight;
+					e.innerHTML += "<br>position: " + e.offsetLeft + " * " + e.offsetTop;
+					e.innerHTML += "<br>stop";
 					
 				},
 			});*/
 			
 			d.drag({
-				cursor: "move",
-				onstart: function(){
-					//e = event.target || window.event.srcElement;
-					//e.style.opacity = 0.6;
-					//Jaria.el.opacity(e, 50);
-					//e.innerHTML = e.style.opacity;
+				css:{
+					cursor: "move",
+					opacity: 0.5,
+					backgroundColor: "#cff"
 				},
-				onstop: function(){
-					//e = event.target || window.event.srcElement;
-					//Jaria.el.opacity(d, 100);
-					//e.style.opacity = 1;
-					//e.innerHTML = e.style.opacity;
+				onstart: function(e){
+					//Jaria.el.opacity(e, 50);
+				},
+				onstop: function(e){
+					//Jaria.el.opacity(e, 100);
 				}
 			});
+						
+			/*d.resize({
+				cursor: "move",
+				onstart: function(e){
+					Jaria.el.opacity(e, 50);
+				},
+				onstop: function(e){
+					Jaria.el.opacity(e, 100);
+				}				
+			})
+			d.oncontextmenu = function(){
+				this.del();
+			};*/
 			
 			
 			

@@ -1606,6 +1606,7 @@
 			return e;			
 		};
 		
+		//OK
 		this.addclass = function(e, s){			// ajoute une class à l'élément [className]
 			/*
 				argument 0 : obligatoire		élément
@@ -1621,6 +1622,7 @@
 			}
 		};
 		
+		//OK
 		this.delclass = function(e, s){			// supprime une class à l'élément [className]
 			/*
 				argument 0 : obligatoire		élément
