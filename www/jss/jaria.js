@@ -1,6 +1,6 @@
 var Jaria = {
 		
-	version: "20130712",
+	version: "20130715",
 	path: "jaria/images/",
 		
 	//Retourne un tableau des images de la bibliothèque Jaria
@@ -72,12 +72,41 @@ var Jaria = {
 	//Gestion des fonctions
 	fn: new function(){
 		
+		var $ = this;
+		$.tab = new Array();
+		
+		$.search = function(f){
+			for(var i = 0; i < $.tab.length; i++){					
+				if(Array.isArray($.tab[i])){
+					if($.tab[i].indexOf(f) != -1){											
+						return i;
+					}
+				}
+			}
+			return -1;
+		};
+		
 		//Ajoute une fonction dans une fonction
-		this.append = function(f, nf){
-			var fc = f;
+		$.append = function(f, nf){
+			var n = $.search(f);				
+			if(n < 0){
+				n =  $.tab.length;
+				$.tab[n] = new Array();	
+				$.tab[n].push(f);
+			}			
+			if($.tab[n].indexOf(nf) < 0){
+				$.tab[n].push(nf);
+			}
+			return function(){				
+				for(var i = 0; i < $.tab[n].length; i++){
+					$.tab[n][i]();
+				}
+			}
+		};
+		
+		$.remove = function(f, df){
 			return function(){
-				fc();
-				nf();
+					f();
 			}
 		}
 		
@@ -451,7 +480,7 @@ var Jaria = {
 		       }   
 		    }  
 		    return false;		     
- 		 };  
+ 		};  
 				
 		//Propriétés à obtenir après le chargement du DOM
 		$.load = function(){
@@ -584,9 +613,8 @@ var Jaria = {
 			// sur la touche échape [escape]
 			$.esc = function(e){						
 				e = e || window.event;
-				// cache l'éventuelle boîte de dialogue
 				if( e.keyCode == 27 ){
-					Jaria.nav.hideallbox(true);
+					Jaria.nav.onescape();
 				}
 			};
 			
@@ -600,8 +628,13 @@ var Jaria = {
 					eval(f + "(e)");
 				}
 
-			};
-					
+			}					
+		};
+		
+		//Fonction appelée sur lors de l'action sur la touche escape
+		$.onescape = function(){
+			//TODO
+			//Jaria.el.title.hide();
 		};
 		
 		//Limite la propagation de l'évènement à l'élèment
@@ -725,14 +758,6 @@ var Jaria = {
 				}
 			}
 		};
-	
-		$.hideallbox = function(b){
-			if(Jaria.nav.lock.escape && b){
-				Jaria.nav.lock.hide();
-			}
-			//TODO
-			//Jaria.el.title.hide();
-		};
 				
 		//Préhargment des images externes
 		$.loadimage = function(o){
@@ -768,10 +793,10 @@ var Jaria = {
 					return false;
 				}
 				if(!$.exist){
-					if(txt.test(o) && txt.isjson(o)){
+					if(txt.isjson(o)){
 						o = JSON.parse(o);
 					}
-					if(el.isobject(o)){
+					if(el.isjson(o)){
 						for(d in o){
 							if(d == "opacity" && !isNaN(o[d])){
 								$.opacity = parseInt(o[d]);
@@ -812,15 +837,19 @@ var Jaria = {
 						left: txt.px(nav.scrollX),
 						width: txt.px(nav.screenX),
 						height: txt.px(nav.screenY),
-						backgroundColor: $.color 
+						backgroundColor: $.color
 					});			
 					nav.body.appendChild($.el);
 					$.setText();		
 					$.exist = true;
 					el.opacity($.el, $.opacity);
 					//TODO oCal.datepicker.hide();	
-					//TODO oCal.timepicker.hide();	
-				}
+					//TODO oCal.timepicker.hide();
+					if($.escape){
+						//Ajoute la fonction hide() à la fonction Jaria.nav.onescape pour prendre en compte la fermeture du lock dans l'événement de la touche ESCAPE
+						nav.onescape = Jaria.fn.append(nav.onescape, $.hide);
+					}
+				}					
 			};
 			
 			//Applique un texte
@@ -917,7 +946,7 @@ var Jaria = {
 				if($.isobject(o)){							
 					Jaria.el.css(this, o);
 				}
-				else if(typeof(o) == "string" && Jaria.txt.isjson(o)){
+				else if(Jaria.txt.isjson(o)){
 					Jaria.el.css(el, JSON.parse(o));
 				}
 			};
@@ -991,10 +1020,10 @@ var Jaria = {
 				function onMove(){};				
 				function onStop(){};	
 				
-				if(txt.test(o) && txt.isjson(o)){				
+				if(txt.isjson(o)){				
 					o = JSON.parse(o);
 				}
-				if(el.isobject(o)){
+				if(el.isjson(o)){
 					for(d in o){
 						if(d == "cursor" && txt.test(o[d])){
 							$.style.cursor = o[d];
@@ -1085,10 +1114,10 @@ var Jaria = {
 				function onMove(){};				
 				function onStop(){};	
 				
-				if(txt.test(o) && txt.isjson(o)){				
+				if(txt.isjson(o)){				
 					o = JSON.parse(o);
 				}
-				if(el.isobject(o)){
+				if(el.isjson(o)){
 					for(d in o){
 						if(d == "cursor" && txt.test(o[d])){
 							$.style.cursor = o[d];
@@ -1160,10 +1189,10 @@ var Jaria = {
 				function onAnime(){};				
 				function onStop(){};				
 				
-				if(txt.test(o) && txt.isjson(o)){				
+				if(txt.isjson(o)){				
 					o = JSON.parse(o);
 				}
-				if(Jaria.el.isobject(o)){
+				if(Jaria.el.isjson(o)){
 					for(d in o){
 						if(d == "top" && !isNaN(o[d])){
 							t = parseInt(o[d]);
@@ -1242,9 +1271,19 @@ var Jaria = {
 			}
 		};
 		
-		//Test l'objet
+		//Test un objet
 		$.isobject = function(o){
 			return ( typeof(o) == "object" ) ? true : false;
+		};
+		
+		//Test un objet JSON
+		$.isjson = function(o){
+			try{
+				JSON.stringify(o);								
+				return true;
+			}
+			catch(e){}
+			return false;							
 		};
 		
 		//Test un élément		
@@ -1770,10 +1809,10 @@ var Jaria = {
 			if( !nav.ready ){
 				return false;
 			}			
-			if(txt.test(o) && txt.isjson(o)){
+			if(txt.isjson(o)){
 				o = JSON.parse(o);
 			}
-			if(el.isobject(o)){
+			if(el.isjson(o)){
 				for(d in o){
 					if(d == "html" && txt.test(o[d])){
 						$.html = o[d];
@@ -1958,8 +1997,8 @@ var Jaria = {
 				$.el.BtOk.focus();	// focus sur le bouton Ok ou Oui
 			}
 			
-			//Ajoute la fonction hide() à la fonction Jaria.nav.hideallbox pour prendre en compte la fermeture de la box dans l'événement de la touche ESCAPE
-			Jaria.nav.hideallbox = Jaria.fn.append(Jaria.nav.hideallbox, $.hide);
+			//Ajoute la fonction hide() à la fonction Jaria.nav.onescape pour prendre en compte la fermeture de la box dans l'événement de la touche ESCAPE
+			Jaria.nav.onescape = Jaria.fn.append(Jaria.nav.onescape, $.hide);
 			
 			nav.addevent("onresize", $.center);
 			nav.addevent("onscroll", $.center);
