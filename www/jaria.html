@@ -7,6 +7,29 @@
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	
+		function Local1(){
+			alert("local1");
+		}
+		
+		function Local2(){
+			alert("local2");
+		}		
+		
+		function Global(){
+			alert("global");
+		}		
+		
+		function AddFunction(){
+			Global = Jaria.fn.append(Global, Local1);
+			Global = Jaria.fn.append(Global, Local2);
+			//Global();
+		}
+		
+		function DelFunction(){
+			Global = Jaria.fn.remove(Global, Local2);
+			Global();
+		}
+	
 		function affBox(){
 			
 			var s = "Navigateur: " + Jaria.nav.name;
@@ -35,33 +58,34 @@
 			a.send("ajax.php", "GET", "XML", function(){	
 				var r = arguments[0];
 				if( r == undefined ){
-					alert("format inconnu !");
+					Jaria.box.error("format inconnu !");
 				 	return false;
 				}
 				if(Jaria.txt.isxml(r)){
-					alert("c'est du XML");
+					Jaria.box.info("c'est du XML");
 				}else if(Jaria.txt.isjson(r)){
-					alert("c'est du JSON");
+					Jaria.box.info("c'est du JSON");
 				}else if(Jaria.txt.test(r)){
-					alert("c'est une chaine : " + r);
+					Jaria.box.info("c'est une chaine : " + r);
 				}else{
-					alert("format inconnu !");
+					Jaria.box.info("format inconnu !");
 				}	
 			})
 		}
 		
 		function Pluriel(){
-			var s = " bateau: " + Jaria.txt.pluriel("bateau", 2);
-			s += "\n bal: " + Jaria.txt.pluriel("bal", 2);
-			s += "\n chacal: " + Jaria.txt.pluriel("chacal", 2);
-			s += "\n Chateau: " + Jaria.txt.pluriel("Chateau", 2);
-			s += "\n Chenal: " + Jaria.txt.pluriel("Chenal", 2);
-			s += "\n landau: " + Jaria.txt.pluriel("landau", 2);
-			s += "\n bijou: " + Jaria.txt.pluriel("bijou", 2);
-			s += "\n tabou: " + Jaria.txt.pluriel("tabou", 2);
-			s += "\n travail: " + Jaria.txt.pluriel("travail", 2);
-			Jaria.box.txt = s;
-			Jaria.box.show();
+			var s = "<ul>";
+			s += "<li> bateau: " + Jaria.txt.pluriel("bateau", 2) + "</li>";
+			s += "<li> bal: " + Jaria.txt.pluriel("bal", 2) + "</li>";
+			s += "<li> chacal: " + Jaria.txt.pluriel("chacal", 2) + "</li>";
+			s += "<li> Chateau: " + Jaria.txt.pluriel("Chateau", 2) + "</li>";
+			s += "<li> Chenal: " + Jaria.txt.pluriel("Chenal", 2) + "</li>";
+			s += "<li> landau: " + Jaria.txt.pluriel("landau", 2) + "</li>";
+			s += "<li> bijou: " + Jaria.txt.pluriel("bijou", 2) + "</li>";
+			s += "<li> tabou: " + Jaria.txt.pluriel("tabou", 2) + "</li>";
+			s += "<li> travail: " + Jaria.txt.pluriel("travail", 2) + "</li>";
+			s += "</ul>";
+			Jaria.box.show({html: s});
 		}
 		function Enter(){
 			var s = arguments[0].value;
@@ -93,7 +117,8 @@
 			Jaria.nav.lock.show({
 				color: "#ffc",
 				textColor: "#f00",
-				text: "Chargement en cours..."
+				text: "Chargement en cours...",
+				escape: true
 			})
 		}
 		
@@ -149,13 +174,14 @@
 					cursor: "move",
 					opacity: 0.5,
 					backgroundColor: "#cff"
-				},
+				}
+				/*
 				onstart: function(e){
 					//Jaria.el.opacity(e, 50);
 				},
 				onstop: function(e){
 					//Jaria.el.opacity(e, 100);
-				}
+				}*/
 			});
 						
 			/*d.resize({
@@ -209,5 +235,6 @@
 <button type="button" onclick="Lock()">Griser la page</button><br />
 <button type="button" onclick="SupportCSS()">Support CSS</button><br />
 <button type="button" onclick="Anime()">Animation</button><br />
+<button type="button" onclick="AddFunction()">Add Fonction</button> <button type="button" onclick="DelFunction()">Del Fonction</button><br />
 </body>
 </html>
