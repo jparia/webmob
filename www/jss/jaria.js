@@ -75,11 +75,22 @@ var Jaria = {
 		var $ = this;
 		$.tab = new Array();
 		
-		$.search = function(f){
+		$.search = function(f, n){
+			if(n){
+				if(Array.isArray($.tab[n])){
+					for(var y = 0; y < $.tab[n].length; y++){
+						if($.tab[n][y].toString() == f.toString()){
+							return y;
+						}						
+					}
+				}
+			}
 			for(var i = 0; i < $.tab.length; i++){					
 				if(Array.isArray($.tab[i])){
-					if($.tab[i].indexOf(f) != -1){											
-						return i;
+					for(var y = 0; y < $.tab[i].length; y++){
+						if($.tab[i][y].toString() == f.toString()){
+							return y;
+						}						
 					}
 				}
 			}
@@ -104,9 +115,23 @@ var Jaria = {
 			}
 		};
 		
+		//Supprime une fonction d'une fonction parent
 		$.remove = function(f, df){
+			var n = $.search(f);
+			alert(n)
+			if(n >= 0){
+				y = $.search(df, n);
+				if(y >= 0){
+					
+					$.tab[n].slice(0, y).concat($.tab[n].slice(y + 1,$.tab[n].length));
+				}
+			}
 			return function(){
-					f();
+				if(Array.isArray($.tab[n])){
+					for(var i = 0; i < $.tab[n].length; i++){
+						$.tab[n][i]();
+					}
+				}
 			}
 		}
 		
