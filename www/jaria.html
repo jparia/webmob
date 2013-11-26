@@ -4,8 +4,15 @@
   	<meta charset="UTF-8" />
 	<title>Formation JavaScript</title>
 	<link href="jss/jaria.css" rel="stylesheet" type="text/css" />
+	<style>
+		var {color:#f00;}
+	</style>
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
+	
+		Jaria.showload = true;
+		//Jaria.path = "";
+		Jaria.message[0] = "The element %1 is not found !";
 	
 		function Local1(){
 			alert("local1");
@@ -65,7 +72,7 @@
 				}else{
 					Jaria.box.info("format inconnu !");
 				}	
-			})
+			});
 		}
 		
 		function Pluriel(){
@@ -95,18 +102,23 @@
 		
 		function Mouse(){
 			var $ = Jaria.nav;
-			Jaria.el.get("mouse").html("mouse - X: " + $.mouseX + " - Y: " + $.mouseY);
+			Jaria.el.get("mouse").html("mouse : X: <var>" + $.mouseX + "</var> - Y: <var>" + $.mouseY + "</var>");
 			
 		}
 		
 		function Size(){
 			var $ = Jaria.nav;
-			Jaria.el.get("size").html("Size - X: " + $.screenX + " - Y: " + $.screenY);	
+			Jaria.el.get("size").html("Size : X: <var>" + $.screenX + "</var> - Y: <var>" + $.screenY + "</var>");	
+		}
+		
+		function Scroll(){
+			var $ = Jaria.nav;
+			Jaria.el.get("scroll").html("Scroll : X: <var>" + $.scrollX + "</var> - Y: <var>" + $.scrollY + "</var>");	
 		}
 		
 		function Marge(){
 			var $ = Jaria.nav;
-			Jaria.el.get("marge").html("Marge - Left: " + $.marginLeft + " - Right: " + $.marginRight + " - Top: " + $.marginTop + " - Bottom: " + $.marginBottom);
+			Jaria.el.get("marge").html("Marge : Left: <var>" + $.marginLeft + "</var> - Right: <var>" + $.marginRight + "</var> - Top: <var>" + $.marginTop + "</var> - Bottom: <var>" + $.marginBottom + "</var>");
 		}
 		
 		function Lock(){
@@ -115,11 +127,11 @@
 				textColor: "#f00",
 				text: "Chargement en cours...",
 				escape: true
-			})
+			});
 		}
 		
 		function SupportCSS(){
-			var s = "textShadow : " + Jaria.nav.support("textShadow")
+			var s = "textShadow : " + Jaria.nav.support("textShadow");
 			Jaria.box.show({html: s});
 		}
 		
@@ -137,7 +149,7 @@
 				zIndex: 100,
 				textAlign: "center",
 				opacity: 0.8
-			})
+			});
 			
 			d.html("Elément animé");
 			Jaria.nav.body.appendChild(d);
@@ -196,13 +208,20 @@
 			
 			
 		}
+		
+		function Test(){			
+			Jaria.el.get("toto");
+		}
 				
 		Jaria.nav.addevent("onmousemove", Mouse);
 		Jaria.nav.addevent("onresize", Size);
+		Jaria.nav.addevent("onscroll", Scroll);
 		Jaria.nav.addevent("onload", function(){
 				
 				Size();
-				Marge();				
+				Marge();
+				Scroll();
+				Mouse();		
 				Jaria.nav.loadimage({
 					show: true,
 					url: ["img/img1.png", "img/img2.png", "img/img3.png", "img/img3.png"]
@@ -217,9 +236,6 @@
 	</script>
 </head>
 <body style="margin-left:10px; margin-top: 20px">
-<div id="marge">&nbsp;</div>
-<div id="size">&nbsp;</div>
-<div id="mouse">&nbsp;</div>
 <input type="text" class="jaria_enter" value="" data-enter="Enter" /><br />
 <button type="button" onclick="affBox()">test oBox</button>
 <button type="button" onclick="affNewBox()">test nouvelle instance box</button>
@@ -235,9 +251,12 @@
 <button type="button" onclick="SupportCSS()">Support CSS</button><br />
 <button type="button" onclick="Anime()">Animation</button><br />
 <button type="button" onclick="AddFunction()">Add Local1 & Local1 à Global</button><br />
-
-<div style="height:600px; width:1600px; border: 1px solid #f00; display: block; text-align: center">
-	<button type="button" onclick="alert(Jaria.nav.name + ' ' + Jaria.nav.version + ' ' + Jaria.nav.scrollX + ' ' + Jaria.nav.scrollY)">alert</button><br />
+<button type="button" onclick="Test()">Test</button><br />
+<div style="height:600px; width:1600px; border: 1px solid #f00; display: block;padding:100px;">
+	<div id="marge">&nbsp;</div>
+	<div id="size">&nbsp;</div>
+	<div id="scroll">&nbsp;</div>
+	<div id="mouse">&nbsp;</div>
 </div>
 </body>
 </html>
