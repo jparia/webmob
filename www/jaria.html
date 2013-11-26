@@ -3,17 +3,47 @@
 <head>
   	<meta charset="UTF-8" />
 	<title>Formation JavaScript</title>
+	<link href="jss/jaria.css" rel="stylesheet" type="text/css" />
 	<script src="jss/jaria.js" type="text/javascript"></script>
 	<script type="text/javascript">
+	
+		function Local1(){
+			alert("local1");
+		}
+		
+		function Local2(){
+			alert("local2");
+		}		
+		
+		function Global(){
+			alert("global");
+		}		
+		
+		function AddFunction(){
+			Global = Jaria.fn.append(Global, Local1);
+			Global = Jaria.fn.append(Global, Local2);
+			Global();
+		}
+				
 		function affBox(){
-			oBox.txt = "version : " + Jaria.nav.version;
-			oBox.txt += "\n Location : " + Jaria.nav.location
-			oBox.show();
+			
+			var s = "Navigateur: " + Jaria.nav.name;
+			s += "<br> Version : " + Jaria.nav.version;
+			s += "<br> Location : " + Jaria.nav.location;
+			s += "<br> Agent : " + Jaria.nav.agent;
+			
+			Jaria.box.show({
+				html: s,
+				shadow: true,
+				title: "Infos navigateur",
+				borderColor: "#cfc",
+				status: true
+			});
 		}
 		
 		function affNewBox(){
 			var b = new Jaria.Box();
-			b.txt = "box instancié";
+			b.html = "box instancié";
 			b.show();
 		}
 		
@@ -23,21 +53,35 @@
 			a.send("ajax.php", "GET", "XML", function(){	
 				var r = arguments[0];
 				if( r == undefined ){
-					alert("format inconnu !");
+					Jaria.box.error("format inconnu !");
 				 	return false;
 				}
 				if(Jaria.txt.isxml(r)){
-					alert("c'est du XML");
+					Jaria.box.info("c'est du XML");
 				}else if(Jaria.txt.isjson(r)){
-					alert("c'est du JSON");
+					Jaria.box.info("c'est du JSON");
 				}else if(Jaria.txt.test(r)){
-					alert("c'est une chaine : " + r);
+					Jaria.box.info("c'est une chaine : " + r);
 				}else{
-					alert("format inconnu !");
+					Jaria.box.info("format inconnu !");
 				}	
 			})
 		}
 		
+		function Pluriel(){
+			var s = "<ul>";
+			s += "<li> bateau: " + Jaria.txt.pluriel("bateau", 2) + "</li>";
+			s += "<li> bal: " + Jaria.txt.pluriel("bal", 2) + "</li>";
+			s += "<li> chacal: " + Jaria.txt.pluriel("chacal", 2) + "</li>";
+			s += "<li> Chateau: " + Jaria.txt.pluriel("Chateau", 2) + "</li>";
+			s += "<li> Chenal: " + Jaria.txt.pluriel("Chenal", 2) + "</li>";
+			s += "<li> landau: " + Jaria.txt.pluriel("landau", 2) + "</li>";
+			s += "<li> bijou: " + Jaria.txt.pluriel("bijou", 2) + "</li>";
+			s += "<li> tabou: " + Jaria.txt.pluriel("tabou", 2) + "</li>";
+			s += "<li> travail: " + Jaria.txt.pluriel("travail", 2) + "</li>";
+			s += "</ul>";
+			Jaria.box.show({html: s});
+		}
 		function Enter(){
 			var s = arguments[0].value;
 			if(s != ""){
@@ -50,34 +94,150 @@
 		}
 		
 		function Mouse(){
-			Jaria.el.get("mouse").html("mouse - X: " + Jaria.nav.mouseX + " - Y: " + Jaria.nav.mouseY);
+			var $ = Jaria.nav;
+			Jaria.el.get("mouse").html("mouse - X: " + $.mouseX + " - Y: " + $.mouseY);
+			
 		}
 		
 		function Size(){
-			Jaria.el.get("size").html("Size - X: " + Jaria.nav.screenX + " - Y: " + Jaria.nav.screenY);		
+			var $ = Jaria.nav;
+			Jaria.el.get("size").html("Size - X: " + $.screenX + " - Y: " + $.screenY);	
 		}
 		
-		Jaria.nav.addevent("onmousemove", Mouse);	
-		Jaria.nav.addevent("onload", function(){
-			Jaria.nav.keyb.valid = function(){
-				alert(arguments[0].value);
-			};
-			Size();
-		});	
-		//Jaria.nav.delevent("onmousemove", mouse)
-		Jaria.nav.addevent("onresize", Size);
+		function Marge(){
+			var $ = Jaria.nav;
+			Jaria.el.get("marge").html("Marge - Left: " + $.marginLeft + " - Right: " + $.marginRight + " - Top: " + $.marginTop + " - Bottom: " + $.marginBottom);
+		}
 		
+		function Lock(){
+			Jaria.nav.lock.show({
+				color: "#ffc",
+				textColor: "#f00",
+				text: "Chargement en cours...",
+				escape: true
+			})
+		}
+		
+		function SupportCSS(){
+			var s = "textShadow : " + Jaria.nav.support("textShadow")
+			Jaria.box.show({html: s});
+		}
+		
+		function Anime(){
+			
+			var d = Jaria.el.create("div");
+			d.css({
+				position: "absolute",
+				width: "100px",
+				height: "100px",
+				top: "100px",
+				left: "100px",
+				backgroundColor: "#ffc",
+				border: "1px solid #f00",
+				zIndex: 100,
+				textAlign: "center",
+				opacity: 0.8
+			})
+			
+			d.html("Elément animé");
+			Jaria.nav.body.appendChild(d);
+			
+			
+			d.anime({
+				top: 200,
+				left: 200,
+				height: 100,
+				width: 100,
+				onstart: function(e){
+					e.innerHTML = "start";
+				},
+				onanime: function(e){
+					e.innerHTML = "start";
+					e.innerHTML += "<br>dimentions: " + e.offsetWidth + " * " + e.offsetHeight;
+					e.innerHTML += "<br>position: " + e.offsetLeft + " * " + e.offsetTop;
+				},
+				onstop: function(e){
+					e.innerHTML = "start";
+					e.innerHTML += "<br>dimentions: " + e.offsetWidth + " * " + e.offsetHeight;
+					e.innerHTML += "<br>position: " + e.offsetLeft + " * " + e.offsetTop;
+					e.innerHTML += "<br>stop";
+					
+				},
+			});
+			
+			d.drag({
+				css:{
+					cursor: "move",
+					opacity: 0.5,
+					backgroundColor: "#cff"
+				}
+				/*
+				onstart: function(e){
+					//Jaria.el.opacity(e, 50);
+				},
+				onstop: function(e){
+					//Jaria.el.opacity(e, 100);
+				}*/
+			});
+						
+			/*d.resize({
+				cursor: "move",
+				onstart: function(e){
+					Jaria.el.opacity(e, 50);
+				},
+				onstop: function(e){
+					Jaria.el.opacity(e, 100);
+				}				
+			})
+			d.oncontextmenu = function(){
+				this.del();
+			};*/
+			
+			
+			
+		}
+				
+		Jaria.nav.addevent("onmousemove", Mouse);
+		Jaria.nav.addevent("onresize", Size);
+		Jaria.nav.addevent("onload", function(){
+				
+				Size();
+				Marge();				
+				Jaria.nav.loadimage({
+					show: true,
+					url: ["img/img1.png", "img/img2.png", "img/img3.png", "img/img3.png"]
+				});
+				
+		});	
+		//Jaria.nav.delevent("onmousemove", Mouse)
+		
+		
+
 		
 	</script>
 </head>
-<body>
+<body style="margin-left:10px; margin-top: 20px">
+<div id="marge">&nbsp;</div>
 <div id="size">&nbsp;</div>
 <div id="mouse">&nbsp;</div>
-<button onclick="affBox()">test oBox</button>
-<button onclick="affNewBox()">test nouvelle instance box</button>
-<button onclick="Ajax()">test Ajax</button>
 <input type="text" class="jaria_enter" value="" data-enter="Enter" /><br />
-<button onclick="Jaria.txt.select(false)">Désactive la sélection du texte du document</button>
-<button onclick="Jaria.txt.select(true)">Active la sélection du texte du document</button>
+<button type="button" onclick="affBox()">test oBox</button>
+<button type="button" onclick="affNewBox()">test nouvelle instance box</button>
+<button type="button" onclick="Ajax()">test Ajax</button><br />
+<button type="button" onclick="Jaria.txt.select(false)">Désactive la sélection du texte du document</button>
+<button type="button" onclick="Jaria.txt.select(true)">Active la sélection du texte du document</button><br />
+<button type="button" onclick="Jaria.txt.select(false, 'marge')">Désactive la sélection du texte des marges</button>
+<button type="button" onclick="Jaria.txt.select(true, 'marge')">Active la sélection du texte des marges</button><br />
+<button type="button" onclick="Jaria.nav.contextmenu(false)">Désactive la menu contextuel</button>
+<button type="button" onclick="Jaria.nav.contextmenu(true)">Active  la menu contextuel</button><br />
+<button type="button" onclick="alert(Jaria.txt.digit('1', 2))">1 en "001"</button> <button type="button" onclick="Pluriel()">Pluriel</button><br />
+<button type="button" onclick="Lock()">Griser la page</button><br />
+<button type="button" onclick="SupportCSS()">Support CSS</button><br />
+<button type="button" onclick="Anime()">Animation</button><br />
+<button type="button" onclick="AddFunction()">Add Local1 & Local1 à Global</button><br />
+
+<div style="height:600px; width:1600px; border: 1px solid #f00; display: block; text-align: center">
+	<button type="button" onclick="alert(Jaria.nav.name + ' ' + Jaria.nav.version + ' ' + Jaria.nav.scrollX + ' ' + Jaria.nav.scrollY)">alert</button><br />
+</div>
 </body>
 </html>
