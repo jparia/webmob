@@ -1,6 +1,6 @@
 var Jaria = {
 		
-	version: "20130715",
+	version: "20131126",
 	path: "jaria/images/",
 		
 	//Retourne un tableau des images de la bibliothèque Jaria
