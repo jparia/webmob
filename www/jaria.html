@@ -24,19 +24,7 @@
 			Global = Jaria.fn.append(Global, Local2);
 			Global();
 		}
-		
-		function DelFunction(n){
-			if(n == 1){
-				alert("on va supprimer Local1")
-				Global = Jaria.fn.remove(Global, Local1);
-			}
-			if(n == 2){
-				alert("on va supprimer Local2")
-				Global = Jaria.fn.remove(Global, Local2);
-			}
-			Global();
-		}
-	
+				
 		function affBox(){
 			
 			var s = "Navigateur: " + Jaria.nav.name;
@@ -108,11 +96,12 @@
 		function Mouse(){
 			var $ = Jaria.nav;
 			Jaria.el.get("mouse").html("mouse - X: " + $.mouseX + " - Y: " + $.mouseY);
+			
 		}
 		
 		function Size(){
 			var $ = Jaria.nav;
-			Jaria.el.get("size").html("Size - X: " + $.screenX + " - Y: " + $.screenY);		
+			Jaria.el.get("size").html("Size - X: " + $.screenX + " - Y: " + $.screenY);	
 		}
 		
 		function Marge(){
@@ -153,7 +142,7 @@
 			d.html("Elément animé");
 			Jaria.nav.body.appendChild(d);
 			
-			/*
+			
 			d.anime({
 				top: 200,
 				left: 200,
@@ -174,7 +163,7 @@
 					e.innerHTML += "<br>stop";
 					
 				},
-			});*/
+			});
 			
 			d.drag({
 				css:{
@@ -208,17 +197,20 @@
 			
 		}
 				
-		Jaria.nav.addevent("onmousemove", Mouse);	
+		Jaria.nav.addevent("onmousemove", Mouse);
+		Jaria.nav.addevent("onresize", Size);
 		Jaria.nav.addevent("onload", function(){
+				
 				Size();
-				Marge();
+				Marge();				
 				Jaria.nav.loadimage({
 					show: true,
 					url: ["img/img1.png", "img/img2.png", "img/img3.png", "img/img3.png"]
 				});
+				
 		});	
 		//Jaria.nav.delevent("onmousemove", Mouse)
-		Jaria.nav.addevent("onresize", Size);
+		
 		
 
 		
@@ -242,6 +234,10 @@
 <button type="button" onclick="Lock()">Griser la page</button><br />
 <button type="button" onclick="SupportCSS()">Support CSS</button><br />
 <button type="button" onclick="Anime()">Animation</button><br />
-<button type="button" onclick="AddFunction()">Add Local1 & Local1 à Global</button> <button type="button" onclick="DelFunction(1)">Del Local1</button> <button type="button" onclick="DelFunction(2)">Del Local2</button><br />
+<button type="button" onclick="AddFunction()">Add Local1 & Local1 à Global</button><br />
+
+<div style="height:600px; width:1600px; border: 1px solid #f00; display: block; text-align: center">
+	<button type="button" onclick="alert(Jaria.nav.name + ' ' + Jaria.nav.version + ' ' + Jaria.nav.scrollX + ' ' + Jaria.nav.scrollY)">alert</button><br />
+</div>
 </body>
 </html>
